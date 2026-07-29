@@ -11,7 +11,7 @@ from decimal import Decimal
 import pytest
 
 from app import create_app
-from app.models import db as _db, Familia, Usuario, Conta, Categoria
+from app.models import db as _db, Familia, Usuario, Conta, Categoria, MeioPagamento
 
 
 @pytest.fixture
@@ -65,6 +65,40 @@ def conta(db, familia, usuario):
         data=date(2026, 1, 1),
         saldo_inicial=Decimal("100.00"),
         saldo_atual=Decimal("100.00"),
+        tipo="Conta Corrente",
+        usuario_id=usuario.id,
+        familia_id=familia.id,
+    )
+    db.session.add(conta)
+    db.session.commit()
+    return conta
+
+
+@pytest.fixture
+def cartao(db, familia, usuario):
+    """Cria um cartão de crédito de teste (fecha dia 10, vence dia 20)."""
+    cartao = MeioPagamento(
+        nome="Cartão Teste",
+        tipo="Crédito",
+        limite=Decimal("1000.00"),
+        fechamento_dia=10,
+        vencimento_dia=20,
+        usuario_id=usuario.id,
+        familia_id=familia.id,
+    )
+    db.session.add(cartao)
+    db.session.commit()
+    return cartao
+
+
+@pytest.fixture
+def conta_destino(db, familia, usuario):
+    """Segunda conta de teste, usada como destino em transferências."""
+    conta = Conta(
+        nome="Conta Destino",
+        data=date(2026, 1, 1),
+        saldo_inicial=Decimal("200.00"),
+        saldo_atual=Decimal("200.00"),
         tipo="Conta Corrente",
         usuario_id=usuario.id,
         familia_id=familia.id,
