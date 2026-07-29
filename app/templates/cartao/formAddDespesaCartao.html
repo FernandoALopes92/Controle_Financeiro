@@ -1,0 +1,148 @@
+<div class="modal fade" id="modalMovimentacaoCartao" tabindex="-1" aria-labelledby="modalMovimentacaoCartaoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl"> <div class="modal-content border-0 shadow">
+      <form id="formAddDespesaCartao" method="post" action="{{ url_for('cartao.editar_movimentacao_cartao', id=mov.id) if mov else url_for('cartao.nova_movimentacao_cartao') }}">      
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        
+        <div class="modal-header bg-purple text-white py-3">
+          <h5 class="modal-title fw-bold" id="modalMovimentacaoCartaoLabel">
+            <i class="bi bi-cart-plus me-2"></i>{{ mov and "Editar" or "Nova" }} Compra no Cartão
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+
+        <div class="modal-body px-4 py-4">
+          
+          <div class="d-flex align-items-center mb-3 p-3 bg-light rounded shadow-sm" id="tipoPagamentoContainer">
+            <label class="form-label text-muted fw-bold mb-0 me-4">Forma de Pagamento:</label>
+            <div class="form-check form-check-inline mb-0">
+              <input class="form-check-input" type="radio" name="tipo_pagamento" id="avista" value="avista" {% if not mov or mov.tipo_pagamento == 'avista' %}checked{% endif %}>
+              <label id="lblAvista" class="form-check-label fw-semibold" for="avista">À vista</label>
+            </div>
+            <div class="form-check form-check-inline mb-0">
+              <input class="form-check-input" type="radio" name="tipo_pagamento" id="parcelado" value="parcelado" {% if mov and mov.tipo_pagamento == 'parcelado' %}checked{% endif %}>
+              <label id="lblParcelado" class="form-check-label fw-semibold" for="parcelado">Parcelado</label>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3 align-items-end">
+            <div class="col-md-5">
+              <label for="descricao" class="form-label text-muted fw-semibold">Descrição</label>
+              <input type="text" id="descricao" name="descricao" class="form-control shadow-sm" placeholder="Ex: Mercado Livre, Padaria..." value="{{ mov.descricao if mov else '' }}" required>
+            </div>
+            
+            <div class="col-md-3">
+              <label for="valor" class="form-label text-muted fw-semibold">Valor</label>
+              <div class="input-group shadow-sm">
+                <span class="input-group-text bg-light border-end-0">R$</span>
+                <input type="text" id="valor" name="valor" class="form-control border-start-0" placeholder="0,00" value="{{ mov.valor if mov else '' }}" required>
+              </div>
+            </div>
+            
+            <div class="col-md-4">
+              <div class="form-check form-switch pb-2">
+                <input class="form-check-input" type="checkbox" id="is_estorno" name="is_estorno" value="true">
+                <label class="form-check-label text-success fw-bold small" for="is_estorno" style="cursor: pointer; user-select: none;">
+                  <i class="bi bi-arrow-down-circle"></i> Estorno / Crédito
+                </label>
+              </div>
+            </div>
+          </div>
+
+      <!-- Alterar essa e as proximas -->
+          <div id="blocoAlterarProximas" class="p-3 border rounded bg-light mb-3 d-none">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="alterar_proximas" name="alterar_proximas" value="true">
+              <label class="form-check-label fw-bold text-primary" for="alterar_proximas" style="cursor: pointer;">
+                <i class="bi bi-calendar-range me-1"></i> Atualizar valor desta e das próximas?
+              </label>
+              <small class="d-block text-muted" style="font-size: 0.85rem; line-height: 1.2; margin-top: 4px;">
+                Aplica o novo valor para todas as cobranças futuras que fazem parte deste mesmo item (Recorrente/Parcelado).
+              </small>
+            </div>
+          </div>
+
+          <div id="valorTipoSection" class="p-3 mb-3 bg-light border rounded" style="display: none;">
+            <div class="row g-3 align-items-center">
+              <div class="col-md-6 d-flex align-items-center">
+                <label class="form-label text-muted fw-bold mb-0 me-3">Lançar como:</label>
+                <div class="form-check form-check-inline mb-0">
+                  <input class="form-check-input" type="radio" name="tipo_valor" id="valor_total" value="total" {% if not mov or mov.tipo_valor == 'total' %}checked{% endif %}>
+                  <label class="form-check-label" for="valor_total">Valor Total</label> 
+                </div>
+                <div class="form-check form-check-inline mb-0">
+                  <input class="form-check-input" type="radio" name="tipo_valor" id="valor_parcela" value="parcela" {% if mov and mov.tipo_valor == 'parcela' %}checked{% endif %}>
+                  <label class="form-check-label" for="valor_parcela">Valor da Parcela</label>
+                </div>
+              </div>
+              <div class="col-md-6 d-flex align-items-center">
+                <label for="numero_parcelas" class="form-label text-muted fw-semibold mb-0 me-3 text-nowrap">Quantidade de Parcelas:</label>
+                <input type="number" id="numero_parcelas" name="numero_parcelas" class="form-control shadow-sm" min="2" placeholder="Ex: 10" value="{{ mov.numero_parcelas if mov and mov.numero_parcelas else '' }}">
+              </div>
+            </div>
+            <div id="valorParcelaCalculado" class="mt-2 text-center" style="display: none;">
+              <small class="text-danger fw-bold fs-6" id="textoValorParcela"></small>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label for="data" class="form-label text-muted fw-semibold">Data da Compra</label>
+              <input type="date" id="data" name="data" class="form-control shadow-sm" value="{{ mov.data_compra.strftime('%Y-%m-%d') if mov else '' }}" required>
+            </div>
+            <div class="col-md-4">
+              <label for="meio_pagamento_id" class="form-label text-muted fw-semibold">Cartão de Crédito</label>
+              <select id="meio_pagamento_id" name="meio_pagamento_id" class="form-select shadow-sm" required>
+                <option value="" disabled selected>Selecione o cartão</option>
+                {% for mp in meios %}
+                  <option value="{{ mp.id }}" {% if mov and mov.meio_pagamento_id == mp.id %}selected{% endif %}>{{ mp.nome }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label for="categoria_id" class="form-label text-muted fw-semibold">Categoria</label>
+              <select id="categoria_id" name="categoria_id" class="form-select shadow-sm" required>
+                <option value="" disabled selected>Selecione a gaveta</option>
+                {% for cat in categorias %}
+                  <option value="{{ cat.id }}" {% if mov and mov.categoria_id == cat.id %}selected{% endif %}>{{ cat.nome }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+<!--           <div class="p-3 border rounded d-flex justify-content-between align-items-center bg-light mt-4">
+            <span class="text-muted fw-semibold">Esta compra será lançada na fatura de:</span>
+            <span id="faturaPrevista" class="badge bg-roxo-azulado px-3 py-2 fs-6">Aguardando dados...</span>
+          </div> -->
+
+          <div class="p-3 border rounded d-flex justify-content-between align-items-center bg-light mt-4">
+            <label for="fatura_mes_ano" class="text-muted fw-semibold mb-0 fs-6">Lançar na Fatura de:</label>
+            <select id="fatura_mes_ano" name="fatura_mes_ano" class="form-select shadow-sm fw-bold text-purple w-auto fs-6 py-2" required>
+              <option value="" disabled selected>Selecione data e cartão...</option>
+            </select>
+          </div>
+
+          <div class="p-3 border rounded d-flex justify-content-between align-items-center bg-light mt-3" id="recorrenteSection">
+            <div>
+              <label for="replicar" class="text-muted fw-semibold mb-1 d-block fs-6">
+                <i class="bi bi-arrow-repeat me-1"></i> Conta Recorrente?
+              </label>
+              <small class="text-muted d-block" style="font-size: 0.85rem; line-height: 1.2;">
+                Ideal para Netflix, Internet, etc. O sistema criará lançamentos<br>independentes de 1 parcela nos meses seguintes.
+              </small>
+            </div>
+            <select id="replicar" name="replicar" class="form-select shadow-sm fw-bold text-purple w-auto fs-6 py-2" >
+              <option value="nao">Não, apenas este mês</option>
+              <option value="3_meses">Sim, clonar por +3 meses</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="modal-footer bg-light border-top-0 py-3">
+          <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-purple px-4 shadow-sm" id="btnSalvarMovimentacao">{{ mov and "Atualizar" or "Salvar Compra" }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

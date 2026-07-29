@@ -1,0 +1,27 @@
+# Ambiente virtual
+.venv/
+venv/
+env/
+
+# Variáveis de ambiente
+.env
+
+# Python
+__pycache__/
+.pytest_cache/
+*.pyc
+*.pyo
+
+# VS Code (opcional)
+.vscode/
+
+# Arquivos temporários
+*.log
+
+# Cópias de arquivos
+*copy*
+*copia*
+
+# Windows
+Thumbs.db
+Desktop.ini

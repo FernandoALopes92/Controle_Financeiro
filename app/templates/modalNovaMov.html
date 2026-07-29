@@ -1,0 +1,408 @@
+
+<div class="modal fade" id="modalNovaMov" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 900px;"> 
+        <div class="modal-content modal-finance-content bg-white">
+            
+            <!-- CABEÇALHO ROXO COM LETRA BRANCA -->
+            <div class="modal-header border-0 pt-4 pb-4 px-4 position-relative justify-content-center" style="background-color: #6c3df4;">
+                <h5 class="modal-title fw-bold text-white" style="font-size: 1.25rem;">
+                    Novo Lançamento
+                </h5>
+                <button type="button" class="btn-close btn-close-white shadow-none position-absolute" data-bs-dismiss="modal" style="right: 24px; top: 24px;"></button>
+            </div>
+            
+            <div class="modal-body p-4 p-md-5">
+                
+                <!-- ETAPA 1 -->
+                <div id="etapa-tipo-transacao">
+                    <p class="text-center text-muted fw-medium mb-4">O que você deseja registrar na sua carteira hoje?</p>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="btn-choice receita" onclick="irParaEtapa('form-receita')">
+                                <div class="icon-circle"><i class="bi bi-arrow-up-right"></i></div>
+                                <h5 class="fw-bold text-dark mb-2">Receita</h5>
+                                <small class="text-muted">Salário, rendimentos e entradas.</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="btn-choice despesa" onclick="irParaEtapa('etapa-origem-despesa')">
+                                <div class="icon-circle"><i class="bi bi-arrow-down-right"></i></div>
+                                <h5 class="fw-bold text-dark mb-2">Despesa</h5>
+                                <small class="text-muted">Gastos de cartão, contas e boletos.</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="btn-choice transferencia" onclick="irParaEtapa('form-transferencia')">
+                                <div class="icon-circle"><i class="bi bi-arrow-left-right"></i></div>
+                                <h5 class="fw-bold text-dark mb-2 te">Transferência</h5>
+                                <small class="text-muted">Mover saldos entre suas contas.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ETAPA 2 -->
+                <div id="etapa-origem-despesa" class="d-none">
+                    <div class="d-flex align-items-center justify-content-center position-relative mb-4">
+                        <button type="button" class="btn-voltar position-absolute start-0" onclick="voltarPara('etapa-tipo-transacao')">
+                            <i class="bi bi-arrow-left fs-5"></i>
+                        </button>
+                        <p class="text-muted fw-medium mb-0 fs-5">De onde saiu o dinheiro da despesa?</p>
+                    </div>
+                    <div class="row g-4 justify-content-center">
+                        <div class="col-md-5">
+                            <div class="btn-choice conta" onclick="irParaEtapa('form-despesa-conta')">
+                                <div class="icon-circle"><i class="bi bi-bank2"></i></div>
+                                <h5 class="fw-bold text-dark mb-2">Conta / PIX</h5>
+                                <small class="text-muted">Saldo de conta corrente ou débito.</small>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="btn-choice cartao" onclick="irParaEtapa('form-despesa-cartao')">
+                                <div class="icon-circle"><i class="bi bi-credit-card-fill"></i></div>
+                                <h5 class="fw-bold text-dark mb-2">Cartão de Crédito</h5>
+                                <small class="text-muted">Compras lançadas para a fatura.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FORMULÁRIO 1: RECEITA -->
+                <form id="form-receita" class="d-none" method="POST" action="{{ url_for('movimentacoes.criar') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input type="hidden" name="tipo_lancamento" value="receita">
+                    
+                    <div class="d-flex align-items-center mb-4">
+                        <button type="button" class="btn-voltar me-3" onclick="voltarPara('etapa-tipo-transacao')"><i class="bi bi-arrow-left"></i></button>
+                        <h4 class="fw-bold mb-0 text-success">Registrar Receita</h4>
+                    </div>
+                    
+                    <div class="form-section mb-4">
+                        <div class="row g-4">
+                            <div class="col-md-8">
+                                <label class="form-label-modern">Descrição</label>
+                                <input type="text" name="descricao" class="form-control form-modern" placeholder="Ex: Salário do mês, Freelance..." required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label-modern text-success">Valor Total (R$)</label>
+                                <input type="number" step="0.01" name="valor" class="form-control form-modern fw-bold text-success" placeholder="0,00" required />
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label class="form-label-modern">Data do Recebimento</label>
+                                <input type="date" name="data" class="form-control form-modern" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label-modern">Categoria</label>
+                                <select class="form-select form-modern" name="categoria_id" id="categoria_id_receita" required>
+                                    <option value="" disabled selected>Selecione...</option>
+                                    {% for categoria in categorias %}
+                                        <option value="{{ categoria.id }}" data-tipo="{{ categoria.tipo }}">{{ categoria.nome }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label-modern">Destino (Conta)</label>
+                                <select class="form-select form-modern" name="conta_id" required>
+                                    <option value="" disabled selected>Onde caiu?</option>
+                                    {% for conta in contas %}
+                                        <option value="{{ conta.id }}">{{ conta.nome }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <div class="custom-switch-card h-100 d-flex align-items-center justify-content-between">
+                                <div>
+                                    <h6 class="fw-bold mb-1 text-success">Dinheiro já caiu?</h6>
+                                    <span class="text-muted small">Desmarque se for previsão.</span>
+                                </div>
+                                <div class="form-check form-switch fs-4 mb-0">
+                                    <input class="form-check-input" type="checkbox" name="pago" value="true" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="custom-switch-card h-100">
+                                <h6 class="fw-bold mb-2"><i class="bi bi-arrow-repeat text-success me-1"></i> Receita Recorrente?</h6>
+                                <select name="replicar" class="form-select form-modern py-1">
+                                    <option value="nao">Apenas este mês</option>
+                                    <option value="3_meses">Repetir por +3 meses</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-success px-5 py-3 fw-bold rounded-pill w-100">Salvar Receita</button>
+                    </div>
+                </form>
+
+                <!-- FORMULÁRIO 2: DESPESA CONTA CORRENTE/PIX -->
+                <form id="form-despesa-conta" class="d-none" method="POST" action="{{ url_for('movimentacoes.criar') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input type="hidden" name="tipo_lancamento" value="despesa">
+                    
+                    <div class="d-flex align-items-center mb-4">
+                        <button type="button" class="btn-voltar me-3" onclick="voltarPara('etapa-origem-despesa')"><i class="bi bi-arrow-left"></i></button>
+                        <h4 class="fw-bold mb-0 text-danger">Saída da Conta / PIX</h4>
+                    </div>
+
+                    <div class="form-section mb-4">
+                        <div class="row g-4">
+                            <div class="col-md-8">
+                                <label class="form-label-modern">Descrição do Gasto</label>
+                                <input type="text" name="descricao" class="form-control form-modern" placeholder="Ex: Conta de Luz, Mercado..." required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label-modern text-danger">Valor (R$)</label>
+                                <input type="number" step="0.01" name="valor" class="form-control form-modern fw-bold text-danger" placeholder="0,00" required />
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label class="form-label-modern">Data do Pagamento</label>
+                                <input type="date" name="data" class="form-control form-modern" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label-modern">Categoria</label>
+                                <select class="form-select form-modern" name="categoria_id" id="categoria_id_despesa" required>
+                                    <option value="" disabled selected>O que foi?</option>
+                                    {% for categoria in categorias %}
+                                        <option value="{{ categoria.id }}" data-tipo="{{ categoria.tipo }}">{{ categoria.nome }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label-modern">Origem do Dinheiro</label>
+                                <select class="form-select form-modern" name="conta_id" id="conta_id_despesa" required>
+                                    <option value="" disabled selected>De onde saiu?</option>
+                                    {% for conta in contas %}
+                                        <option value="{{ conta.id }}" data-saldo="{{ conta.saldo_atual }}">{{ conta.nome }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div id="saldoContaDespesaContainer" class="mt-2 text-end" style="display: none;">
+                                    <span id="saldoContaDespesa" class="badge bg-light text-secondary border fw-medium p-1 px-2"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <div class="custom-switch-card h-100 d-flex align-items-center justify-content-between">
+                                <div>
+                                    <h6 class="fw-bold mb-1 text-danger">Esta conta já foi paga?</h6>
+                                    <span class="text-muted small">Desmarque se for agendamento.</span>
+                                </div>
+                                <div class="form-check form-switch fs-4 mb-0">
+                                    <input class="form-check-input" type="checkbox" name="pago" value="true" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="custom-switch-card h-100">
+                                <h6 class="fw-bold mb-2"><i class="bi bi-arrow-repeat text-purple me-1"></i> Despesa Recorrente?</h6>
+                                <select name="replicar" class="form-select form-modern py-1">
+                                    <option value="nao">Apenas este mês</option>
+                                    <option value="3_meses">Repetir por +3 meses</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-danger px-5 py-3 fw-bold rounded-pill w-100">Salvar Despesa</button>
+                    </div>
+                </form>
+
+                <!-- FORMULÁRIO 3: COMPRA NO CARTÃO DE CRÉDITO -->
+                <form id="form-despesa-cartao" class="d-none" method="post" action="{{ url_for('cartao.nova_movimentacao_cartao') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="d-flex align-items-center mb-4">
+                        <button type="button" class="btn-voltar me-3" onclick="voltarPara('etapa-origem-despesa')"><i class="bi bi-arrow-left"></i></button>
+                        <h4 class="fw-bold mb-0" style="color: #d39e00;"><i class="bi bi-credit-card-fill me-2"></i>Compra no Cartão</h4>
+                    </div>
+
+                    <div class="form-section mb-4">
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label-modern">Descrição da Compra</label>
+                                <input type="text" name="descricao" class="form-control form-modern" placeholder="Ex: Mercado Livre, Uber, Restaurante..." required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label-modern text-warning text-darken">Valor Base (R$)</label>
+                                <input type="text" id="valor_compra_cartao" name="valor" class="form-control form-modern fw-bold text-dark" placeholder="0,00" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label-modern">Data da Compra</label>
+                                <input type="date" id="data_cartao" name="data" class="form-control form-modern" required>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label-modern">Cartão Utilizado</label>
+                                <select id="meio_pagamento_id_cartao" name="meio_pagamento_id" class="form-select form-modern" required>
+                                    <option value="" disabled selected>Qual cartão?</option>
+                                    {% for mp in meios %}
+                                        <option value="{{ mp.id }}">{{ mp.nome }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label-modern">Categoria</label>
+                                <select id="categoria_id_cartao" name="categoria_id" class="form-select form-modern" required>
+                                    <option value="" disabled selected>Do que se trata?</option>
+                                    {% for cat in categorias %}
+                                        <option value="{{ cat.id }}" data-tipo="{{ cat.tipo }}">{{ cat.nome }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label-modern text-purple">Lançar na Fatura de:</label>
+                                <select id="fatura_mes_ano_cartao" name="fatura_mes_ano" class="form-select form-modern" style="border: 1px solid #6c3df4;" required>
+                                    <option value="" disabled selected>Insira a data primeiro...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- LÓGICA DE PARCELAMENTO MAIS COMPACTA -->
+                        <div class="p-3 px-4 rounded-3" style="background-color: #fafbfc; border: 1px solid #eef0f4;">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <label class="form-label-modern mb-1">Modalidade de Pagamento</label>
+                                    <div class="d-flex gap-3 mt-1">
+                                        <div class="form-check custom-control">
+                                            <input class="form-check-input" type="radio" name="tipo_pagamento" id="avista_cartao" value="avista" checked>
+                                            <label class="form-check-label fw-bold text-dark" for="avista_cartao">À vista</label>
+                                        </div>
+                                        <div class="form-check custom-control">
+                                            <input class="form-check-input" type="radio" name="tipo_pagamento" id="parcelado_cartao" value="parcelado">
+                                            <label class="form-check-label fw-bold text-dark" for="parcelado_cartao">Parcelado</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                                    <div class="form-check form-switch d-inline-block text-start bg-white p-2 px-3 rounded-pill border mb-0">
+                                        <input class="form-check-input mt-1 ms-0" type="checkbox" name="is_estorno" value="true">
+                                        <label class="form-check-label text-success fw-bold ms-2" style="font-size: 0.85rem;">Isto é um Estorno (+)</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Box de Informação de Parcelamento Reduzido -->
+                            <div id="valorTipoSection" class="mt-3 pt-3 border-top" style="display: none;">
+                                <div class="row align-items-start g-3">
+                                    <div class="col-md-7">
+                                        <label class="form-label-modern mb-2" style="font-size: 0.65rem;">O valor digitado lá em cima é:</label>
+                                        <div class="d-flex flex-column gap-2">
+                                            <div class="radio-compacto d-flex align-items-center">
+                                                <input class="form-check-input m-0 me-2" type="radio" name="tipo_valor" id="valor_total_cartao" value="total" checked>
+                                                <label class="form-check-label fw-semibold text-dark mb-0 w-100" style="font-size: 0.85rem; cursor: pointer;" for="valor_total_cartao">Valor Total da Compra</label> 
+                                            </div>
+                                            <div class="radio-compacto d-flex align-items-center">
+                                                <input class="form-check-input m-0 me-2" type="radio" name="tipo_valor" id="valor_parcela_cartao" value="parcela">
+                                                <label class="form-check-label fw-semibold text-dark mb-0 w-100" style="font-size: 0.85rem; cursor: pointer;" for="valor_parcela_cartao">Valor de apenas 1 Parcela</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 border-start ps-md-3">
+                                        <label class="form-label-modern mb-1" style="font-size: 0.65rem;">Qtd. Parcelas</label>
+                                        <input type="number" id="numero_parcelas_cartao" name="numero_parcelas" class="form-control form-modern w-100 fw-bold text-center mb-2 py-1" min="2" placeholder="Ex: 10" style="font-size: 0.9rem;">
+                                        
+                                        <!-- Caixa Mágica de Resultado (Agora Compacta) -->
+                                        <div id="resumoCalculoParcela" class="p-2 rounded-3 text-center" style="display:none; background-color: rgba(108, 61, 244, 0.05); border: 1px solid rgba(108, 61, 244, 0.1);">
+                                            <small class="d-block fw-bold text-muted mb-0" style="font-size: 0.65rem; text-transform: uppercase;">Resumo p/ Fatura</small>
+                                            <span id="textoCalculoParcela" class="fw-bold" style="color: #6c3df4; font-size: 0.9rem;"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="custom-switch-card mb-4" id="recorrenteSectionCard">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h6 class="fw-bold mb-1"><i class="bi bi-arrow-repeat text-purple me-1"></i> Compra Recorrente (Assinatura)?</h6>
+                                <span class="text-muted small">Ex: Netflix, Academia (cai todo mês).</span>
+                            </div>
+                            <select name="replicar" class="form-select form-modern w-auto bg-white">
+                                <option value="nao">Não</option>
+                                <option value="3_meses">Repetir por +3 meses</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-warning px-5 py-3 fw-bold rounded-pill w-100 text-dark" style="background-color: #ffc107;">Salvar Compra no Cartão</button>
+                    </div>
+                </form>
+
+                <!-- FORMULÁRIO 4: TRANSFERÊNCIA -->
+                <form id="form-transferencia" class="d-none" method="POST" action="{{ url_for('transferencias.nova_transferencia') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="d-flex align-items-center mb-4">
+                        <button type="button" class="btn-voltar me-3" onclick="voltarPara('etapa-tipo-transacao')"><i class="bi bi-arrow-left"></i></button>
+                        <!-- Nova cor de título: Cinza Grafite -->
+                        <h4 class="fw-bold mb-0 text-primary" ><i class="bi bi-arrow-left-right me-2"></i>Transferência entre Contas</h4>
+                    </div>
+
+                    <div class="form-section mb-4">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label-modern text-danger">De onde saiu? (Origem)</label>
+                                <select id="conta_origem_transf" class="form-select form-modern" name="conta_origem" required>
+                                    <option value="" disabled selected>Selecione a conta...</option>
+                                    {% for conta in contas %}
+                                        <option value="{{ conta.id }}" data-saldo="{{ conta.saldo_atual }}">{{ conta.nome }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div id="saldoContaOrigemTransfContainer" class="mt-2" style="display: none;">
+                                    <span id="saldoContaOrigemTransf" class="small text-muted fw-medium"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label-modern text-success">Para onde foi? (Destino)</label>
+                                <select class="form-select form-modern" name="conta_destino" id="conta_destino_transf" required>
+                                    <option value="" disabled selected>Selecione a conta...</option>
+                                    {% for conta in contas %}
+                                        <option value="{{ conta.id }}" data-saldo="{{ conta.saldo_atual }}">{{ conta.nome }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div id="saldoContaDestinoTransfContainer" class="mt-2" style="display: none;">
+                                    <span id="saldoContaDestinoTransf" class="small text-muted fw-medium"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label-modern">Valor (R$)</label>
+                                <input type="number" step="0.01" name="valor" id="valor_transf" class="form-control form-modern fw-bold fs-5" placeholder="0,00" required />
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label-modern">Data da Transferência</label>
+                                <input type="date" id="data_transf" name="data" class="form-control form-modern" required />
+                            </div>
+                            
+                            <div class="col-12">
+                                <label class="form-label-modern">Observações (Opcional)</label>
+                                <input type="text" name="descricao" class="form-control form-modern" placeholder="Ex: Guardando para reserva, cobrindo saldo..." />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-end">
+                        <!-- Novo botão Grafite -->
+                        <button type="submit" class="btn btn-primary px-5 py-3 fw-bold text-white rounded-pill w-100">Confirmar Transferência</button>
+                    </div>
+                </form>
+
+            </div> 
+        </div>
+    </div>
+</div>

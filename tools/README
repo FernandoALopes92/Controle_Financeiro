@@ -1,0 +1,12 @@
+# Ferramentas Auxiliares
+
+Esta pasta contém scripts utilizados apenas durante o desenvolvimento.
+
+Eles não fazem parte da aplicação em produção.
+
+Scripts disponíveis:
+
+- criar_banco.py
+- importar_excel.py
+- gerar_parcelas.py
+- limpar_banco.py

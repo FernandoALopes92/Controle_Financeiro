@@ -1,0 +1,259 @@
+{% extends 'navbar/base.html' %} {% block content%}
+<div class="container mt-4">
+  <div class="row mb-4">
+    <div class="col-md-9">
+      <h2 class="mb-4">Cartões de Crédito</h2>
+    </div>
+    <div class="col-md-3 p-0">
+      <button
+        class="btn btn-purple w-100 mb-3"
+        data-bs-toggle="modal"
+        data-bs-target="#cadastroModal"
+      >
+        Novo Cartão de Crédito
+      </button>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for
+    category, message in messages %} 
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %} {% endif %} {% endwith %}
+
+    <table class="table table-striped text-center align-middle mx-auto">
+      <thead class="table-dark">
+        <tr>
+          <th>Cartão</th>
+          <th>Logo</th>
+          <th>Vencimento</th>
+          <th>Fechamento</th>
+          <th>Limite</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for meio in meios_pagamento %}
+        <tr>
+          <td>{{ meio.nome }}</td>
+          <td>
+            {% if meio.logo %}
+            <img
+              src="{{ url_for('static', filename='logos/cartoes/' ~ meio.logo) }}"
+              alt="{{ meio.nome }} logo"
+              width="40"
+              height="40"
+              class="me-2 align-middle"
+            />
+            {% else %} - {% endif %}
+          </td>
+          <td>{{ meio.vencimento_dia if meio.vencimento_dia else '-' }}</td>
+          <td>{{ meio.fechamento_dia if meio.fechamento_dia else '-' }}</td>
+          <td>{% if meio.limite %}R$ {{ meio.limite | brl }}{% else %}- {% endif %}</td>
+          <td>
+            <button
+              class="btn btn-sm btn-roxo-azulado btn-editar"
+              title="Editar"
+              data-bs-toggle="modal"
+              data-bs-target="#editarModal{{ meio.id }}"
+            >
+              <i class="bi bi-pencil-fill"></i>
+            </button>
+            <button
+              class="btn btn-sm btn-purple btn-excluir"
+              title="Excluir"
+              data-bs-toggle="modal"
+              data-bs-target="#excluirModal{{ meio.id }}"
+            >
+              <i class="bi bi-trash3"></i>
+            </button>
+          </td>
+        </tr>
+
+        <div
+          class="modal fade"
+          id="editarModal{{ meio.id }}"
+          tabindex="-1"
+          aria-labelledby="editarModalLabel{{ meio.id }}"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog">
+            <form
+              method="POST"
+              enctype="multipart/form-data"
+              action="{{ url_for('meios_pagamento.editar_meio_pagamento', id=meio.id) }}"
+            >
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="editarModalLabel{{ meio.id }}">
+                    Editar Cartão de Crédito
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Fechar"
+                  ></button>
+                </div>
+                <input type="hidden" name="tipo" value="cartao_credito" />
+                <div class="modal-body">
+                  <div class="mb-3">
+                    <label for="nome" class="form-label">Nome do Cartão</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="nome"
+                      value="{{ meio.nome }}"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="fechamento_dia" class="form-label">Fechamento</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="fechamento_dia"
+                      value="{{ meio.fechamento_dia }}"
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="vencimento_dia" class="form-label">Vencimento</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="vencimento_dia"
+                      value="{{ meio.vencimento_dia }}"
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="limite" class="form-label">Limite</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      class="form-control"
+                      name="limite"
+                      value="{{ meio.limite }}"
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="logo" class="form-label">Logo do Cartão</label>
+                    <input
+                      type="file"
+                      class="form-control"
+                      name="logo"
+                      accept="image/*"
+                    />
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-roxo-azulado">Salvar</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div
+          class="modal fade"
+          id="excluirModal{{ meio.id }}"
+          tabindex="-1"
+          aria-labelledby="excluirModalLabel{{ meio.id }}"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog">
+            <form
+              method="POST"
+              action="{{ url_for('meios_pagamento.excluir_meio_pagamento', id=meio.id) }}"
+            >
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="excluirModalLabel{{ meio.id }}">
+                    Excluir Cartão de Crédito
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Fechar"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  Tem certeza que deseja excluir o cartão de crédito
+                  <strong>{{ meio.nome }}</strong>?
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-danger">Excluir</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div
+    class="modal fade"
+    id="cadastroModal"
+    tabindex="-1"
+    aria-labelledby="cadastroModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <form method="POST" enctype="multipart/form-data" action="{{ url_for('meios_pagamento.listar') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="cadastroModalLabel">Cadastrar Cartão de Crédito</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Fechar"
+            ></button>
+          </div>
+          <input type="hidden" name="tipo" value="cartao_credito" />
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="nome" class="form-label">Nome do Cartão</label>
+              <input type="text" class="form-control" id="nome" name="nome" required />
+            </div>
+            <div class="mb-3">
+              <label for="fechamento_dia" class="form-label">Fechamento</label>
+              <input type="number" class="form-control" name="fechamento_dia" />
+            </div>
+            <div class="mb-3">
+              <label for="vencimento_dia" class="form-label">Vencimento</label>
+              <input type="number" class="form-control" name="vencimento_dia" />
+            </div>
+            <div class="mb-3">
+              <label for="limite" class="form-label">Limite</label>
+              <input type="number" step="0.01" class="form-control" name="limite" />
+            </div>
+            <div class="mb-3">
+              <label for="logo" class="form-label">Logo do Cartão</label>
+              <input type="file" class="form-control" name="logo" accept="image/*" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-purple">Cadastrar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

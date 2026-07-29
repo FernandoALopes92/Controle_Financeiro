@@ -1,0 +1,174 @@
+:root {
+  --primary: #6c4cf1;
+  --primary-dark: #5638d9;
+  --primary-light: #ede9ff;
+
+  --success: #1dbf73;
+  --danger: #e5484d;
+  --warning: #f5a524;
+
+  --background: #f5f7fb;
+  --surface: #ffffff;
+
+  --text: #1f2937;
+  --text-light: #6b7280;
+
+  --border: #e5e7eb;
+
+  --shadow: 0 10px 30px rgba(30, 41, 59, 0.08);
+
+  --radius: 18px;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+
+  background: var(--background);
+
+  color: var(--text);
+}
+
+.card {
+  border: none;
+
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow);
+
+  transition: 0.25s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: var(--primary);
+
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+
+  border-color: var(--primary-dark);
+}
+
+.form-control,
+.form-select {
+  border-radius: 12px;
+
+  border: 1px solid var(--border);
+
+  min-height: 46px;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--primary);
+
+  box-shadow: 0 0 0 0.2rem rgba(108, 76, 241, 0.15);
+}
+
+/* ===========================
+   SIDEBAR
+=========================== */
+
+.sidebar {
+  width: 260px;
+
+  background: linear-gradient(180deg, #5b35d5, #3e248f);
+
+  min-height: 100vh;
+
+  color: #fff;
+
+  position: fixed;
+
+  left: 0;
+
+  top: 0;
+
+  overflow: auto;
+
+  box-shadow: 5px 0 25px rgba(0, 0, 0, 0.08);
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+
+  border-radius: 20px;
+}
+
+.sidebar .logo {
+  padding: 30px;
+
+  font-size: 24px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.5px;
+}
+
+.sidebar ul {
+  list-style: none;
+
+  padding: 10px;
+
+  margin: 0;
+}
+
+.sidebar li {
+  margin-bottom: 8px;
+}
+
+.sidebar a {
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+
+  color: #fff;
+
+  text-decoration: none;
+
+  padding: 14px 18px;
+
+  border-radius: 14px;
+
+  transition: 0.25s;
+
+  opacity: 0.85;
+}
+
+.sidebar a:hover{
+
+    background:rgba(255,255,255,.12);
+
+    opacity:1;
+
+    transform:translateX(4px);
+
+}
+
+.sidebar a.active{
+
+    background:#fff;
+
+    color:#5B35D5;
+
+    font-weight:600;
+
+}
+.content-wrapper{
+
+    margin-left:260px;
+
+    padding:35px;
+
+}

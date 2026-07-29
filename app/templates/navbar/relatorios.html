@@ -1,0 +1,376 @@
+{% extends "navbar/base.html" %}
+{% block title %}Relatórios e Análises{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4 mb-5">
+    
+    <!--  Cabeçalho  -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4">
+        <div class="mb-3 mb-md-0">
+            <h2 class="mb-0 fw-bold">Consolidação Financeira</h2>
+            <p class="text-muted mb-0">Visão macro de metas, receitas e despesas.</p>
+        </div>
+        <form method="POST" action="{{ url_for('relatorios.relatorios') }}" id="filtroForm" class="d-flex gap-2 align-items-end">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div>
+                <label class="form-label small text-muted mb-1 fw-semibold">Ano de Análise</label>
+                <select name="ano" class="form-select form-select-sm shadow-sm border-0 fw-bold" style="min-width: 110px;">
+                    {% for a in anos %} <option value="{{ a }}" {% if a == ano_filtro %}selected{% endif %}>{{ a }}</option> {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-sm btn-purple shadow-sm fw-semibold px-4 h-100">Atualizar Painel</button>
+        </form>
+    </div>
+
+    <!--    Tabs      -->
+
+    <ul class="nav nav-pills mb-4 shadow-sm p-1 bg-white" style="border-radius: 50px; display: inline-flex;" id="relatorioTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active rounded-pill px-4 fw-semibold" data-bs-toggle="pill" data-bs-target="#planilha" type="button" role="tab"><i class="bi bi-table me-2"></i>Planilha de Controle</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill px-4 fw-semibold text-muted" data-bs-toggle="pill" data-bs-target="#graficos" type="button" role="tab"><i class="bi bi-pie-chart-fill me-2"></i>Visão Gráfica</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill px-4 fw-semibold text-muted" data-bs-toggle="pill" data-bs-target="#metas" type="button" role="tab"><i class="bi bi-bullseye me-2"></i>Mural de Metas</button>
+        </li>
+    </ul>
+
+    <!-- Receitas  -->
+    <div class="tab-content" id="relatorioTabsContent">
+
+        <div class="tab-pane fade show active" id="planilha" role="tabpanel">
+            <div class="card border-0 bg-transparent" style="border-radius: 12px;">
+                
+                {% macro colgroup_padrao() %}
+                <colgroup>
+                    <col style="width: 17%;"> 
+                    {% for i in range(12) %}<col style="width: 6.2%;">{% endfor %} 
+                    <col style="width: 8.6%;"> 
+                </colgroup>
+                {% endmacro %}
+
+                <div class="table-responsive shadow-sm rounded-3 mb-4 bg-white">
+                    <table class="table table-bordered table-hover table-sm align-middle text-center mb-0" style="table-layout: fixed; font-size: 0.85rem; width: 100%;">
+                        {{ colgroup_padrao() }}
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-start ps-3 py-3 fw-bold text-success fs-6 bg-success bg-opacity-10"><i class="bi bi-arrow-up-circle-fill me-2"></i>RECEITAS</th>
+                                {% for mes in meses_nomes %} <th class="py-3 bg-success bg-opacity-10">{{ mes }}</th> {% endfor %}
+                                <th class="py-3 bg-success bg-opacity-25 fw-bold">Total do Ano</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for categoria, info in receitas_por_categoria.items() %}
+                            
+                            <!-- Salva o ID do loop pai numa variável segura -->
+                            {% set cat_index = loop.index %}
+                            
+                            <!-- LINHA PAI: CATEGORIA (Clicável para expandir) -->
+                            <tr class="table-light" style="cursor: pointer;" onclick="toggleLinhaExpandivel('subrow-rec-{{ cat_index }}', 'icon-rec-{{ cat_index }}');">
+                                <td class="text-start ps-3 fw-bold text-success text-truncate">
+                                    <button type="button" class="btn btn-sm p-0 border-0 me-2 text-success" style="line-height: 1;">
+                                        <i class="bi bi-plus-square-fill" id="icon-rec-{{ cat_index }}" style="font-size: 0.95rem;"></i>
+                                    </button>
+                                    {{ categoria }}
+                                </td>
+                                {% for m in range(1, 13) %}
+                                    <td class="text-success fw-semibold text-nowrap">{% if info['meses'][m] > 0 %}R$ {{ info['meses'][m] | brl }}{% else %}-{% endif %}</td>
+                                {% endfor %}
+                                <td class="fw-bold text-success bg-light text-nowrap">R$ {{ info['total'] | brl }}</td>
+                            </tr>
+
+                            <!-- LINHAS FILHAS: DESCRIÇÕES OCULTAS -->
+                            {% for desc, dados_desc in info['descricoes'].items() %}
+                            <tr class="subrow-rec-{{ cat_index }} d-none border-dashed" style="font-size: 0.78rem; background-color: #fafafa !important;">
+                                <td class="text-start ps-5 text-muted fw-semibold text-truncate">
+                                    <i class="bi bi-arrow-return-right me-1 small text-secondary"></i> {{ desc }}
+                                </td>
+                                {% for m in range(1, 13) %}
+                                    <td class="text-muted">{% if dados_desc['meses'][m] > 0 %}R$ {{ dados_desc['meses'][m] | brl }}{% else %}-{% endif %}</td>
+                                {% endfor %}
+                                <td class="fw-bold text-muted text-nowrap">R$ {{ dados_desc['total'] | brl }}</td>
+                            </tr>
+                            {% endfor %}
+                            
+                            {% endfor %}
+
+                            <!-- RODAPÉ: TOTAL ARRECADADO -->
+                            <tr class="table-success">
+                                <td class="text-start ps-3 fw-bold">Total Arrecadado</td>
+                                {% for m in range(1, 13) %} 
+                                    <td class="fw-bold text-nowrap">{% if total_receitas_mes[m] > 0 %}R$ {{ total_receitas_mes[m] | brl }}{% else %}-{% endif %}</td> 
+                                {% endfor %}
+                                <td class="fw-bold text-success fs-6 text-nowrap">R$ {{ total_receitas_ano | brl }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Balanço e Investimentos -->
+                <div class="table-responsive shadow-sm rounded-3 mb-4 bg-white">
+                    <table class="table table-bordered table-hover table-sm align-middle text-center mb-0" style="table-layout: fixed; font-size: 0.85rem; width: 100%;">
+                        {{ colgroup_padrao() }}
+                        <thead class="bg-roxo-escuro">
+                            <tr>
+                                <th class="text-start ps-3 py-3 fw-bold fs-6 border-0"><i class="bi bi-cpu-fill me-2 text-warning"></i>BALANÇO & INVESTIMENTO</th>
+                                {% for mes in meses_nomes %} <th class="py-3 border-0">{{ mes }}</th> {% endfor %}
+                                <th class="py-3 border-0">Acumulado</th>
+                            </tr>
+                        </thead>
+                        <tbody class="fw-semibold">
+                            <tr>
+                                <td class="text-start ps-3 input-meta">Meta Individual (%)</td>
+                                {% for m in range(1, 13) %} 
+                                    <td class="p-1 input-meta">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <input type="number" name="meta_{{ m }}" form="filtroForm" value="{{ meta_meses[m]|int }}" class="input-meta form-control form-control-sm text-end fw-bold p-0 border-0 bg-white" style="width: 42px; height: 24px; font-size: 0.8rem;">
+                                            <span class="ms-1 small">%</span>
+                                        </div>
+                                    </td> 
+                                {% endfor %}
+                                <td class="input-meta">-</td>
+                            </tr>
+                            <tr class="linha-texto-roxo">
+                                <td class="text-center ps-3"><i class="bi bi-arrow-return-right me-1"></i>Valor da Meta</td>
+                                {% for m in range(1, 13) %} <td class="text-nowrap">{% if meta_valor_mes[m] > 0 %}R$ {{ meta_valor_mes[m] | brl }}{% else %}-{% endif %}</td> {% endfor %}
+                                <td class="fw-bold text-nowrap">R$ {{ meta_ano | brl }}</td>
+                            </tr>
+
+                            <tr style="cursor: pointer;" onclick="toggleLinhaExpandivel('row-detalhe-gasto', 'btn-icon-gasto');">
+                                <td class="text-start ps-3 fw-bold text-danger">
+                                    <button type="button" class="btn btn-sm p-0 border-0 me-2 text-danger" style="line-height: 1;">
+                                        <i class="bi bi-plus-square-fill" id="btn-icon-gasto" style="font-size: 0.95rem;"></i>
+                                    </button>
+                                    Total Gasto
+                                </td>
+                                {% for m in range(1, 13) %} 
+                                    <td class="text-danger fw-bold text-nowrap">
+                                        {% if total_despesas_mes[m] > 0 %}R$ {{ total_despesas_mes[m] | brl }}{% else %}-{% endif %}
+                                    </td> 
+                                {% endfor %}
+                                <td class="text-danger fw-bold text-nowrap ">R$ {{ total_despesas_ano | brl }}</td>
+                            </tr>
+
+                            <tr class="row-detalhe-gasto table-light d-none border-dashed" style="font-size: 0.78rem; background-color: #fafafa !important;">
+                                <td class="text-start ps-5 text-muted fw-semibold text-truncate">
+                                    <i class="bi bi-bank me-1 small text-secondary"></i> Conta (Pix/Débito)
+                                </td>
+                                {% for m in range(1, 13) %}
+                                    <td class="text-muted">{% if total_gastos_contas_mes[m] > 0 %}R$ {{ total_gastos_contas_mes[m] | brl }}{% else %}-{% endif %}</td>
+                                {% endfor %}
+                                <td class="fw-bold text-muted text-nowrap">R$ {{ total_gastos_contas_ano | brl }}</td>
+                            </tr>
+
+                            {% for cartao, dados in gastos_por_cartao.items() %}
+                            <tr class="row-detalhe-gasto table-light d-none border-dashed" style="font-size: 0.78rem; background-color: #fafafa !important;">
+                                <td class="text-start ps-5 text-muted fw-semibold text-truncate">
+                                    <i class="bi bi-credit-card me-1 small text-secondary"></i> {{ cartao }}
+                                </td>
+                                {% for m in range(1, 13) %}
+                                    <td class="text-muted">{% if dados[m] > 0 %}R$ {{ dados[m] | brl }}{% else %}-{% endif %}</td>
+                                {% endfor %}
+                                <td class="fw-bold text-muted text-nowrap">R$ {{ dados['total'] | brl }}</td>
+                            </tr>
+                            {% endfor %}
+
+                            <tr>
+                                <td class="text-start ps-3 text-dark">Sobra Real do Mês</td>
+                                {% for m in range(1, 13) %} 
+                                    <td class="text-nowrap {% if sobra_mes[m] > 0 %}text-success{% elif sobra_mes[m] < 0 %}text-danger{% endif %}">
+                                        R$ {{ sobra_mes[m] | brl }}
+                                    </td> 
+                                {% endfor %}
+                                <td class="fw-bold text-nowrap {% if sobra_ano > 0 %}text-success{% else %}text-danger{% endif %}">R$ {{ sobra_ano | brl }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-start ps-3 fw-bold text-dark">Cumpriu a Meta?</td>
+                                {% for m in range(1, 13) %}
+
+                                    <td class="fw-bold text-nowrap p-1">
+                                        {% if cumpriu_meta[m] is boolean %}
+                                            {% if cumpriu_meta[m] %}
+                                                <span class="badge bg-success w-100 py-2 shadow-sm d-block text-truncate">SIM</span>
+                                            {% else %}
+                                                <span class="badge bg-danger w-100 py-2 shadow-sm d-block text-truncate">NÃO</span>
+                                            {% endif %}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                                <td class="p-1">
+                                    {% if total_receitas_ano > 0 %}
+                                        {% if sobra_ano >= meta_ano %}
+                                            <span class="badge bg-success w-100 py-2 shadow-sm d-block text-truncate fw-bold"><i class="bi bi-trophy-fill me-1"></i> SIM</span>
+                                        {% else %}
+                                            <span class="badge bg-danger w-100 py-2 shadow-sm d-block text-truncate fw-bold"><i class="bi bi-x-circle-fill me-1"></i> NÃO</span>
+                                        {% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Gastos por categoria -->
+                <div class="table-responsive shadow-sm rounded-3 mb-4 bg-white">
+                    <table class="table table-bordered table-hover table-sm align-middle text-center mb-0" style="table-layout: fixed; font-size: 0.85rem; width: 100%;">
+                        {{ colgroup_padrao() }}
+                        <thead class="table-light">
+                            <tr >
+                                <th class="text-start ps-3 py-2 fw-bold text-danger fs-6 bg-danger bg-opacity-10">
+                                    <i class="bi bi-tags-fill me-2"></i>GASTOS POR CATEGORIA
+                                    <i class="bi bi-info-circle ms-1 text-muted" 
+                                    style="cursor: help; font-size: 0.9rem;" 
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-placement="top" 
+                                    title="As células coloridas indicam o Top 7 de maiores despesas do mês. O degradê escuro indica o 1º maior gasto, clareando até o 7º.">
+                                    </i>
+                                </th>
+                                 {% for mes in meses_nomes %} <th class="py-2 bg-danger bg-opacity-10 fw-bold ">{{ mes }}</th> {% endfor %}
+                                <th class="py-2 bg-danger bg-opacity-25 fw-bold">Total do Ano</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for categoria, dados in despesas_por_categoria.items() %}
+                            <tr>
+                                <td class="text-start ps-3 fw-semibold text-secondary text-truncate" title="{{ categoria }}">{{ categoria }}</td>
+                                {% for m in range(1, 13) %}
+                                    {% if categoria in top_7_por_mes[m] %}
+                                        {% set posicao = top_7_por_mes[m].index(categoria) %}
+                                        {% set opacidade = 0.35 - (posicao * 0.05) %}
+                                        <td style="background-color: rgba(220, 53, 69, {{ opacidade }}); color: #b02a37; font-weight: 700;" class="text-nowrap">
+                                            {% if dados[m] > 0 %}R$ {{ dados[m] | brl }}{% else %}-{% endif %}
+                                        </td>
+                                    {% else %}
+                                        <td>{% if dados[m] > 0 %}R$ {{ dados[m] | brl }}{% else %}-{% endif %}</td>
+                                    {% endif %}
+                                {% endfor %}
+                                <td class="fw-bold bg-light text-nowrap">R$ {{ dados['total'] | brl }}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr class="table-danger">
+                                <td class="text-start ps-3 fw-bold">Total Gasto</td>
+                                {% for m in range(1, 13) %} <td class="fw-bold text-nowrap">{% if total_despesas_mes[m] > 0 %}R$ {{ total_despesas_mes[m] | brl }}{% else %}-{% endif %}</td> {% endfor %}
+                                <td class="fw-bold text-danger fs-6 text-nowrap">R$ {{ total_despesas_ano | brl }}</td>
+                            </tr>               
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Painel Gráfico -->
+<div class="tab-pane fade" id="graficos" role="tabpanel">
+    
+    <div class="row g-3 mb-4 mt-1">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 p-3 h-100 bg-white border-start border-success border-4">
+                <p class="text-muted small mb-1 fw-bold">Taxa de Eficiência</p>
+                <h4 class="fw-bold text-dark mb-0" id="cardEficiencia">--%</h4>
+                <small class="text-muted" style="font-size: 0.7rem;">% da receita que virou sobra</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 p-3 h-100 bg-white border-start border-primary border-4">
+                <p class="text-muted small mb-1 fw-bold">Projeção Anual</p>
+                <h4 class="fw-bold text-dark mb-0" id="cardProjecao">R$ --</h4>
+                <small class="text-muted" style="font-size: 0.7rem;">Sobra estimada até o fim do ano</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 p-3 h-100 bg-white border-start border-danger border-4">
+                <p class="text-muted small mb-1 fw-bold">O Grande Vilão</p>
+                <h4 class="fw-bold text-danger mb-0 text-truncate" id="cardVilao">--</h4>
+                <small class="text-muted" style="font-size: 0.7rem;">Categoria com maior gasto total</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 p-3 h-100 bg-white border-start border-warning border-4">
+                <p class="text-muted small mb-1 fw-bold">Consumo das Receitas</p>
+                <div class="progress mt-2 mb-1" style="height: 10px;">
+                    <div class="progress-bar bg-warning" id="barraConsumo" role="progressbar" style="width: 0%;"></div>
+                </div>
+                <div class="d-flex justify-content-between text-muted" style="font-size: 0.7rem;">
+                    <span id="textoConsumo">0% gasto</span>
+                    <span>Teto ideal: 80%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-12">
+            <div class="card border-0 shadow-sm rounded-3 p-4 h-100 bg-white">
+                <h5 class="fw-bold text-roxo-escuro mb-1">Evolução do Caixa (Sobra Real)</h5>
+                <p class="text-muted small mb-4">Acompanhe se a sua capacidade de reter dinheiro está crescendo ou caindo.</p>
+                <div style="position: relative; height: 250px; width: 100%;">
+                    <canvas id="lineChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-3 p-4 h-100 bg-white">
+                <h5 class="fw-bold text-roxo-escuro mb-1">Receitas vs Despesas</h5>
+                <p class="text-muted small mb-4">Comparativo direto do fluxo de caixa.</p>
+                <div style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-3 p-4 h-100 bg-white">
+                <h5 class="fw-bold text-roxo-escuro mb-1">Distribuição de Gastos</h5>
+                <p class="text-muted small mb-4">As despesas que mais consumiram recursos.</p>
+                <div style="position: relative; height: 280px; width: 100%; display: flex; justify-content: center; align-items: center;">
+                    <canvas id="doughnutChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <!-- Visão Tática -->
+
+        <div class="tab-pane fade" id="metas" role="tabpanel">
+            <div class="card border-0 shadow-sm p-5 text-center mt-2" style="border-radius: 12px; background-color: #f8f9fa;">
+                <i class="bi bi-bullseye text-muted mb-3" style="font-size: 3.5rem;"></i>
+                <h4 class="fw-bold text-dark mb-2">Visão Tática</h4>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/relatorios.js')}}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Injetando as variáveis do Python para o JS ler depois
+    window.dadosRelatorio = {
+        meses: {{ meses_nomes | safe }},
+        receitas: [{% for m in range(1, 13) %}{{ total_receitas_mes[m] }}{% if not loop.last %}, {% endif %}{% endfor %}],
+        despesas: [{% for m in range(1, 13) %}{{ total_despesas_mes[m] }}{% if not loop.last %}, {% endif %}{% endfor %}],
+        sobras: [{% for m in range(1, 13) %}{{ sobra_mes[m] }}{% if not loop.last %}, {% endif %}{% endfor %}],
+        totalReceitasAno: {{ total_receitas_ano }},
+        totalDespesasAno: {{ total_despesas_ano }},
+        categoriasNomes: [],
+        categoriasValores: []
+    };
+
+    {% for categoria, dados in despesas_por_categoria.items() %}
+        {% if dados['total'] > 0 %}
+            window.dadosRelatorio.categoriasNomes.push("{{ categoria }}");
+            window.dadosRelatorio.categoriasValores.push({{ dados['total'] }});
+        {% endif %}
+    {% endfor %}
+</script>
+
+{% endblock %}

@@ -1,0 +1,119 @@
+<div class="modal fade" id="modalMovimentacaoConta" tabindex="-1" aria-labelledby="modalMovimentacaoContaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      
+      <form method="POST" action="{{ url_for('movimentacoes.criar') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <div class="modal-header bg-purple text-white border-0">
+          <h5 class="modal-title fw-bold" id="modalMovimentacaoContaLabel">
+            <i class="bi bi-journal-plus me-2"></i>Nova Movimentação
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        
+        <div class="modal-body p-4 bg-light">
+          
+          <div class="row g-3">
+            
+            <div class="col-12 mb-1">
+              <div class="btn-group w-100 shadow-sm" role="group" aria-label="Tipo de Movimentação">
+                <input type="radio" class="btn-check" name="tipo_lancamento" id="tipo_despesa" value="despesa" autocomplete="off" checked>
+                <label class="btn btn-outline-danger fw-bold py-2" for="tipo_despesa">
+                  <i class="bi bi-arrow-down-circle me-1"></i> Despesa
+                </label>
+
+                <input type="radio" class="btn-check" name="tipo_lancamento" id="tipo_receita" value="receita" autocomplete="off">
+                <label class="btn btn-outline-success fw-bold py-2" for="tipo_receita">
+                  <i class="bi bi-arrow-up-circle me-1"></i> Receita
+                </label>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="data" class="form-label text-muted fw-semibold small text-uppercase">Data</label>
+              <input type="date" id="data" name="data" class="form-control shadow-sm" required />
+            </div>
+
+            <div class="col-md-6">
+              <label for="valor" class="form-label text-muted fw-semibold small text-uppercase">Valor (R$)</label>
+              <input type="number" step="0.01" name="valor" id="valor" class="form-control shadow-sm fw-bold" placeholder="0,00" required />
+            </div>
+
+            <div class="col-12">
+              <label for="descricao" class="form-label text-muted fw-semibold small text-uppercase">Descrição</label>
+              <input type="text" name="descricao" id="descricao" class="form-control shadow-sm" placeholder="Ex: Conta de Luz, Salário..." required />
+            </div>
+
+            <div class="col-md-6">
+              <label for="categoria_id" class="form-label text-muted fw-semibold small text-uppercase">Categoria</label>
+              <select class="form-select shadow-sm" name="categoria_id" id="categoria_id" required>
+                <option value="" disabled selected>Selecione...</option>
+                {% for categoria in categorias %}
+                  <option value="{{ categoria.id }}" data-tipo="{{ categoria.tipo }}">
+                    {{ categoria.nome }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label for="conta_id" class="form-label text-muted fw-semibold small text-uppercase">Conta</label>
+              <select class="form-select shadow-sm" name="conta_id" id="conta_id" required>
+                <option value="" disabled selected>Selecione...</option>
+                {% for conta in contas %}
+                  <option value="{{ conta.id }}" data-saldo="{{ conta.saldo_atual }}">
+                    {{ conta.nome }}
+                  </option>
+                {% endfor %}
+              </select>
+              
+              <div id="saldoContaContainer" class="mt-1 text-end" style="display: none;">
+                <span id="saldoConta" class="badge bg-secondary fw-medium"></span>
+              </div>
+            </div>
+
+            <div class="col-12 mt-2">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body p-3 d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="mb-0 fw-semibold text-dark">Status da Movimentação</h6>
+                    <small class="text-muted">Já foi descontado ou recebido no banco?</small>
+                  </div>
+                  <div class="form-check form-switch fs-4 mb-0">
+                    <select class="form-select form-select-sm shadow-sm fw-medium" name="pago" id="pago" style="width: auto; font-size: 0.95rem;">
+                      <option value="true">Sim, está pago</option>
+                      <option value="false">Não, pendente</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 mt-2" id="recorrenteSectionContaAvulsa">
+                <div class="p-3 border rounded bg-white shadow-sm">
+                    <div class="mb-3">
+                        <label for="replicar" id="tituloRecorrente" class="text-muted fw-semibold mb-1 d-block fs-6">
+                            <i class="bi bi-arrow-repeat me-1"></i> Conta Recorrente?
+                        </label>
+                        <small id="textoRecorrente" class="text-muted d-block" style="font-size: 0.85rem; line-height: 1.4;">
+                            Ideal para contas fixas como Internet ou Telefone. O sistema clonará o lançamento para os meses seguintes.
+                        </small>
+                    </div>
+                    <select id="replicar" name="replicar" class="form-select shadow-sm fw-bold text-purple w-100 fs-6 py-2">
+                        <option value="nao">Não, apenas este mês</option>
+                        <option value="3_meses">Sim, clonar por +3 meses</option>
+                    </select>
+                </div>
+            </div>
+
+          </div>
+        </div>
+        
+        <div class="modal-footer border-top-0 bg-white">
+          <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-purple px-5 shadow-sm fw-bold">Salvar </button>
+        </div>        
+      </form>
+    </div>
+  </div>
+</div>
