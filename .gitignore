@@ -25,3 +25,10 @@ __pycache__/
 # Windows
 Thumbs.db
 Desktop.ini
+
+# Cache do Flask
+instance/
+
+# Arquivos de cobertura de testes
+.coverage
+htmlcov/
