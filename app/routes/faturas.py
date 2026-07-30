@@ -6,12 +6,16 @@ from flask_login import current_user, login_required
 
 from app.models import MeioPagamento, Fatura
 from app.services import cartao_service, fatura_service
-import locale
 
 fatura_bp = Blueprint('faturas', __name__, url_prefix='/faturas')
 
-# Configurar o locale para português
-locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+# CORREÇÃO: removido o locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8') que
+# existia aqui. Ele exigia que o idioma "português do Brasil" estivesse
+# instalado no sistema operacional onde o Flask roda — o que quebrava o app
+# (erro "unsupported locale setting") em ambientes que não têm esse idioma
+# instalado, como o Ubuntu limpo usado pelo GitHub Actions. Os nomes de mês
+# em português agora vêm de um dicionário fixo (veja cartao_service.py e a
+# função obter_nome_fatura logo abaixo), sem depender do sistema operacional.
 
 
 @fatura_bp.route('/prever_fatura', methods=['POST'])

@@ -153,6 +153,12 @@ def calcular_fatura_para_compra(
     else:
         mes_fatura, ano_fatura = mes_fechamento, ano_fechamento
     return obter_ou_criar_fatura_aberta(cartao, mes_fatura, ano_fatura, familia_id)
+_MESES_PT = {
+    1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril", 5: "Maio", 6: "Junho",
+    7: "Julho", 8: "Agosto", 9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro",
+}
+
+
 def prever_opcoes_fatura(cartao: MeioPagamento, data_compra: date) -> list[dict]:
     """Retorna as duas opções de fatura exibidas no formulário (prevista + seguinte)."""
     if data_compra.day <= cartao.fechamento_dia:
@@ -167,7 +173,10 @@ def prever_opcoes_fatura(cartao: MeioPagamento, data_compra: date) -> list[dict]
         mes_fatura_1, ano_fatura_1 = mes_fechamento, ano_fechamento
     mes_fatura_2, ano_fatura_2 = _avancar_mes(mes_fatura_1, ano_fatura_1)
     def _label(mes: int, ano: int, sufixo: str = "") -> str:
-        nome = datetime(ano, mes, 1).strftime("%B").capitalize()
+        # CORREÇÃO: usava datetime(...).strftime("%B"), que depende do idioma
+        # do sistema operacional estar configurado em português (quebrava em
+        # ambientes sem esse idioma instalado, como o Ubuntu do GitHub Actions).
+        nome = _MESES_PT[mes]
         return f"{nome}/{ano}{sufixo}"
     return [
         {"valor": f"{mes_fatura_1}-{ano_fatura_1}", "texto": _label(mes_fatura_1, ano_fatura_1, " (Prevista)")},
