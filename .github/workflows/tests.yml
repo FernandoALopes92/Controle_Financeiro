@@ -1,0 +1,27 @@
+name: Testes
+
+# Quando esse "robô" deve rodar:
+on:
+  push:
+    branches: ["**"]        # toda vez que você der push, em qualquer branch
+  pull_request:
+    branches: ["main"]      # e toda vez que abrir um pull request pra main
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest   # liga uma máquina Linux limpa, do zero, só pra isso
+
+    steps:
+      - name: Baixar o código do repositório
+        uses: actions/checkout@v4
+
+      - name: Instalar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar as dependências do projeto
+        run: pip install -r requirements.txt
+
+      - name: Rodar os testes automatizados
+        run: pytest -v
