@@ -1,0 +1,10 @@
+.auth-page { display: grid; min-height: 100vh; place-items: center; padding: var(--space-5); overflow: hidden; background: radial-gradient(circle at 10% 10%, rgba(196,181,253,.5), transparent 34%), linear-gradient(135deg, var(--color-primary-900), var(--color-primary-600)); }
+.auth-pattern { position: fixed; inset: 0; display: flex; flex-wrap: wrap; gap: 6rem; padding: 3rem; opacity: .08; pointer-events: none; }
+.auth-pattern i { color: var(--color-white); font-size: 4.5rem; }
+.auth-card { position: relative; z-index: 1; width: min(100%, 25rem); padding: var(--space-8); border: 1px solid rgba(255,255,255,.5); border-radius: var(--radius-xl); background: rgba(255,255,255,.96); box-shadow: 0 24px 54px rgba(21,10,62,.28); }
+.auth-brand { display: grid; width: 3.5rem; height: 3.5rem; place-items: center; margin: 0 auto var(--space-4); border-radius: var(--radius-lg); color: var(--color-primary-700); background: var(--color-primary-100); font-size: 1.6rem; }
+.auth-card h1 { margin: 0; color: var(--color-text); font-size: var(--font-size-xl); font-weight: 800; letter-spacing: -.03em; }
+.auth-card__subtitle { margin: var(--space-2) 0 var(--space-6); color: var(--color-text-muted); font-size: var(--font-size-sm); }
+.auth-card .btn { width: 100%; }
+
+@media (max-width: 575.98px) { .auth-page { padding: var(--space-4); } .auth-card { padding: var(--space-6); } }

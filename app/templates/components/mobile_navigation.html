@@ -1,0 +1,15 @@
+<div class="offcanvas offcanvas-start mobile-navigation" tabindex="-1" id="mobileNavigation" aria-labelledby="mobileNavigationLabel">
+  <div class="offcanvas-header"><h5 class="offcanvas-title" id="mobileNavigationLabel"><i class="bi bi-wallet2 me-2" aria-hidden="true"></i>Gestão Financeira</h5><button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button></div>
+  <div class="offcanvas-body">
+    <nav class="nav flex-column sidebar-nav" aria-label="Navegação mobile">
+      <a class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}" href="{{ url_for('main.dashboard') }}" {% if request.endpoint == 'main.dashboard' %}aria-current="page"{% endif %}><i class="bi bi-grid-1x2" aria-hidden="true"></i>Dashboard</a>
+      <a class="nav-link {% if request.endpoint == 'movimentacoes.lista' %}active{% endif %}" href="{{ url_for('movimentacoes.lista') }}" {% if request.endpoint == 'movimentacoes.lista' %}aria-current="page"{% endif %}><i class="bi bi-arrow-left-right" aria-hidden="true"></i>Movimentações</a>
+      <a class="nav-link {% if request.endpoint == 'cartao.listar_movimentacoes_cartao' %}active{% endif %}" href="{{ url_for('cartao.listar_movimentacoes_cartao') }}" {% if request.endpoint == 'cartao.listar_movimentacoes_cartao' %}aria-current="page"{% endif %}><i class="bi bi-credit-card" aria-hidden="true"></i>Cartões e faturas</a>
+      <a class="nav-link {% if request.endpoint == 'relatorios.relatorios' %}active{% endif %}" href="{{ url_for('relatorios.relatorios') }}" {% if request.endpoint == 'relatorios.relatorios' %}aria-current="page"{% endif %}><i class="bi bi-bar-chart-line" aria-hidden="true"></i>Relatórios</a>
+      <hr class="border-light opacity-25 my-3">
+      <a class="nav-link {% if request.endpoint == 'contas.listar' %}active{% endif %}" href="{{ url_for('contas.listar') }}" {% if request.endpoint == 'contas.listar' %}aria-current="page"{% endif %}><i class="bi bi-bank" aria-hidden="true"></i>Contas</a>
+      <a class="nav-link {% if request.endpoint == 'categorias.listar' %}active{% endif %}" href="{{ url_for('categorias.listar') }}" {% if request.endpoint == 'categorias.listar' %}aria-current="page"{% endif %}><i class="bi bi-tags" aria-hidden="true"></i>Categorias</a>
+      <a class="nav-link {% if request.endpoint == 'meios_pagamento.listar' %}active{% endif %}" href="{{ url_for('meios_pagamento.listar') }}" {% if request.endpoint == 'meios_pagamento.listar' %}aria-current="page"{% endif %}><i class="bi bi-wallet2" aria-hidden="true"></i>Meios de pagamento</a>
+    </nav>
+  </div>
+</div>

@@ -1,0 +1,18 @@
+.btn { min-height: 2.5rem; padding: .55rem var(--space-4); border-radius: var(--radius-sm); font-size: var(--font-size-sm); font-weight: 700; transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast); box-shadow: none; }
+.btn:hover { transform: translateY(-1px); }
+.btn-primary, .btn-purple { border-color: var(--color-primary-600); color: #fff; background: var(--color-primary-600); }
+.btn-primary:hover, .btn-purple:hover { border-color: var(--color-primary-700); color: #fff; background: var(--color-primary-700); }
+.btn-outline-primary, .btn-outline-purple { border-color: var(--color-primary-300); color: var(--color-primary-700); background: var(--color-surface); }
+.btn-outline-primary:hover, .btn-outline-purple:hover { border-color: var(--color-primary-600); color: var(--color-primary-700); background: var(--color-primary-50); }
+.btn-roxo-azulado, .btn-light-purple { border-color: var(--color-primary-500); color: #fff; background: var(--color-primary-500); }
+.btn-roxo-azulado:hover, .btn-light-purple:hover { border-color: var(--color-primary-700); color: #fff; background: var(--color-primary-700); }
+.btn-outline-roxo-azulado { border-color: var(--color-primary-300); color: var(--color-primary-700); background: var(--color-surface); }
+.btn-outline-roxo-azulado:hover { border-color: var(--color-primary-600); color: var(--color-primary-700); background: var(--color-primary-50); }
+.btn-success { border-color: var(--color-success); background: var(--color-success); }
+.btn-danger { border-color: var(--color-danger); background: var(--color-danger); }
+.btn-secondary, .btn-light { border-color: var(--color-border); color: var(--color-text); background: var(--color-surface); }
+.btn:disabled { transform: none; opacity: .58; }
+.btn-fab { width: 3.5rem; height: 3.5rem; right: var(--space-8); bottom: var(--space-8); border-radius: var(--radius-md); background: var(--color-primary-600); box-shadow: 0 14px 26px rgba(108,76,241,.32); }
+.btn-fab:hover { background: var(--color-primary-700); }
+
+@media (max-width: 767.98px) { .btn-fab { right: var(--space-5); bottom: var(--space-5); width: 3.25rem; height: 3.25rem; } }

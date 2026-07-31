@@ -1,8 +1,15 @@
 {% extends "navbar/base.html" %} 
 {% block title %}Movimentações do Cartão{% endblock %} 
 
+{% block page_header %}
+  {% set page_eyebrow = 'Operações' %}
+  {% set page_title = 'Cartões e faturas' %}
+  {% set page_subtitle = 'Acompanhe compras, parcelas e faturas dos seus cartões.' %}
+  {% include "components/page_header.html" %}
+{% endblock %}
+
 {% block content %}
-<div class="container-fluid mt-4">
+<div class="container-fluid business-page business-page--credit-cards">
   <div class="row">
     <div class="col-md-8">
       <div class="row mb-3">

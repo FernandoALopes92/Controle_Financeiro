@@ -1,0 +1,28 @@
+<aside class="app-sidebar" aria-label="Navegação principal">
+  <a class="app-brand" href="{{ url_for('main.dashboard') }}">
+    <span class="app-brand__mark"><i class="bi bi-wallet2" aria-hidden="true"></i></span>
+    <span>Gestão Financeira</span>
+  </a>
+
+  <p class="sidebar-label">Visão geral</p>
+  <nav class="nav flex-column sidebar-nav" aria-label="Visão geral">
+    <a class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}" href="{{ url_for('main.dashboard') }}" {% if request.endpoint == 'main.dashboard' %}aria-current="page"{% endif %}><i class="bi bi-grid-1x2" aria-hidden="true"></i>Dashboard</a>
+    <a class="nav-link {% if request.endpoint == 'movimentacoes.lista' %}active{% endif %}" href="{{ url_for('movimentacoes.lista') }}" {% if request.endpoint == 'movimentacoes.lista' %}aria-current="page"{% endif %}><i class="bi bi-arrow-left-right" aria-hidden="true"></i>Movimentações</a>
+    <a class="nav-link {% if request.endpoint == 'cartao.listar_movimentacoes_cartao' %}active{% endif %}" href="{{ url_for('cartao.listar_movimentacoes_cartao') }}" {% if request.endpoint == 'cartao.listar_movimentacoes_cartao' %}aria-current="page"{% endif %}><i class="bi bi-credit-card" aria-hidden="true"></i>Cartões e faturas</a>
+    <a class="nav-link {% if request.endpoint == 'relatorios.relatorios' %}active{% endif %}" href="{{ url_for('relatorios.relatorios') }}" {% if request.endpoint == 'relatorios.relatorios' %}aria-current="page"{% endif %}><i class="bi bi-bar-chart-line" aria-hidden="true"></i>Relatórios</a>
+  </nav>
+
+  <p class="sidebar-label mt-4">Organização</p>
+  <nav class="nav flex-column sidebar-nav" aria-label="Organização">
+    <a class="nav-link {% if request.endpoint == 'contas.listar' %}active{% endif %}" href="{{ url_for('contas.listar') }}" {% if request.endpoint == 'contas.listar' %}aria-current="page"{% endif %}><i class="bi bi-bank" aria-hidden="true"></i>Contas</a>
+    <a class="nav-link {% if request.endpoint == 'categorias.listar' %}active{% endif %}" href="{{ url_for('categorias.listar') }}" {% if request.endpoint == 'categorias.listar' %}aria-current="page"{% endif %}><i class="bi bi-tags" aria-hidden="true"></i>Categorias</a>
+    <a class="nav-link {% if request.endpoint == 'meios_pagamento.listar' %}active{% endif %}" href="{{ url_for('meios_pagamento.listar') }}" {% if request.endpoint == 'meios_pagamento.listar' %}aria-current="page"{% endif %}><i class="bi bi-wallet2" aria-hidden="true"></i>Meios de pagamento</a>
+  </nav>
+
+  {% if current_user.is_authenticated %}
+  <div class="sidebar-bottom">
+    <div class="sidebar-user"><span class="app-avatar"><i class="bi bi-person" aria-hidden="true"></i></span><span class="text-truncate">{{ current_user.nome }}</span></div>
+    <a class="sidebar-logout" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-left me-1" aria-hidden="true"></i>Sair da conta</a>
+  </div>
+  {% endif %}
+</aside>

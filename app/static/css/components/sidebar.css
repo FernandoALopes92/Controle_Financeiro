@@ -1,0 +1,18 @@
+.app-sidebar { position: fixed; inset: 0 auto 0 0; z-index: 1040; display: flex; width: var(--sidebar-width); min-height: 100vh; flex-direction: column; padding: var(--space-6) var(--space-3); overflow-y: auto; color: var(--color-white); background: radial-gradient(circle at 0 0, rgba(172, 145, 255, .42), transparent 34%), linear-gradient(160deg, #2f1a68, #4b2aaa 54%, #331a7b); box-shadow: 12px 0 30px rgba(36, 19, 92, .12); }
+.app-brand { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-3) var(--space-8); color: var(--color-white); font-size: var(--font-size-lg); font-weight: 750; letter-spacing: -.025em; text-decoration: none; }
+.app-brand:hover { color: var(--color-white); }
+.app-brand__mark { display: grid; width: 2.25rem; height: 2.25rem; place-items: center; border: 1px solid rgba(255,255,255,.25); border-radius: var(--radius-md); background: rgba(255,255,255,.14); }
+.sidebar-label { margin: 0 var(--space-3) var(--space-2); color: rgba(255,255,255,.55); font-size: .65rem; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
+.sidebar-nav { gap: var(--space-1); }
+.sidebar-nav .nav-link { display: flex; align-items: center; gap: var(--space-3); min-height: 2.75rem; padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm); color: rgba(255,255,255,.8); font-size: var(--font-size-sm); font-weight: 600; transition: color var(--transition-fast), background-color var(--transition-fast), transform var(--transition-fast); }
+.sidebar-nav .nav-link i { width: 1.25rem; text-align: center; font-size: 1rem; }
+.sidebar-nav .nav-link:hover { color: var(--color-white); background: rgba(255,255,255,.12); transform: translateX(2px); }
+.sidebar-nav .nav-link.active { color: var(--color-primary-900); background: var(--color-white); box-shadow: var(--shadow-sm); }
+.sidebar-bottom { margin-top: auto; padding: var(--space-5) var(--space-2) var(--space-1); border-top: 1px solid rgba(255,255,255,.14); }
+.sidebar-user { display: flex; align-items: center; gap: var(--space-2); color: #fff; font-size: var(--font-size-sm); }
+.app-avatar { display: inline-grid; width: 2rem; height: 2rem; flex: 0 0 auto; place-items: center; border-radius: 50%; }
+.sidebar-user .app-avatar { background: rgba(255,255,255,.16); }
+.sidebar-logout { display: inline-flex; align-items: center; margin-top: var(--space-2); color: rgba(255,255,255,.72); font-size: var(--font-size-xs); text-decoration: none; }
+.sidebar-logout:hover { color: var(--color-white); }
+
+@media (max-width: 991.98px) { .app-sidebar { display: none; } }

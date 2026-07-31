@@ -1,0 +1,7 @@
+<header class="app-topbar">
+  <button class="mobile-menu-button" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavigation" aria-controls="mobileNavigation" aria-expanded="false" aria-label="Abrir menu"><i class="bi bi-list fs-5" aria-hidden="true"></i></button>
+  <span class="topbar-title">Sua visão financeira</span>
+  {% if current_user.is_authenticated %}
+  <div class="topbar-user"><span>{{ current_user.nome }}</span><span class="app-avatar"><i class="bi bi-person" aria-hidden="true"></i></span></div>
+  {% endif %}
+</header>

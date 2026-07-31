@@ -1,0 +1,8 @@
+.reports-page .reports-filter { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-2); padding: var(--space-4); margin-bottom: var(--space-6); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-sm); }
+.reports-page .reports-filter h2 { display: none; }
+.reports-page .nav-pills { display: inline-flex; max-width: 100%; gap: var(--space-1); padding: var(--space-1); overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md) !important; background: var(--color-surface); box-shadow: var(--shadow-sm); }
+.reports-page .nav-pills .nav-link { white-space: nowrap; }
+.reports-page .card.bg-transparent { border-color: var(--color-border) !important; background: var(--color-surface) !important; }
+.reports-page canvas { max-width: 100%; }
+
+@media (max-width: 767.98px) { .reports-page .reports-filter > div { flex: 1 1 8rem; } .reports-page .reports-filter .btn { flex: 1 1 100%; } }

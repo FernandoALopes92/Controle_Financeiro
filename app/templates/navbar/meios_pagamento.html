@@ -1,5 +1,12 @@
-{% extends 'navbar/base.html' %} {% block content%}
-<div class="container mt-4">
+{% extends 'navbar/base.html' %}
+{% block page_header %}
+  {% set page_eyebrow = 'Organização' %}
+  {% set page_title = 'Meios de pagamento' %}
+  {% set page_subtitle = 'Cadastre e acompanhe os cartões usados no seu dia a dia.' %}
+  {% include "components/page_header.html" %}
+{% endblock %}
+{% block content %}
+<div class="container business-page business-page--payment-methods">
   <div class="row mb-4">
     <div class="col-md-9">
       <h2 class="mb-4">Cartões de Crédito</h2>
@@ -22,7 +29,7 @@
       </div>
     {% endfor %} {% endif %} {% endwith %}
 
-    <table class="table table-striped text-center align-middle mx-auto">
+    <div class="table-responsive"><table class="table table-hover text-center align-middle mx-auto">
       <thead class="table-dark">
         <tr>
           <th>Cartão</th>
@@ -199,7 +206,7 @@
         </div>
         {% endfor %}
       </tbody>
-    </table>
+    </table></div>
   </div>
 
   <div

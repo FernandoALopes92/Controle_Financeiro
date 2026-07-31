@@ -1,0 +1,12 @@
+/* Visual alignment for existing modal workflows; IDs and form contracts remain untouched. */
+#modalNovaMov .modal-dialog { max-width: min(56rem, calc(100vw - 2rem)); }
+#modalNovaMov .modal-header, #modalMovimentacaoConta .modal-header, #modalTransferencia .modal-header, #modalMovimentacaoCartao .modal-header { color: var(--color-text); background: var(--color-surface) !important; }
+#modalNovaMov .modal-title, #modalMovimentacaoConta .modal-title, #modalTransferencia .modal-title, #modalMovimentacaoCartao .modal-title { color: var(--color-text) !important; }
+#modalNovaMov .btn-close-white, #modalMovimentacaoConta .btn-close-white, #modalTransferencia .btn-close-white, #modalMovimentacaoCartao .btn-close-white { filter: none; }
+#modalMovimentacaoConta .modal-body, #modalTransferencia .modal-body { background: var(--color-surface-subtle) !important; }
+#modalNovaMov .btn-choice { height: 100%; padding: var(--space-5); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-sm); cursor: pointer; transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast); }
+#modalNovaMov .btn-choice:hover { border-color: var(--color-primary-300); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+#modalNovaMov .btn-choice .icon-circle { display: grid; width: 2.75rem; height: 2.75rem; place-items: center; margin-bottom: var(--space-4); border-radius: var(--radius-md); color: var(--color-primary-700); background: var(--color-primary-100); font-size: 1.25rem; }
+[id^="modalPagarFatura"] .modal-header { color: var(--color-text); background: var(--color-surface); }
+[id^="modalPagarFatura"] .modal-title { color: var(--color-text); }
+[id^="modalPagarFatura"] .btn-close-white { filter: none; }

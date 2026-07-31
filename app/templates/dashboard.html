@@ -1,382 +1,75 @@
 {% extends "navbar/base.html" %}
 {% block title %}Painel de Controle{% endblock %}
+{% block page_styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/dashboard.css') }}" />{% endblock %}
+
+{% block page_header %}
+  {% set page_eyebrow = 'Visão geral' %}
+  {% set page_title = saudacao ~ ', ' ~ current_user.nome ~ '!' %}
+  {% set page_subtitle = 'Veja rapidamente como estão suas finanças no período selecionado.' %}
+  {% include "components/page_header.html" %}
+{% endblock %}
 
 {% block content %}
+{% set burn_rate = (despesas_totais / receitas_mes * 100) if receitas_mes > 0 else 0 %}
+{% set burn_rate_capped = burn_rate if burn_rate <= 100 else 100 %}
+{% set valor_meta_poupanca = (receitas_mes * (meta_percentual / 100)) %}
+{% set percentual_poupado_atual = (balanco_mes / receitas_mes * 100) if receitas_mes > 0 and balanco_mes > 0 else 0 %}
 
-<div class="container-fluid mt-4 mb-5">
-    
-    <div class="row align-items-center mb-4">
-        <div class="col-md-7">
-            <h2 class="mb-0 fw-bold">{{ saudacao }}, {{ current_user.nome }}!</h2>
-            <p class="text-muted mb-0">Visão unificada das finanças.</p>
-        </div>
-        <div class="col-md-5 mt-3 mt-md-0">
-            <form method="GET" action="{{ url_for('main.dashboard') }}" class="d-flex gap-2 justify-content-md-end">
-                <select name="ano" class="form-select form-select-sm shadow-sm w-auto border-0 fw-semibold">
-                    {% for a in anos %} <option value="{{ a }}" {% if a == ano_filtro %}selected{% endif %}>{{ a }}</option> {% endfor %}
-                </select>
-                <select name="mes" class="form-select form-select-sm shadow-sm w-auto border-0 fw-semibold">
-                    {% for nome, numero in meses %} <option value="{{ numero }}" {% if numero == mes_filtro %}selected{% endif %}>{{ nome }}</option> {% endfor %}
-                </select>
-                <button type="submit" class="btn btn-sm btn-purple shadow-sm fw-bold px-4">Filtrar</button>
-            </form>
-        </div>
+<section class="dashboard-filter" aria-label="Filtros do Dashboard">
+  <form method="GET" action="{{ url_for('main.dashboard') }}" class="d-flex flex-wrap align-items-end gap-2 w-100">
+    <div class="dashboard-filter__group">
+      <label class="dashboard-filter__label" for="filtro-ano">Ano</label>
+      <select id="filtro-ano" name="ano" class="form-select">
+        {% for a in anos %}<option value="{{ a }}" {% if a == ano_filtro %}selected{% endif %}>{{ a }}</option>{% endfor %}
+      </select>
     </div>
-
-    <!-- LINHA 1: 4 CARDS -->
-    <div class="row g-3 mb-4">
-        <div class="col-6 col-lg-3">
-            <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden" style="border-radius: 12px; border-bottom: 4px solid #198754 !important;">
-                <i class="bi bi-arrow-up-circle-fill position-absolute text-success" style="font-size: 5rem; right: -15px; bottom: -20px; opacity: 0.15;"></i>
-                <div class="card-body position-relative z-1">
-                    <div class="text-muted fw-semibold small mb-1">Receitas do Mês</div>
-                    <h4 class="mb-0 fw-bold text-dark">R$ {{ receitas_mes | brl }}</h4>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-lg-3">
-            <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden" style="border-radius: 12px; border-bottom: 4px solid #dc3545 !important;">
-                <i class="bi bi-arrow-down-circle-fill position-absolute text-danger" style="font-size: 5rem; right: -15px; bottom: -20px; opacity: 0.1;"></i>
-                <div class="card-body position-relative z-1">
-                    <div class="text-muted fw-semibold small mb-1">Despesas Totais</div>
-                    <h4 class="mb-0 fw-bold text-dark">R$ {{ despesas_totais | brl }}</h4>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-lg-3">
-            <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden" style="border-radius: 12px; border-bottom: 4px solid {% if balanco_mes >= 0 %}#198754{% else %}#dc3545{% endif %} !important;">
-                <i class="bi bi-piggy-bank-fill position-absolute {% if balanco_mes >= 0 %}text-success{% else %}text-danger{% endif %}" style="font-size: 5rem; right: -10px; bottom: -15px; opacity: 0.15;"></i>
-                <div class="card-body position-relative z-1">
-                    <div class="text-muted fw-semibold small mb-1">Balanço Mensal</div>
-                    <h4 class="mb-0 fw-bold text-dark">R$ {{ balanco_mes | brl }}</h4>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-lg-3">
-            <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden" style="border-radius: 12px; border-bottom: 4px solid #6c3df4 !important;">
-                <i class="bi bi-wallet2 position-absolute text-primary" style="font-size: 5rem; right: -15px; bottom: -15px; opacity: 0.15;"></i>
-                <div class="card-body position-relative z-1">
-                    <div class="text-muted fw-semibold small mb-1">Saldo Atual (Contas)</div>
-                    <h4 class="mb-0 fw-bold text-dark">R$ {{ saldo_total | brl }}</h4>
-                </div>
-            </div>
-        </div>
+    <div class="dashboard-filter__group">
+      <label class="dashboard-filter__label" for="filtro-mes">Mês</label>
+      <select id="filtro-mes" name="mes" class="form-select">
+        {% for nome, numero in meses %}<option value="{{ numero }}" {% if numero == mes_filtro %}selected{% endif %}>{{ nome }}</option>{% endfor %}
+      </select>
     </div>
+    <button type="submit" class="btn btn-primary"><i class="bi bi-funnel me-1" aria-hidden="true"></i>Atualizar visão</button>
+  </form>
+</section>
 
-    {% set burn_rate = (despesas_totais / receitas_mes * 100) if receitas_mes > 0 else 0 %}
-    {% set burn_rate_capped = burn_rate if burn_rate <= 100 else 100 %}
-    
-    {% set valor_meta_poupanca = (receitas_mes * (meta_percentual / 100)) %}
-    {% set percentual_poupado_atual = (balanco_mes / receitas_mes * 100) if receitas_mes > 0 and balanco_mes > 0 else 0 %}
-    
-    <!-- LINHA 2: VELOCIDADE E META -->
-    <div class="row g-3 mb-4">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
-                <div class="card-body py-3 px-4 d-flex flex-column justify-content-center">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="fw-semibold text-muted small">
-                            <i class="bi bi-wallet2 me-2 text-danger"></i>Consumo das Receitas (Despesas Totais)
-                        </span>
-                        <span class="fw-bold {% if burn_rate > 80 %}text-danger{% elif burn_rate > 60 %}text-warning{% else %}text-success{% endif %} small">
-                            {{ "%.1f"|format(burn_rate) }}% Gasto
-                        </span>
-                    </div>
-                    <div class="progress shadow-sm" style="height: 12px; border-radius: 10px; background-color: #e9ecef;">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated {% if burn_rate > 80 %}bg-danger{% elif burn_rate > 60 %}bg-warning{% else %}bg-success{% endif %}" 
-                             role="progressbar" style="width: {{ burn_rate_capped }}%;">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<section class="row g-3 mb-4" aria-label="Indicadores financeiros">
+  <div class="col-12 col-sm-6 col-xl-3"><article class="card dashboard-metric dashboard-metric--balance h-100"><div class="card-body"><p class="dashboard-metric__label">Quanto tenho hoje</p><p class="dashboard-metric__value">R$ {{ saldo_total | brl }}</p><span class="dashboard-metric__hint">Saldo atual das contas</span></div></article></div>
+  <div class="col-12 col-sm-6 col-xl-3"><article class="card dashboard-metric dashboard-metric--income h-100"><div class="card-body"><p class="dashboard-metric__label">Receitas no mês</p><p class="dashboard-metric__value">R$ {{ receitas_mes | brl }}</p><span class="dashboard-metric__hint">Entradas do período selecionado</span></div></article></div>
+  <div class="col-12 col-sm-6 col-xl-3"><article class="card dashboard-metric dashboard-metric--expense h-100"><div class="card-body"><p class="dashboard-metric__label">Já gastei no mês</p><p class="dashboard-metric__value">R$ {{ despesas_totais | brl }}</p><span class="dashboard-metric__hint">Contas, PIX e cartões</span></div></article></div>
+  <div class="col-12 col-sm-6 col-xl-3"><article class="card dashboard-metric dashboard-metric--available h-100"><div class="card-body"><p class="dashboard-metric__label">Disponível no mês</p><p class="dashboard-metric__value">R$ {{ balanco_mes | brl }}</p><span class="dashboard-metric__hint">Receitas menos despesas do período</span></div></article></div>
+</section>
 
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; background-color: #f8f9fa;">
-                <div class="card-body py-3 px-4 d-flex flex-column justify-content-center">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="fw-bold text-dark small">
-                            <i class="bi bi-bullseye me-2 text-purple"></i>Meta ({{ meta_percentual|int }}%)
-                        </span>
-                        
-                        {% if percentual_poupado_atual >= meta_percentual and receitas_mes > 0 %}
-                            <span class="badge bg-success shadow-sm py-1 px-2">Atingida <i class="bi bi-check-circle ms-1"></i></span>
-                        {% else %}
-                            <span class="badge bg-warning text-dark shadow-sm py-1 px-2">Pendente</span>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="d-flex justify-content-between align-items-end mt-1">
-                        <div>
-                            <div class="text-muted" style="font-size: 0.70rem;">Valor Alvo:</div>
-                            <div class="fw-bold text-dark" style="font-size: 0.95rem;">R$ {{ valor_meta_poupanca | brl }}</div>
-                        </div>
-                        <div class="text-end">
-                            <div class="text-muted" style="font-size: 0.70rem;">Guardado:</div>
-                            <div class="fw-bold {% if percentual_poupado_atual >= meta_percentual %}text-success{% else %}text-purple{% endif %}" style="font-size: 1rem;">
-                                {{ "%.1f"|format(percentual_poupado_atual) }}%
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>        
-    </div>
-    
-   <!-- LINHA 3: AS 3 LISTAS (RADAR, FATURAS E DESPESAS) -->
-    <div class="row g-3 mb-4">
-        
-        <!-- Radar da Semana (Atualizado com Lógica de Atrasos e Receitas) -->
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; background-color: #f8f9fa;">
-                <div class="card-header bg-transparent border-0 pt-3 pb-0">
-                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-radar text-purple me-2"></i>Radar da Semana</h6>
-                </div>
-                <div class="card-body pt-2">
-                    {% if agenda %}
-                        <div class="list-group list-group-flush bg-transparent">
-                            {% for item in agenda %}
-                            <div class="list-group-item bg-transparent px-0 py-2 border-bottom border-white d-flex align-items-center">
-                                <div class="{{ item.bg }} bg-opacity-10 rounded p-2 me-3 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
-                                    <i class="bi {{ item.icone }} {{ item.cor }} fs-6"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="fw-semibold text-dark" style="font-size: 0.95rem;">
-                                        {{ item.descricao }}
-                                        {% if item.atrasado %}
-                                            <span class="badge bg-danger ms-1" style="font-size: 0.65rem; padding: 0.25em 0.4em; vertical-align: text-top;">Atrasado</span>
-                                        {% endif %}
-                                    </div>
-                                    <small class="{% if item.atrasado %}text-danger fw-bold{% else %}text-muted{% endif %}" style="font-size: 0.80rem;">
-                                        {% if item.tipo == 'receita' %}
-                                            Previsto para {{ item.data.strftime('%d/%m') }}
-                                        {% elif item.atrasado %}
-                                            Venceu dia {{ item.data.strftime('%d/%m') }}
-                                        {% else %}
-                                            Vence dia {{ item.data.strftime('%d/%m') }}
-                                        {% endif %}
-                                    </small>
-                                </div>
-                                <div class="fw-bold {% if item.tipo == 'receita' %}text-success{% else %}text-dark{% endif %}" style="font-size: 1rem;">
-                                    R$ {{ item.valor | brl }}
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="text-center text-muted py-3">
-                            <i class="bi bi-check2-circle text-success" style="font-size: 2.5rem;"></i>
-                            <p class="mt-2 fw-semibold text-dark mb-0" style="font-size: 1rem;">Tudo tranquilo!</p>
-                            <p class="small text-muted" style="font-size: 0.85rem;">Nenhuma pendência na semana.</p>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+<section class="row g-4 mb-4" aria-label="Situação financeira do mês">
+  <div class="col-lg-7"><article class="card h-100"><div class="card-header"><h2 class="dashboard-section-title"><i class="bi bi-speedometer2" aria-hidden="true"></i>Situação financeira do mês</h2></div><div class="card-body"><div class="d-flex justify-content-between gap-3 align-items-baseline mb-3"><div><p class="u-text-muted small mb-1">Consumo das receitas</p><strong class="dashboard-summary-value">{{ "%.1f"|format(burn_rate) }}%</strong></div><span class="badge {% if burn_rate > 80 %}text-bg-danger{% elif burn_rate > 60 %}text-bg-warning{% else %}text-bg-success{% endif %}">{% if burn_rate > 80 %}Atenção aos gastos{% elif burn_rate > 60 %}Acompanhe o ritmo{% else %}Ritmo saudável{% endif %}</span></div><div class="progress dashboard-progress" role="progressbar" aria-label="Consumo das receitas" aria-valuenow="{{ burn_rate_capped }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar {% if burn_rate > 80 %}bg-danger{% elif burn_rate > 60 %}bg-warning{% else %}bg-success{% endif %}" style="width: {{ burn_rate_capped }}%"></div></div><p class="u-text-muted small mb-0 mt-3">Dos R$ {{ receitas_mes | brl }} recebidos, R$ {{ despesas_totais | brl }} já foram comprometidos.</p></div></article></div>
+  <div class="col-lg-5"><article class="card h-100"><div class="card-header"><h2 class="dashboard-section-title"><i class="bi bi-bullseye" aria-hidden="true"></i>Meta de economia</h2></div><div class="card-body"><div class="d-flex align-items-start justify-content-between gap-3"><div><p class="u-text-muted small mb-1">Objetivo do período</p><strong class="dashboard-summary-value">{{ meta_percentual|int }}%</strong></div><span class="badge {% if percentual_poupado_atual >= meta_percentual and receitas_mes > 0 %}text-bg-success{% else %}text-bg-warning{% endif %}">{% if percentual_poupado_atual >= meta_percentual and receitas_mes > 0 %}Atingida{% else %}Em andamento{% endif %}</span></div><div class="progress dashboard-progress mt-3" role="progressbar" aria-label="Progresso da meta de economia" aria-valuenow="{{ percentual_poupado_atual }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-primary" style="width: {{ percentual_poupado_atual if percentual_poupado_atual <= 100 else 100 }}%"></div></div><div class="d-flex justify-content-between mt-3 small"><span class="u-text-muted">Meta: R$ {{ valor_meta_poupanca | brl }}</span><strong>{{ "%.1f"|format(percentual_poupado_atual) }}% guardado</strong></div></div></article></div>
+</section>
 
-        <!-- Monitor de Faturas -->
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
-                <div class="card-header bg-white border-0 pt-3 pb-1 d-flex justify-content-between align-items-center">
-                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-credit-card-2-front-fill text-purple me-2"></i>Monitor de Faturas</h6>
-                </div>
-                <div class="card-body pt-1 custom-scrollbar" style="max-height: 220px; overflow-y: auto;">
-                    
-                    <!-- Faturas do Mês Atual -->
-                    <div class="d-flex align-items-center mb-2 mt-1">
-                        <span class="badge bg-roxo px-2 py-1 me-2" style="font-size: 0.75rem;">{{ nome_mes_atual }}</span>
-                        <span class="text-muted" style="font-size: 0.80rem;">Mês Atual</span>
-                    </div>
-                    
-                    {% if lista_faturas_atuais %}
-                        {% for fat in lista_faturas_atuais %}
-                        <div class="d-flex justify-content-between align-items-center mb-2 ps-2">
-                            <div class="d-flex align-items-center">
-                                {% if fat.cartao.logo %}
-                                    <img src="{{ url_for('static', filename='logos/cartoes/' ~ fat.cartao.logo) }}" width="24" height="24" class="me-2 rounded-1 shadow-sm" style="object-fit: contain;">
-                                {% else %}
-                                    <i class="bi bi-credit-card-fill text-muted me-2" style="font-size: 1.1rem;"></i>
-                                {% endif %}
-                                <span class="fw-semibold text-dark me-2" style="font-size: 0.95rem;">{{ fat.cartao.nome }}</span>
-                                
-                                {% if fat.status == 'aberta' %}
-                                    <span class="badge bg-lavanda text-white" style="font-size: 0.70rem; font-weight: 500;">Aberta</span>
-                                {% elif fat.status == 'pago' %}
-                                    <span class="badge bg-roxo-escuro text-white" style="font-size: 0.70rem; font-weight: 500;">Paga</span>
-                                {% elif fat.status == 'pago_parcial' %}
-                                    <span class="badge bg-warning text-dark" style="font-size: 0.70rem; font-weight: 500;">Parcial</span>
-                                {% else %}
-                                    <span class="badge bg-secondary text-white" style="font-size: 0.70rem; font-weight: 500;">Fechada</span>
-                                {% endif %}
-                            </div>
-                            <span class="fw-bold text-danger" style="font-size: 0.95rem;">R$ {{ fat.saldo | brl }}</span>
-                        </div>
-                        {% endfor %}
-                    {% else %}
-                        <p class="text-muted mb-2 ps-2" style="font-size: 0.85rem;">Nenhuma fatura lançada.</p>
-                    {% endif %}
-                    
-                    <hr class="my-2" style="opacity: 0.1;">
-                    
-                    <!-- Faturas do Próximo Mês -->
-                    <div class="d-flex align-items-center mb-2">
-                        <span class="badge bg-roxo px-2 py-1 me-2" style="font-size: 0.75rem;">{{ nome_mes_prox }}</span>
-                        <span class="text-muted" style="font-size: 0.80rem;">Próximo Mês</span>
-                    </div>
+<section class="row g-4 mb-4" aria-label="Ações e faturas">
+  <div class="col-lg-7"><article class="card h-100"><div class="card-header"><h2 class="dashboard-section-title"><i class="bi bi-exclamation-circle" aria-hidden="true"></i>Atenção agora</h2></div><div class="card-body">{% if agenda %}{% for item in agenda %}<div class="dashboard-attention-item {% if item.atrasado %}dashboard-attention-item--overdue{% endif %}"><div class="dashboard-attention-icon"><i class="bi {{ item.icone }}" aria-hidden="true"></i></div><div><p class="dashboard-attention-item__title">{{ item.descricao }} {% if item.atrasado %}<span class="badge text-bg-danger ms-1">Atrasado</span>{% endif %}</p><p class="dashboard-attention-item__meta">{% if item.tipo == 'receita' %}Previsto para {{ item.data.strftime('%d/%m') }}{% elif item.atrasado %}Venceu em {{ item.data.strftime('%d/%m') }}{% else %}Vence em {{ item.data.strftime('%d/%m') }}{% endif %}</p></div><span class="dashboard-list__amount {% if item.tipo == 'receita' %}text-success{% else %}text-danger{% endif %}">R$ {{ item.valor | brl }}</span></div>{% endfor %}{% else %}<div class="dashboard-empty"><i class="bi bi-check2-circle text-success fs-3" aria-hidden="true"></i><p class="mb-0 mt-2">Nenhuma pendência exige atenção agora.</p></div>{% endif %}</div></article></div>
+  <div class="col-lg-5"><article class="card h-100"><div class="card-header"><h2 class="dashboard-section-title"><i class="bi bi-credit-card-2-front" aria-hidden="true"></i>Monitor de faturas</h2></div><div class="card-body"><p class="u-text-muted small mb-2">{{ nome_mes_atual }}</p>{% if lista_faturas_atuais %}<div class="dashboard-list">{% for fat in lista_faturas_atuais %}<div class="dashboard-list__item"><div class="dashboard-list__identity">{% if fat.cartao.logo %}<img src="{{ url_for('static', filename='logos/cartoes/' ~ fat.cartao.logo) }}" width="32" height="32" class="rounded-2" style="object-fit: contain;" alt="Logo {{ fat.cartao.nome }}">{% else %}<span class="dashboard-list__icon"><i class="bi bi-credit-card" aria-hidden="true"></i></span>{% endif %}<div><p class="dashboard-list__name">{{ fat.cartao.nome }}</p><p class="dashboard-list__meta">{% if fat.status == 'aberta' %}Fatura aberta{% elif fat.status == 'pago' %}Fatura paga{% elif fat.status == 'pago_parcial' %}Pagamento parcial{% else %}Fatura fechada{% endif %}</p></div></div><span class="dashboard-list__amount text-danger">R$ {{ fat.saldo | brl }}</span></div>{% endfor %}</div>{% else %}<div class="dashboard-empty"><p class="mb-0">Nenhuma fatura lançada em {{ nome_mes_atual }}.</p></div>{% endif %}<p class="u-text-muted small border-top pt-3 mt-3 mb-0">Próximo ciclo: {{ nome_mes_prox }}{% if lista_faturas_proximas %} · {{ lista_faturas_proximas|length }} fatura(s) acompanhada(s){% endif %}</p></div></article></div>
+</section>
 
-                    {% if lista_faturas_proximas %}
-                        {% for fat in lista_faturas_proximas %}
-                        <div class="d-flex justify-content-between align-items-center mb-2 ps-2">
-                            <div class="d-flex align-items-center">
-                                {% if fat.cartao.logo %}
-                                    <img src="{{ url_for('static', filename='logos/cartoes/' ~ fat.cartao.logo) }}" width="24" height="24" class="me-2 rounded-1 shadow-sm opacity-75" style="object-fit: contain;">
-                                {% else %}
-                                    <i class="bi bi-credit-card-fill text-muted me-2 opacity-75" style="font-size: 1.1rem;"></i>
-                                {% endif %}
-                                <span class="fw-semibold text-muted me-2" style="font-size: 0.95rem;">{{ fat.cartao.nome }}</span>
-                                
-                                {% if fat.status == 'aberta' %}
-                                    <span class="badge bg-lavanda text-white opacity-75" style="font-size: 0.70rem; font-weight: 500;">Aberta</span>
-                                {% elif fat.status == 'pago' %}
-                                    <span class="badge bg-roxo-escuro text-white opacity-75" style="font-size: 0.70rem; font-weight: 500;">Paga</span>
-                                {% elif fat.status == 'pago_parcial' %}
-                                    <span class="badge bg-warning text-dark opacity-75" style="font-size: 0.70rem; font-weight: 500;">Parcial</span>
-                                {% else %}
-                                    <span class="badge bg-secondary text-white opacity-75" style="font-size: 0.70rem; font-weight: 500;">Fechada</span>
-                                {% endif %}
-                            </div>
-                            <span class="fw-bold text-muted" style="font-size: 0.95rem;">R$ {{ fat.saldo | brl }}</span>
-                        </div>
-                        {% endfor %}
-                    {% else %}
-                        <p class="text-muted mb-0 ps-2" style="font-size: 0.85rem;">Nenhuma previsão de fatura.</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+<section class="row g-4 mb-4" aria-label="Distribuição dos gastos">
+  <div class="col-lg-5"><article class="card h-100"><div class="card-header"><h2 class="dashboard-section-title"><i class="bi bi-bar-chart" aria-hidden="true"></i>Origem dos gastos</h2></div><div class="card-body"><div class="dashboard-chart"><canvas id="origemChart" aria-label="Gráfico da origem dos gastos" role="img"></canvas></div><p class="u-text-muted small text-center mb-0">Comparativo entre gastos por conta/PIX e cartão.</p></div></article></div>
+  <div class="col-lg-7"><article class="card h-100"><div class="card-header"><h2 class="dashboard-section-title"><i class="bi bi-pie-chart" aria-hidden="true"></i>Onde você mais gasta</h2></div><div class="card-body"><div class="row align-items-center"><div class="col-md-5"><div class="dashboard-chart dashboard-chart--donut"><canvas id="categoriaChart" aria-label="Gráfico de distribuição dos gastos por categoria" role="img"></canvas></div></div><div class="col-md-7"><h3 class="u-text-muted small text-uppercase fw-bold mb-3">Ranking por categoria</h3>{% if top_5_categorias %}<div class="dashboard-ranking">{% for cat in top_5_categorias %}<div class="dashboard-ranking__row"><div><div class="dashboard-ranking__name"><span class="dashboard-ranking__dot" style="background-color: {{ cat.cor }};"></span><span class="u-truncate">{{ cat.nome }}</span></div><div class="progress dashboard-ranking__bar"><div class="progress-bar" style="width: {{ cat.percentual }}%; background-color: {{ cat.cor }};"></div></div></div><div class="text-end"><strong class="small d-block">R$ {{ cat.valor | brl }}</strong><span class="u-text-muted small">{{ cat.percentual }}%</span></div></div>{% endfor %}</div>{% else %}<div class="dashboard-empty"><p class="mb-0">Sem dados de categorias neste período.</p></div>{% endif %}</div></div></div></article></div>
+</section>
 
-        <!-- Maiores Despesas -->
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
-                <div class="card-header bg-white border-0 pt-3 pb-0">
-                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-fire text-danger me-2"></i>Maiores Despesas</h6>
-                </div>
-                <div class="card-body pt-2">
-                    {% if top_5_despesas %}
-                        <div class="list-group list-group-flush">
-                            {% for item in top_5_despesas %}
-                            <div class="list-group-item px-0 py-1 border-light d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-light rounded-circle p-1 me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                                        <i class="bi {{ item.icone }} text-muted small"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-0 fw-semibold" style="font-size: 0.80rem;">{{ item.descricao }}</h6>
-                                        <small class="text-muted" style="font-size: 0.65rem;">{{ item.origem }}</small>
-                                    </div>
-                                </div>
-                                <span class="fw-bold text-dark" style="font-size: 0.85rem;">- R$ {{ item.valor | brl }}</span>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="text-center text-muted py-3">
-                            <p class="small text-muted mb-0">Nenhuma despesa para exibir.</p>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    
-    <!-- LINHA 4: OS GRÁFICOS -->
-    <div class="row g-4 mb-4">
-        <!-- Gráfico 1: Conta vs Cartão (Empilhado Largo) -->
-        <div class="col-lg-5">
-            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
-                <div class="card-header bg-white border-0 pt-4 pb-0">
-                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-bar-chart-fill text-purple me-2"></i>Origem dos Gastos</h6>
-                </div>
-                <div class="card-body d-flex flex-column justify-content-center">
-                    <div style="position: relative; height: 260px; width: 100%;">
-                        <canvas id="origemChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
+<section class="card mb-4" aria-labelledby="movimentacoes-destaque-title"><div class="card-header"><h2 class="dashboard-section-title" id="movimentacoes-destaque-title"><i class="bi bi-receipt" aria-hidden="true"></i>Movimentações em destaque</h2><p class="u-text-muted small mb-0 mt-1">Despesas de maior impacto no período selecionado.</p></div><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Descrição</th><th>Origem</th><th>Data</th><th class="text-end">Valor</th></tr></thead><tbody>{% if top_5_despesas %}{% for item in top_5_despesas %}<tr><td><span class="dashboard-list__identity"><span class="dashboard-list__icon"><i class="bi {{ item.icone }}" aria-hidden="true"></i></span><strong>{{ item.descricao }}</strong></span></td><td>{{ item.origem }}</td><td>{{ item.data.strftime('%d/%m/%Y') }}</td><td class="text-end text-danger fw-bold">− R$ {{ item.valor | brl }}</td></tr>{% endfor %}{% else %}<tr><td colspan="4" class="dashboard-empty">Nenhuma despesa para exibir neste período.</td></tr>{% endif %}</tbody></table></div></section>
 
-        <!-- Gráfico 2: Distribuição -->
-        <div class="col-lg-7">
-            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
-                <div class="card-header bg-white border-0 pt-4 pb-0">
-                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-pie-chart-fill text-primary me-2"></i>Onde você mais gasta</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row align-items-center h-100">
-                        
-                        <!-- ESQUERDA: Gráfico Gigante -->
-                        <div class="col-md-6 border-end-md">
-                            <div style="position: relative; height: 280px; width: 100%; display: flex; justify-content: center;">
-                                <canvas id="categoriaChart"></canvas>
-                            </div>
-                        </div>
-                        
-                        <!-- DIREITA: Legenda Rica -->
-                        <div class="col-md-6 ps-md-4 mt-4 mt-md-0">
-                            <h6 class="text-muted fw-bold mb-3 small text-uppercase" style="letter-spacing: 0.5px;">Ranking / Legenda</h6>
-                            
-                            <div class="mt-2">
-                                {% if top_5_categorias %}
-                                    {% for cat in top_5_categorias %}
-                                    <div class="mb-3 pe-2">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <div class="d-flex align-items-center">
-                                                <div class="shadow-sm" style="width: 14px; height: 14px; border-radius: 4px; background-color: {{ cat.cor }}; margin-right: 12px;"></div>
-                                                <span class="fw-bold text-dark" style="font-size: 0.95rem;">{{ cat.nome }}</span>
-                                            </div>
-                                            <span class="fw-bold text-muted" style="font-size: 0.90rem;">R$ {{ cat.valor | brl }}</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center" style="padding-left: 26px;">
-                                            <div class="progress flex-grow-1 me-3 shadow-sm" style="height: 6px; border-radius: 10px;">
-                                                <div class="progress-bar" style="width: {{ cat.percentual }}%; background-color: {{ cat.cor }};"></div>
-                                            </div>
-                                            <span class="small fw-bold text-dark" style="font-size: 0.8rem;">{{ cat.percentual }}%</span>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                {% else %}
-                                    <p class="text-muted text-center small mt-3">Sem dados de categorias.</p>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<button class="btn-fab" data-bs-toggle="modal" data-bs-target="#modalNovaMov" title="Nova Movimentação">
-    <i class="bi bi-plus-lg"></i>
-</button>
+<button class="btn-fab" data-bs-toggle="modal" data-bs-target="#modalNovaMov" title="Novo lançamento" aria-label="Novo lançamento"><i class="bi bi-plus-lg" aria-hidden="true"></i></button>
 
 {% include 'modalNovaMov.html' %}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-    window.dadosDashboard = {
-        despesasConta: {{ despesas_conta_mes | default(0) }},
-        despesasCartao: {{ despesas_cartao_mes | default(0) }},
-        nomesCategorias: {{ nomes_cats_chart | tojson if nomes_cats_chart else '[]' }},
-        valoresCategorias: {{ valores_cats_chart | tojson if valores_cats_chart else '[]' }},
-        coresCategorias: {{ cores_cats_chart | tojson if cores_cats_chart else '[]' }}
-    };
+  window.dadosDashboard = {
+    despesasConta: {{ despesas_conta_mes | default(0) }},
+    despesasCartao: {{ despesas_cartao_mes | default(0) }},
+    nomesCategorias: {{ nomes_cats_chart | tojson if nomes_cats_chart else '[]' }},
+    valoresCategorias: {{ valores_cats_chart | tojson if valores_cats_chart else '[]' }},
+    coresCategorias: {{ cores_cats_chart | tojson if cores_cats_chart else '[]' }}
+  };
 </script>
-
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-
 {% endblock %}

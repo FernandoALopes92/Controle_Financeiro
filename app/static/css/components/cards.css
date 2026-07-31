@@ -1,0 +1,7 @@
+.card { overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-sm); transition: box-shadow var(--transition-base), transform var(--transition-base); }
+.card:hover { box-shadow: var(--shadow-md); }
+.card-header { padding: var(--space-5) var(--space-6); border-bottom: 1px solid var(--color-border); background: transparent; }
+.card-body { padding: var(--space-6); }
+.card-footer { padding: var(--space-4) var(--space-6); border-top: 1px solid var(--color-border); background: var(--color-surface-subtle); }
+
+@media (max-width: 767.98px) { .card-header, .card-body { padding: var(--space-4); } }

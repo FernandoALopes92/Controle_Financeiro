@@ -2,8 +2,15 @@
 
 {% block title %}Controle de Caixa{% endblock %}
 
+{% block page_header %}
+  {% set page_eyebrow = 'Operações' %}
+  {% set page_title = 'Caixa e movimentações' %}
+  {% set page_subtitle = 'Acompanhe entradas, saídas e transferências em um só lugar.' %}
+  {% include "components/page_header.html" %}
+{% endblock %}
+
 {% block content %}
-<div class="container-fluid mt-4">
+<div class="container-fluid business-page business-page--movements">
 
   <div class="row">
 
@@ -557,7 +564,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script src="{{ url_for('static', filename='js/MovimentacaoConta.js') }}"></script>
+<script src="{{ url_for('static', filename='js/movimentacaoConta.js') }}"></script>
 
 <script src="{{ url_for('static', filename='js/transferencias.js') }}"></script>
 

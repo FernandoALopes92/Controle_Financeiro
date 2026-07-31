@@ -1,0 +1,9 @@
+.table-responsive { border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); }
+.table { --bs-table-bg: transparent; --bs-table-hover-bg: var(--color-table-hover); margin-bottom: 0; color: var(--color-text); }
+.table > :not(caption) > * > * { padding: .9rem var(--space-4); border-bottom-color: var(--color-border); vertical-align: middle; }
+.table thead th { border-bottom-width: 1px; color: var(--color-text-muted); background: var(--color-surface-subtle); font-size: .68rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+.table tbody tr { transition: background-color var(--transition-fast); }
+.table tbody tr:hover { background: var(--color-table-hover); }
+.dataTables_filter input, .dataTables_length select { min-height: 2.35rem; border: 1px solid var(--color-control-border); border-radius: var(--radius-sm); }
+.pagination .page-link { border-radius: var(--radius-sm); color: var(--color-primary-600); }
+.pagination .page-item.active .page-link { border-color: var(--color-primary-600); background: var(--color-primary-600); }

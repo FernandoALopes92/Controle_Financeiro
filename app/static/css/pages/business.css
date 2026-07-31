@@ -1,0 +1,23 @@
+/* Shared page composition for operational screens. It uses the core Design System components. */
+.business-page { max-width: var(--content-max-width); }
+.business-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-5); }
+.business-toolbar__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.business-page .nav-tabs { gap: var(--space-2); border-bottom: 1px solid var(--color-border) !important; }
+.business-page .nav-tabs .nav-link { margin: 0; padding: var(--space-3) var(--space-4); border: 0; border-bottom: 2px solid transparent; border-radius: var(--radius-sm) var(--radius-sm) 0 0; color: var(--color-text-muted); font-size: var(--font-size-sm); font-weight: 700; }
+.business-page .nav-tabs .nav-link:hover { color: var(--color-primary-700); background: var(--color-primary-50); }
+.business-page .nav-tabs .nav-link.active { border-bottom-color: var(--color-primary-600); color: var(--color-primary-700); background: transparent; }
+.business-page .table-responsive { margin-bottom: var(--space-4); }
+.business-page .table td, .business-page .table th { text-align: inherit; }
+.business-page .table thead { text-align: left; }
+.business-page .table-dark, .business-page .table-light { --bs-table-bg: var(--color-surface-subtle); --bs-table-color: var(--color-text); }
+.business-page .table .btn-sm { min-height: 2rem; padding: .3rem .55rem; }
+.business-page .list-group-item { border-color: var(--color-border); background: transparent; }
+.business-page .card > .table-responsive { border: 0; border-radius: 0; }
+.business-page--movements > .row > .col-md-8 > .row:first-child h2, .business-page--credit-cards > .row > .col-md-8 > .row:first-child h2, .business-page--accounts > .row:first-child h2, .business-page--categories > .row:first-child h2, .business-page--payment-methods > .row:first-child h2 { display: none; }
+.business-summary-card { border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-sm); }
+.business-summary-card__title { margin: 0; color: var(--color-text-muted); font-size: var(--font-size-xs); font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.business-summary-card__value { margin: var(--space-2) 0 0; color: var(--color-text); font-size: var(--font-size-xl); font-weight: 800; letter-spacing: -.03em; }
+.business-page .modal-dialog-scrollable .modal-body { overflow-y: auto; }
+.business-page img.logo-img, .business-page .logo-img { border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface); }
+
+@media (max-width: 767.98px) { .business-toolbar__actions { width: 100%; } .business-toolbar__actions .btn { flex: 1 1 auto; } .business-page .nav-tabs { overflow-x: auto; flex-wrap: nowrap; } .business-page .nav-tabs .nav-link { white-space: nowrap; } }

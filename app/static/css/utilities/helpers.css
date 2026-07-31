@@ -1,0 +1,9 @@
+.u-text-muted { color: var(--color-text-muted) !important; }
+.u-text-primary { color: var(--color-primary-600) !important; }
+.u-surface { background: var(--color-surface) !important; }
+.u-surface-subtle { background: var(--color-surface-subtle) !important; }
+.u-rounded { border-radius: var(--radius-lg) !important; }
+.u-shadow-sm { box-shadow: var(--shadow-sm) !important; }
+.u-shadow-md { box-shadow: var(--shadow-md) !important; }
+.u-nowrap { white-space: nowrap !important; }
+.u-truncate { overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }

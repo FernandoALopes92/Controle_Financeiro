@@ -1,0 +1,8 @@
+<header class="page-header">
+  <div>
+    {% if page_eyebrow %}<p class="page-header__eyebrow">{{ page_eyebrow }}</p>{% endif %}
+    <h1 class="page-header__title">{{ page_title }}</h1>
+    {% if page_subtitle %}<p class="page-header__subtitle">{{ page_subtitle }}</p>{% endif %}
+  </div>
+  {% if page_actions %}<div class="page-header__actions">{{ page_actions | safe }}</div>{% endif %}
+</header>

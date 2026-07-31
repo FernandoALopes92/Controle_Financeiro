@@ -19,17 +19,30 @@
       href="https://fonts.googleapis.com/css2?family=Inter&display=swap"
       rel="stylesheet"
     />
-<!--     <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/theme.css') }}"
-    /> -->
 
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/base.css') }}"
     />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/sidebar.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/navbar.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/page-header.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/buttons.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/cards.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/forms.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/tables.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/modals.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/feedback.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/business.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/auxiliary.css') }}" />
+    {% block page_styles %}{% endblock %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities/helpers.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities/spacing.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities/animations.css') }}" />
   </head>
-  <body>
+  <body class="app-shell">
     <!-- prettier-ignore -->
     <div
       id="flash-messages"
@@ -37,8 +50,13 @@
       style="display: none;"
     ></div>
 
-    <!-- Navbar -->
-<nav class="navbar navbar-expand-lg shadow-sm">
+    {% include "components/sidebar.html" %}
+    <div class="app-workspace">
+      {% include "components/topbar.html" %}
+      {% include "components/mobile_navigation.html" %}
+
+    <!-- Navbar legado preservado para compatibilidade -->
+<nav class="navbar navbar-expand-lg shadow-sm legacy-navbar">
       <div class="container-fluid">
         
         <a class="navbar-brand fw-bold text-white d-flex align-items-center" href="{{ url_for('main.dashboard') }}">
@@ -101,7 +119,12 @@
 
     <!-- Conteúdo da página -->
     <!-- Mensagens -->
-    <div class="container-fluid">{% block content %}{% endblock %}</div>
+    <main class="app-page">
+      {% block page_header %}
+        {% if page_title is defined %}{% include "components/page_header.html" %}{% endif %}
+      {% endblock %}
+      <div class="container-fluid">{% block content %}{% endblock %}</div>
+    </main>
 
     <!-- Toast -->
     <div
@@ -125,6 +148,8 @@
           ></button>
         </div>
       </div>
+    </div>
+
     </div>
 
     <!-- Scripts -->
