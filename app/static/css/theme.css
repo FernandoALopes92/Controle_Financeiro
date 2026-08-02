@@ -13,7 +13,7 @@
   --color-danger: #df4a55;
   --color-warning: #d08811;
   --color-info: #3178d4;
-  --color-bg: #f5f7fb;
+  --color-bg: #eef2f7;
   --color-surface: #ffffff;
   --color-surface-subtle: #fafbff;
   --color-text: #1f2937;
@@ -61,7 +61,7 @@
   --transition-slow: 320ms ease;
 
   /* Shell */
-  --sidebar-width: 16.5rem;
+  --sidebar-width: 15.5rem;
   --topbar-height: 4.75rem;
   --content-max-width: 100rem;
   --page-padding: var(--space-8);

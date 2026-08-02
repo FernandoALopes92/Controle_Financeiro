@@ -1,0 +1,14 @@
+.filter-group {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 9.5rem;
+}
+.filter-group .form-select {
+  text-align: center;
+  text-align-last: center;
+  -moz-text-align-last: center;
+}
+
+.filter-group .form-select option {
+  text-align: center;
+}

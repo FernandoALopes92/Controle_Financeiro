@@ -5,7 +5,23 @@
 {% block page_header %}
   {% set page_eyebrow = 'Visão geral' %}
   {% set page_title = saudacao ~ ', ' ~ current_user.nome ~ '!' %}
-  {% set page_subtitle = 'Veja rapidamente como estão suas finanças no período selecionado.' %}
+  {% set page_subtitle = 'Veja rapidamente como estão suas finanças.' %}
+  {% set page_actions %}
+  <form method="GET" action="{{ url_for('main.dashboard') }}" class="page-header__form">
+    <div class="filter-group">
+      <select id="filtro-ano" name="ano" class="form-select" aria-label="Ano">
+        {% for a in anos %}<option value="{{ a }}" {% if a == ano_filtro %}selected{% endif %}>{{ a }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="filter-group">
+      <select id="filtro-mes" name="mes" class="form-select" aria-label="Mês">
+        {% for nome, numero in meses %}<option value="{{ numero }}" {% if numero == mes_filtro %}selected{% endif %}>{{ nome }}</option>{% endfor %}
+      </select>
+    </div>
+    <button class="btn btn-primary page-header__form-button" type="submit"><i class="bi bi-funnel me-1" aria-hidden="true"></i>Atualizar visão</button>
+  </form>
+
+{% endset %}
   {% include "components/page_header.html" %}
 {% endblock %}
 
@@ -15,29 +31,22 @@
 {% set valor_meta_poupanca = (receitas_mes * (meta_percentual / 100)) %}
 {% set percentual_poupado_atual = (balanco_mes / receitas_mes * 100) if receitas_mes > 0 and balanco_mes > 0 else 0 %}
 
-<section class="dashboard-filter" aria-label="Filtros do Dashboard">
-  <form method="GET" action="{{ url_for('main.dashboard') }}" class="d-flex flex-wrap align-items-end gap-2 w-100">
-    <div class="dashboard-filter__group">
-      <label class="dashboard-filter__label" for="filtro-ano">Ano</label>
-      <select id="filtro-ano" name="ano" class="form-select">
-        {% for a in anos %}<option value="{{ a }}" {% if a == ano_filtro %}selected{% endif %}>{{ a }}</option>{% endfor %}
-      </select>
-    </div>
-    <div class="dashboard-filter__group">
-      <label class="dashboard-filter__label" for="filtro-mes">Mês</label>
-      <select id="filtro-mes" name="mes" class="form-select">
-        {% for nome, numero in meses %}<option value="{{ numero }}" {% if numero == mes_filtro %}selected{% endif %}>{{ nome }}</option>{% endfor %}
-      </select>
-    </div>
-    <button type="submit" class="btn btn-primary"><i class="bi bi-funnel me-1" aria-hidden="true"></i>Atualizar visão</button>
-  </form>
-</section>
 
 <section class="row g-3 mb-4" aria-label="Indicadores financeiros">
-  <div class="col-12 col-sm-6 col-xl-3"><article class="card dashboard-metric dashboard-metric--balance h-100"><div class="card-body"><p class="dashboard-metric__label">Quanto tenho hoje</p><p class="dashboard-metric__value">R$ {{ saldo_total | brl }}</p><span class="dashboard-metric__hint">Saldo atual das contas</span></div></article></div>
-  <div class="col-12 col-sm-6 col-xl-3"><article class="card dashboard-metric dashboard-metric--income h-100"><div class="card-body"><p class="dashboard-metric__label">Receitas no mês</p><p class="dashboard-metric__value">R$ {{ receitas_mes | brl }}</p><span class="dashboard-metric__hint">Entradas do período selecionado</span></div></article></div>
-  <div class="col-12 col-sm-6 col-xl-3"><article class="card dashboard-metric dashboard-metric--expense h-100"><div class="card-body"><p class="dashboard-metric__label">Já gastei no mês</p><p class="dashboard-metric__value">R$ {{ despesas_totais | brl }}</p><span class="dashboard-metric__hint">Contas, PIX e cartões</span></div></article></div>
-  <div class="col-12 col-sm-6 col-xl-3"><article class="card dashboard-metric dashboard-metric--available h-100"><div class="card-body"><p class="dashboard-metric__label">Disponível no mês</p><p class="dashboard-metric__value">R$ {{ balanco_mes | brl }}</p><span class="dashboard-metric__hint">Receitas menos despesas do período</span></div></article></div>
+  <div class="col-12 col-sm-6 col-xl-3"><article class="card dashboard-metric dashboard-metric--balance h-100"><div class="card-body"><div class="dashboard-metric__icon"><i class="bi bi-wallet2"></i></div><p class="dashboard-metric__label">Saldo disponível</p><p class="dashboard-metric__value">R$ {{ saldo_total | brl }}</p><span class="dashboard-metric__hint">Saldo atual das contas</span></div></article></div>
+  <div class="col-12 col-sm-6 col-xl-3"><article class="card dashboard-metric dashboard-metric--income h-100"><div class="card-body"><div class="dashboard-metric__icon"><i class="bi bi-cash-stack"></i></div><p class="dashboard-metric__label">Receitas no mês</p><p class="dashboard-metric__value">R$ {{ receitas_mes | brl }}</p><span class="dashboard-metric__hint">Entradas do período selecionado</span></div></article></div>
+  <div class="col-12 col-sm-6 col-xl-3"><article class="card dashboard-metric dashboard-metric--expense h-100"><div class="card-body"><div class="dashboard-metric__icon"><i class="bi bi-credit-card"></i></div><p class="dashboard-metric__label">Gastos no mês</p><p class="dashboard-metric__value">R$ {{ despesas_totais | brl }}</p><span class="dashboard-metric__hint">Contas, PIX e cartões</span></div></article></div>
+  <div class="col-12 col-sm-6 col-xl-3">
+    <article class="card dashboard-metric {% if balanco_mes >= 0 %} dashboard-metric--available {% else %} dashboard-metric--expense {% endif %}h-100"><div class="card-body">
+      <div class="dashboard-metric__icon">
+        {% if balanco_mes >= 0 %}
+            <i class="bi bi-graph-up-arrow"></i>
+        {% else %}
+            <i class="bi bi-graph-down-arrow"></i>
+        {% endif %}
+      </div>
+    <p class="dashboard-metric__label">Resultado no mês</p>
+    <p class="dashboard-metric__value">R$ {{ balanco_mes | brl }}</p><span class="dashboard-metric__hint">Receitas menos despesas do período</span></div></article></div>
 </section>
 
 <section class="row g-4 mb-4" aria-label="Situação financeira do mês">
