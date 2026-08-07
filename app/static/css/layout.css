@@ -1,16 +1,28 @@
 /* Structural layout only. Component appearance lives in components/. */
-.app-shell { min-height: 100vh; }
-.app-workspace { min-width: 0; margin-left: var(--sidebar-width); }
-.app-page { width: 100%; max-width: calc(var(--content-max-width) + (var(--page-padding) * 2)); margin: 0 auto; padding: var(--space-8) var(--page-padding) var(--space-12); }
-.app-page > .container-fluid { padding-right: 0; padding-left: 0; }
-
-@media (max-width: 991.98px) {
-  :root { --page-padding: var(--space-5); }
-  .app-workspace { margin-left: 0; }
-  .app-page { padding-top: var(--space-6); }
+.app-shell {
+  min-height: 100vh;
+}
+.app-workspace {
+  min-width: 0;
+  margin-left: calc(var(--sidebar-width) + 12px);
 }
 
-@media (max-width: 575.98px) {
-  :root { --page-padding: var(--space-4); }
-  .app-page { padding-bottom: var(--space-8); }
+.app-page {
+  width: 100%;
+  max-width: calc(var(--content-max-width) + (var(--page-padding) * 2));
+  margin: 0 auto;
+  padding: var(--space-6) var(--page-padding) var(--space-12);
+}
+.app-page > .container-fluid {
+  padding: 0;
+}
+
+@media (max-width: 991.98px) {
+  .app-workspace {
+    margin-left: 0;
+  }
+
+  .app-sidebar {
+    display: none;
+  }
 }

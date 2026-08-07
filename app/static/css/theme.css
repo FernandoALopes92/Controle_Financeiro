@@ -61,7 +61,7 @@
   --transition-slow: 320ms ease;
 
   /* Shell */
-  --sidebar-width: 15.5rem;
+  --sidebar-width: 80px;
   --topbar-height: 4.75rem;
   --content-max-width: 100rem;
   --page-padding: var(--space-8);

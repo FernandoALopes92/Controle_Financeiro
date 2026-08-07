@@ -3,33 +3,54 @@
 
 {% block page_styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/reports.css') }}" />{% endblock %}
 {% block page_header %}
-  {% set page_eyebrow = 'Análises' %}
-  {% set page_title = 'Relatórios financeiros' %}
-  {% set page_subtitle = 'Acompanhe metas, receitas, despesas e evolução do seu caixa.' %}
-  {% include "components/page_header.html" %}
+    {% set page_eyebrow = 'Análises' %}
+    {% set page_title = 'Relatórios Financeiros' %}
+    {% set page_subtitle = 'Acompanhe metas, receitas, despesas e evolução do seu caixa.' %}
+
+    {% set page_actions %}
+    <form method="POST"
+          action="{{ url_for('relatorios.relatorios') }}"
+          id="filtroForm"
+          class="page-header__form">
+
+        <input type="hidden"
+               name="csrf_token"
+               value="{{ csrf_token() }}"/>
+
+        <div class="filter-group">
+            <select name="ano" class="form-select">
+                {% for a in anos %}
+                    <option value="{{ a }}"
+                        {% if a == ano_filtro %}selected{% endif %}>
+                        {{ a }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit"
+                class="btn btn-primary page-header__form-button">
+            <i class="bi bi-arrow-repeat me-1"></i>
+            Atualizar
+        </button>
+
+    </form>
+    {% endset %}
+
+    {% include "components/page_header.html" %}
 {% endblock %}
 
 {% block content %}
 
-<div class="container-fluid business-page reports-page">
-    
-    <!--  Cabeçalho  -->
-    <div class="reports-filter">
-        <div class="mb-3 mb-md-0">
-            <h2 class="mb-0 fw-bold">Consolidação Financeira</h2>
-            <p class="text-muted mb-0">Visão macro de metas, receitas e despesas.</p>
-        </div>
-        <form method="POST" action="{{ url_for('relatorios.relatorios') }}" id="filtroForm" class="d-flex gap-2 align-items-end">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-            <div>
-                <label class="form-label small text-muted mb-1 fw-semibold">Ano de Análise</label>
-                <select name="ano" class="form-select form-select-sm shadow-sm border-0 fw-bold" style="min-width: 110px;">
-                    {% for a in anos %} <option value="{{ a }}" {% if a == ano_filtro %}selected{% endif %}>{{ a }}</option> {% endfor %}
-                </select>
-            </div>
-            <button type="submit" class="btn btn-sm btn-purple shadow-sm fw-semibold px-4 h-100">Atualizar Painel</button>
-        </form>
-    </div>
+{% macro colgroup_padrao() %}
+    <colgroup>
+        <col style="width: 17%;"> 
+            {% for i in range(12) %}<col style="width: 6.2%;">{% endfor %} 
+        <col style="width: 8.6%;"> 
+    </colgroup>
+{% endmacro %}
+
+<div class="reports-page">
 
     <!--    Tabs      -->
 
@@ -45,46 +66,49 @@
         </li>
     </ul>
 
-    <!-- Receitas  -->
+ <!-- Receitas  -->
+
     <div class="tab-content" id="relatorioTabsContent">
 
         <div class="tab-pane fade show active" id="planilha" role="tabpanel">
-            <div class="card border-0 bg-transparent" style="border-radius: 12px;">
-                
-                {% macro colgroup_padrao() %}
-                <colgroup>
-                    <col style="width: 17%;"> 
-                    {% for i in range(12) %}<col style="width: 6.2%;">{% endfor %} 
-                    <col style="width: 8.6%;"> 
-                </colgroup>
-                {% endmacro %}
+            <section class="report-section">
+
+                <div class="report-section__header">
+                    <div>
+                        <h2>
+                            <i class="bi bi-cash-stack"></i>
+                            Receitas
+                        </h2>
+
+                        <p>Entradas organizadas por categoria e mês.</p>
+                    </div>
+                </div>
 
                 <div class="table-responsive shadow-sm rounded-3 mb-4 bg-white">
                     <table class="table table-bordered table-hover table-sm align-middle text-center mb-0" style="table-layout: fixed; font-size: 0.85rem; width: 100%;">
-                        {{ colgroup_padrao() }}
-                        <thead class="table-light">
+                        <thead>
                             <tr>
-                                <th class="text-start ps-3 py-3 fw-bold text-success fs-6 bg-success bg-opacity-10"><i class="bi bi-arrow-up-circle-fill me-2"></i>RECEITAS</th>
-                                {% for mes in meses_nomes %} <th class="py-3 bg-success bg-opacity-10">{{ mes }}</th> {% endfor %}
-                                <th class="py-3 bg-success bg-opacity-25 fw-bold">Total do Ano</th>
+                                <th class="text-start ps-3 report-table__category">Categoria</th>
+                                    {% for mes in meses_nomes %} 
+                                <th class="report-table__month">{{ mes }}</th> {% endfor %}
+                                <th class="report-table__total">Total do Ano</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for categoria, info in receitas_por_categoria.items() %}
-                            
-                            <!-- Salva o ID do loop pai numa variável segura -->
-                            {% set cat_index = loop.index %}
-                            
+                        {% for categoria, info in receitas_por_categoria.items() %}
+                                            
+                        {% set cat_index = loop.index %}
+                                            
                             <!-- LINHA PAI: CATEGORIA (Clicável para expandir) -->
                             <tr class="table-light" style="cursor: pointer;" onclick="toggleLinhaExpandivel('subrow-rec-{{ cat_index }}', 'icon-rec-{{ cat_index }}');">
-                                <td class="text-start ps-3 fw-bold text-success text-truncate">
+                                <td class="text-start ps-3 fw-bold report-income-name">
                                     <button type="button" class="btn btn-sm p-0 border-0 me-2 text-success" style="line-height: 1;">
                                         <i class="bi bi-plus-square-fill" id="icon-rec-{{ cat_index }}" style="font-size: 0.95rem;"></i>
                                     </button>
                                     {{ categoria }}
                                 </td>
                                 {% for m in range(1, 13) %}
-                                    <td class="text-success fw-semibold text-nowrap">{% if info['meses'][m] > 0 %}R$ {{ info['meses'][m] | brl }}{% else %}-{% endif %}</td>
+                                <td class="text-success fw-semibold text-nowrap">{% if info['meses'][m] > 0 %}R$ {{ info['meses'][m] | brl }}{% else %}-{% endif %}</td>
                                 {% endfor %}
                                 <td class="fw-bold text-success bg-light text-nowrap">R$ {{ info['total'] | brl }}</td>
                             </tr>
@@ -96,32 +120,53 @@
                                     <i class="bi bi-arrow-return-right me-1 small text-secondary"></i> {{ desc }}
                                 </td>
                                 {% for m in range(1, 13) %}
-                                    <td class="text-muted">{% if dados_desc['meses'][m] > 0 %}R$ {{ dados_desc['meses'][m] | brl }}{% else %}-{% endif %}</td>
+                                <td class="text-muted">{% if dados_desc['meses'][m] > 0 %}R$ {{ dados_desc['meses'][m] | brl }}{% else %}-{% endif %}</td>
                                 {% endfor %}
                                 <td class="fw-bold text-muted text-nowrap">R$ {{ dados_desc['total'] | brl }}</td>
                             </tr>
                             {% endfor %}
-                            
-                            {% endfor %}
+                                            
+                        {% endfor %}
 
                             <!-- RODAPÉ: TOTAL ARRECADADO -->
-                            <tr class="table-success">
+                            <tr class="report-total-row">
                                 <td class="text-start ps-3 fw-bold">Total Arrecadado</td>
                                 {% for m in range(1, 13) %} 
-                                    <td class="fw-bold text-nowrap">{% if total_receitas_mes[m] > 0 %}R$ {{ total_receitas_mes[m] | brl }}{% else %}-{% endif %}</td> 
+                                <td class="fw-bold text-nowrap">{% if total_receitas_mes[m] > 0 %}R$ {{ total_receitas_mes[m] | brl }}{% else %}-{% endif %}</td> 
                                 {% endfor %}
                                 <td class="fw-bold text-success fs-6 text-nowrap">R$ {{ total_receitas_ano | brl }}</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-                <!-- Balanço e Investimentos -->
-                <div class="table-responsive shadow-sm rounded-3 mb-4 bg-white">
+            </section>
+
+ 
+            <div class="card border-0 bg-transparent" style="border-radius: 12px;">
+                
+      
+
+            <section class="report-section">
+                <div class="report-section__header">
+                    <div>
+                        <h2>
+                            <i class="bi bi-bullseye"></i>
+                            Meta Financeira
+                        </h2>
+
+                        <p>
+                            Acompanhe sua meta mensal de economia.
+                        </p>
+                    </div>
+                </div>
+
+                                <!-- Balanço e Investimentos -->
+                <div class="table-responsive">
                     <table class="table table-bordered table-hover table-sm align-middle text-center mb-0" style="table-layout: fixed; font-size: 0.85rem; width: 100%;">
                         {{ colgroup_padrao() }}
                         <thead class="bg-roxo-escuro">
                             <tr>
-                                <th class="text-start ps-3 py-3 fw-bold fs-6 border-0"><i class="bi bi-cpu-fill me-2 text-warning"></i>BALANÇO & INVESTIMENTO</th>
+                                <th class="text-start ps-3 py-3 fw-bold fs-6 border-0"><i class="bi bi-cpu-fill me-2 text-warning"></i>Descrição</th>
                                 {% for mes in meses_nomes %} <th class="py-3 border-0">{{ mes }}</th> {% endfor %}
                                 <th class="py-3 border-0">Acumulado</th>
                             </tr>
@@ -132,7 +177,7 @@
                                 {% for m in range(1, 13) %} 
                                     <td class="p-1 input-meta">
                                         <div class="d-flex align-items-center justify-content-center">
-                                            <input type="number" name="meta_{{ m }}" form="filtroForm" value="{{ meta_meses[m]|int }}" class="input-meta form-control form-control-sm text-end fw-bold p-0 border-0 bg-white" style="width: 42px; height: 24px; font-size: 0.8rem;">
+                                            <input type="number" name="meta_{{ m }}" form="filtroForm" value="{{ meta_meses[m]|int }}" class="meta-chip">
                                             <span class="ms-1 small">%</span>
                                         </div>
                                     </td> 
@@ -183,7 +228,7 @@
                             {% endfor %}
 
                             <tr>
-                                <td class="text-start ps-3 text-dark">Sobra Real do Mês</td>
+                                <td class="text-start ps-3 text-dark">Saldo do Mês</td>
                                 {% for m in range(1, 13) %} 
                                     <td class="text-nowrap {% if sobra_mes[m] > 0 %}text-success{% elif sobra_mes[m] < 0 %}text-danger{% endif %}">
                                         R$ {{ sobra_mes[m] | brl }}
@@ -222,15 +267,31 @@
                         </tbody>
                     </table>
                 </div>
+            
+            </section>
 
-                <!-- Gastos por categoria -->
-                <div class="table-responsive shadow-sm rounded-3 mb-4 bg-white">
+
+            <section class="report-section">
+                <div class="report-section__header">
+                    <div>
+                        <h2>
+                            <i class="bi-wallet2"></i>
+                            Gastos por Categoria
+                        </h2>
+
+                        <p>
+                            Onde seu dinheiro foi gasto
+                        </p>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
                     <table class="table table-bordered table-hover table-sm align-middle text-center mb-0" style="table-layout: fixed; font-size: 0.85rem; width: 100%;">
                         {{ colgroup_padrao() }}
                         <thead class="table-light">
                             <tr >
                                 <th class="text-start ps-3 py-2 fw-bold text-danger fs-6 bg-danger bg-opacity-10">
-                                    <i class="bi bi-tags-fill me-2"></i>GASTOS POR CATEGORIA
+                                    <i class="bi bi-tags-fill me-2"></i>Categoria
                                     <i class="bi bi-info-circle ms-1 text-muted" 
                                     style="cursor: help; font-size: 0.9rem;" 
                                     data-bs-toggle="tooltip" 
@@ -268,6 +329,9 @@
                         </tbody>
                     </table>
                 </div>
+            </section>
+                <!-- Gastos por categoria -->
+
 
             </div>
         </div>
