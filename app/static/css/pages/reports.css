@@ -1,3 +1,19 @@
+/* ==========================================================
+   RELATÓRIOS — BASE
+   Estrutura compartilhada pelas tabelas de Receitas, Meta e Gastos.
+   As diferenças visuais ficam nas classes de variação:
+   --success / --primary / --danger.
+========================================================== */
+
+.reports-page {
+  --report-accent: var(--color-primary-500);
+  --report-accent-subtle: var(--color-primary-subtle);
+}
+
+/* ==========================================================
+   TABS + ELEMENTOS GERAIS
+========================================================== */
+
 .reports-page .nav-pills {
   display: inline-flex;
   max-width: 100%;
@@ -9,132 +25,634 @@
   background: var(--color-surface);
   box-shadow: var(--shadow-sm);
 }
+
 .reports-page .nav-pills .nav-link {
   white-space: nowrap;
 }
-.reports-page .card.bg-transparent {
-  border-color: var(--color-border) !important;
-  background: var(--color-surface) !important;
-}
+
 .reports-page canvas {
   max-width: 100%;
 }
 
+/* ==========================================================
+   RESUMO
+========================================================== */
+
+.reports-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+/* ==========================================================
+   SEÇÃO
+========================================================== */
+
 .report-section {
-  background: var(--color-surface);
+  --report-accent: var(--color-primary-500);
+  --report-accent-subtle: var(--color-primary-subtle);
+
+  margin-bottom: var(--space-6);
+  overflow: hidden;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  overflow: hidden;
-  margin-bottom: 2rem;
+  background: var(--color-surface);
   box-shadow: var(--shadow-sm);
 }
 
+.report-section--success {
+  --report-accent: var(--color-success);
+  --report-accent-subtle: var(--color-success-subtle);
+}
+
+.report-section--primary {
+  --report-accent: var(--color-primary-500);
+  --report-accent-subtle: var(--color-primary-subtle);
+}
+
+.report-section--danger {
+  --report-accent: var(--color-danger);
+  --report-accent-subtle: var(--color-danger-subtle);
+}
+
+/* ==========================================================
+   CABEÇALHO DA SEÇÃO
+========================================================== */
+
 .report-section__header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6);
   border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
 }
 
-.report-section__header h2 {
+.report-section__title {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.report-section__title > div:last-child {
+  min-width: 0;
+}
+
+.report-section__title h2 {
   margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.report-section__title p {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.report-section__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: 0 0 2.5rem;
+  border-radius: var(--radius-md);
+  background: var(--report-accent-subtle);
+  color: var(--report-accent);
   font-size: 1.15rem;
+}
+
+.report-section__action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 0 0 auto;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-primary-600);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.report-section__action:hover {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-300);
+  box-shadow: var(--shadow-sm);
+}
+
+.report-section__action span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.report-section__chevron {
+  transition: transform var(--transition-base);
+}
+
+.report-section__action.is-open .report-section__chevron {
+  transform: rotate(180deg);
+}
+
+/* ==========================================================
+   TABELAS — BASE COMPARTILHADA
+========================================================== */
+
+.report-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  background: var(--color-surface);
+}
+
+.report-table,
+.report-meta-table,
+.report-expenses-table {
+  width: 100%;
+  table-layout: fixed;
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+
+.report-table th,
+.report-table td,
+.report-meta-table th,
+.report-meta-table td,
+.report-expenses-table th,
+.report-expenses-table td {
+  border-color: var(--color-border);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.report-table thead th,
+.report-meta-table thead th,
+.report-expenses-table thead th {
+  height: 42px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-subtle);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.report-table thead th:first-child,
+.report-meta-table thead th:first-child,
+.report-expenses-table thead th:first-child {
+  text-align: left;
+}
+
+/* Macro colgroup_padrao() distribui as 14 colunas em 100%. */
+.report-table__category,
+.report-meta-table__description,
+.report-expenses-table__category {
+  width: 17%;
   font-weight: 700;
 }
-.report-section__header h2 i {
-  color: #16a34a;
-  font-size: 1.35rem;
+
+.report-table__total,
+.report-meta-table__accumulated,
+.report-expenses-table__total {
+  min-width: 0;
+  background: var(--color-surface-subtle);
+  font-weight: 700;
 }
 
-.report-section__header p {
-  margin: 4px;
-  font-size: 0.88rem;
-  color: #6b7280;
+/* Coluna final fica visível durante o scroll em telas pequenas. */
+.report-table thead th:last-child,
+.report-table tbody td:last-child,
+.report-meta-table thead th:last-child,
+.report-meta-table tbody td:last-child,
+.report-expenses-table thead th:last-child,
+.report-expenses-table tbody td:last-child {
+  position: sticky;
+  right: 0;
+  z-index: 2;
 }
 
-.report-section .table {
+.report-table tbody td:last-child,
+.report-meta-table tbody td:last-child,
+.report-expenses-table tbody td:last-child {
+  background: var(--color-surface);
+}
+
+/* ==========================================================
+   MÊS DESTACADO
+========================================================== */
+
+.reports-page th.report-month-active {
+  position: relative;
+  background: var(--color-primary-500) !important;
+  color: var(--color-white) !important;
+  border-radius: var(--radius-sm);
+}
+
+/* ==========================================================
+   VARIAÇÃO DE CORES — TOTAL DO ANO
+========================================================== */
+
+/* Linhas normais: fundo branco, destaque somente no valor. */
+.report-section--success tbody tr:not(.report-total-row) > td:last-child {
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.report-section--danger
+  tbody
+  tr:not(.report-expenses-table__total-row)
+  > td:last-child {
+  color: var(--color-danger);
+  font-weight: 700;
+}
+
+/* Linha de total: todas as células recebem o fundo da variação. */
+.report-section--success .report-total-row td {
+  background: var(--color-success-subtle) !important;
+  color: var(--color-text);
+  font-weight: 700;
+  border-top: 2px solid var(--color-success);
+}
+
+.report-section--success .report-total-row td:last-child {
+  color: var(--color-success);
+  font-weight: 800;
+}
+
+.report-section--danger .report-expenses-table__total-row td {
+  background: var(--color-danger-subtle) !important;
+  color: var(--color-danger);
+  font-weight: 700;
+  border-top: 2px solid var(--color-danger);
+}
+
+.report-section--danger .report-expenses-table__total-row td:last-child {
+  font-size: var(--font-size-base);
+}
+
+/* ==========================================================
+   RECEITAS
+========================================================== */
+
+.report-income-row {
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.report-income-row:hover {
+  background: var(--color-surface-subtle);
+}
+
+.report-income-row td:first-child {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.report-income-name {
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.report-income-toggle {
+  padding: 0;
+  margin-right: var(--space-2);
+  border: 0;
+  background: transparent;
+  color: var(--color-success);
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.report-income-toggle:hover {
+  color: var(--color-primary-600);
+  transform: scale(1.05);
+}
+
+.report-income-toggle i {
+  font-size: 0.95rem;
+}
+
+.report-income-row td:not(:first-child) {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+/* Detalhes das receitas. */
+.border-dashed td {
+  background: var(--color-surface-subtle);
+}
+
+.border-dashed td:first-child,
+.subrow td:first-child {
+  padding-left: var(--space-8);
+  color: var(--color-text-muted);
+}
+
+.subrow td:first-child {
+  font-size: var(--font-size-xs);
+}
+
+/* ==========================================================
+   META FINANCEIRA
+========================================================== */
+
+.report-meta-table__description {
+  text-align: left;
+}
+
+.report-meta-table__input {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.report-meta-table__input input {
+  width: 2rem !important;
+  height: auto !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+
+  background: transparent !important;
+
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+
+  text-align: right !important;
+
+  /* Remove aparência padrão do input */
+  appearance: textfield;
+  -webkit-appearance: none;
+}
+/* Chrome / Edge / Safari */
+.report-meta-table__input input::-webkit-inner-spin-button,
+.report-meta-table__input input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
   margin: 0;
 }
 
-.report-table__category {
-  background: #f8fafc;
-  color: #334155;
-  font-weight: 700;
-  width: 220px;
+.report-meta-table__input input:focus {
+  border: none;
+  outline: none;
+  box-shadow: none;
 }
 
-.report-table__month {
-  background: #f8fafc;
-  color: #64748b;
-  font-size: 0.78rem;
+.report-meta-table__target-row td {
+  background: var(--color-surface-subtle);
+  color: var(--color-primary-600);
+}
+
+.report-meta-table__expense-row {
+  cursor: pointer;
+  background: var(--color-danger-50);
+}
+
+.report-meta-table__expense-row td {
+  background: var(--color-danger-50);
+}
+
+.report-meta-table td.report-meta-table__expense {
+  color: var(--color-danger);
+  font-weight: 700;
+}
+
+.report-meta-table__expense-toggle {
+  padding: 0;
+  margin-right: var(--space-2);
+  border: 0;
+  background: transparent;
+  color: var(--color-danger);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.report-meta-table__expense-toggle i {
+  font-size: 0.95rem;
+}
+
+.report-meta-table__detail-row td {
+  background: var(--color-surface-subtle);
+}
+
+.report-meta-table__card-row {
+  font-size: var(--font-size-xs);
+}
+
+.report-meta-table__balance {
+  font-weight: 700;
+}
+
+.report-meta-table__balance.is-positive {
+  color: var(--color-success);
+}
+
+.report-meta-table__balance.is-negative {
+  color: var(--color-danger);
+}
+
+.report-meta-table__balance-row td {
+  background: var(--color-surface);
+}
+
+.report-meta-table__status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 4.5rem;
+  min-height: 1.9rem;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-xl);
+  font-size: var(--font-size-xs);
   font-weight: 700;
   text-transform: uppercase;
 }
 
-.report-table__total {
-  background: #eef7f2;
-  color: #15803d;
+.report-meta-table__status--success {
+  background: var(--color-success);
+  color: var(--color-white);
+}
+
+.report-meta-table__status--danger {
+  background: var(--color-danger);
+  color: var(--color-white);
+}
+
+/* ==========================================================
+   GASTOS POR CATEGORIA
+========================================================== */
+
+.report-expenses-table__category {
+  text-align: left;
+}
+
+.report-expenses-table__info {
+  margin-left: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  cursor: help;
+}
+
+.report-expenses-table tbody td {
+  height: 38px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  color: var(--color-text);
+  text-align: center;
+}
+
+.report-expenses-table tbody td:first-child {
+  text-align: left;
+  font-weight: 600;
+}
+
+.report-expenses-table tbody tr {
+  transition: background-color var(--transition-fast);
+}
+
+.report-expenses-table tbody tr:hover td {
+  background: var(--color-surface-subtle);
+}
+
+.report-expenses-table__name {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+/* Top 7: uma regra comum + apenas a intensidade muda. */
+.report-expenses-table__highlight {
+  --expense-highlight-strength: 6%;
+  background: color-mix(
+    in srgb,
+    var(--color-danger) var(--expense-highlight-strength),
+    var(--color-surface)
+  ) !important;
+  color: var(--color-danger) !important;
   font-weight: 700;
-  min-width: 140px;
-}
-thead th {
-  background: #f8fafc !important;
 }
 
-.report-income-name {
-  color: #15803d;
+.report-expenses-table__highlight--1 {
+  --expense-highlight-strength: 25%;
+}
+.report-expenses-table__highlight--2 {
+  --expense-highlight-strength: 21%;
+}
+.report-expenses-table__highlight--3 {
+  --expense-highlight-strength: 18%;
+}
+.report-expenses-table__highlight--4 {
+  --expense-highlight-strength: 15%;
+}
+.report-expenses-table__highlight--5 {
+  --expense-highlight-strength: 12%;
+}
+.report-expenses-table__highlight--6 {
+  --expense-highlight-strength: 9%;
+}
+.report-expenses-table__highlight--7 {
+  --expense-highlight-strength: 6%;
 }
 
-.report-total-row {
-  background: #eef7f2;
-
+.report-expenses-table__row-total {
+  color: var(--color-text);
   font-weight: 700;
 }
 
-.report-total-row td {
-  border-top: 2px solid #86efac;
-}
-.border-dashed td {
-  background: #fbfcfe;
-}
+/* ==========================================================
+   Não deixa espaço extra depois da tabela de gastos.
+========================================================== */
 
-.border-dashed td:first-child {
-  padding-left: 3.5rem;
-
-  color: #64748b;
-}
-.subrow td:first-child {
-  padding-left: 58px;
-  font-size: 0.82rem;
-  color: #6b7280;
+.reports-page .report-section:last-child {
+  margin-bottom: 0;
 }
 
-.report-table__total,
-.report-total-column {
-  position: sticky;
-  right: 0;
+/* ==========================================================
+   RESPONSIVO
+========================================================== */
 
-  background: white;
-
-  z-index: 2;
+@media (max-width: 991.98px) {
+  .reports-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
-.meta-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 
-  min-width: 48px;
-  height: 32px;
-
-  border-radius: 10px;
-
-  background: #f8fafc;
-
-  font-weight: 700;
-}
 @media (max-width: 767.98px) {
+  .report-table,
+  .report-meta-table,
+  .report-expenses-table {
+    font-size: var(--font-size-xs);
+  }
+
+  .report-table__category,
+  .report-meta-table__description,
+  .report-expenses-table__category {
+    width: 190px;
+  }
+
+  .report-table__total,
+  .report-meta-table__accumulated,
+  .report-expenses-table__total {
+    min-width: 120px;
+  }
+
+  .report-meta-table__input input {
+    width: 3.75rem;
+  }
+
+  .report-expenses-table thead th,
+  .report-expenses-table tbody td {
+    padding: var(--space-2);
+  }
+}
+
+@media (max-width: 575.98px) {
+  .reports-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .report-section__header {
+    align-items: flex-start;
+    padding: var(--space-4);
+  }
+
+  .report-section__action span {
+    font-size: 0;
+  }
+
+  .report-section__action span i {
+    font-size: 1rem;
+  }
+
+  .report-section__title p {
+    font-size: var(--font-size-xs);
+  }
+
+  .report-expenses-table thead th,
+  .report-expenses-table tbody td {
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
+  }
 }

@@ -25,9 +25,358 @@
   background: var(--color-surface-subtle);
 }
 
-@media (max-width: 767.98px) {
-  .card-header,
-  .card-body {
-    padding: var(--space-4);
+/* ==========================================================
+   STATS CARD
+========================================================== */
+
+.stats-card {
+  position: relative;
+
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+
+  min-height: var(--stats-card-min-height);
+
+  overflow: hidden;
+
+  border: 1px solid var(--color-border);
+  border-top: 3px solid transparent;
+
+  border-radius: var(--radius-lg);
+
+  background: var(--color-surface);
+
+  box-shadow: var(--shadow-sm);
+
+  transition:
+    transform var(--transition-base),
+    box-shadow var(--transition-base);
+}
+
+.stats-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ==========================================================
+   CONTEÚDO
+========================================================== */
+
+.stats-card__content {
+  position: relative;
+
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: var(--space-6);
+
+  min-width: 0;
+  padding-right: 135px;
+}
+
+.reports-page .stats-card__content {
+  padding-right: calc(var(--space-6) + 7rem);
+}
+
+.stats-card__label {
+  position: relative;
+
+  margin: 0 0 var(--space-2);
+
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-sm);
+
+  font-weight: 700;
+}
+
+.stats-card__value {
+  position: relative;
+
+  margin: 0;
+
+  color: var(--color-text);
+
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+
+  font-weight: 800;
+
+  letter-spacing: -0.03em;
+
+  line-height: 1.2;
+}
+
+.stats-card__subtitle {
+  position: relative;
+
+  display: block;
+
+  margin-top: var(--space-3);
+
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-xs);
+}
+
+/* ==========================================================
+   ÍCONE
+========================================================== */
+
+.stats-card__icon {
+  position: absolute;
+
+  right: var(--space-4);
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  z-index: 0;
+
+  font-size: 4.5rem;
+
+  opacity: 0.3;
+
+  pointer-events: none;
+}
+
+/* ==========================================================
+   VARIAÇÃO — PRIMARY
+========================================================== */
+
+.stats-card.primary {
+  border-top-color: var(--color-primary-600);
+}
+
+.stats-card.primary .stats-card__icon {
+  color: var(--color-primary-500);
+}
+
+/* ==========================================================
+   VARIAÇÃO — SUCCESS
+========================================================== */
+
+.stats-card.success {
+  border-top-color: var(--color-success);
+}
+
+.stats-card.success .stats-card__icon {
+  color: var(--color-success);
+}
+
+/* ==========================================================
+   VARIAÇÃO — DANGER
+========================================================== */
+
+.stats-card.danger {
+  border-top-color: var(--color-danger);
+}
+
+.stats-card.danger .stats-card__icon {
+  color: var(--color-danger);
+}
+/* ==========================================================
+   VARIAÇÃO — warning
+========================================================== */
+
+.stats-card.warning {
+  border-top-color: var(--color-warning);
+  color: var(--color-warning);
+}
+
+.stats-card.warning .stats-card__icon {
+  color: var(--color-warning);
+}
+
+/* ==========================================================
+   VARIAÇÃO — INFO
+========================================================== */
+
+.stats-card.info {
+  border-top-color: var(--color-info);
+  color: var(--color-info);
+}
+
+.stats-card.info .stats-card__icon {
+  color: var(--color-info);
+}
+
+/* ==========================================================
+   REPORTS — STATS CARD
+   Visual específico dos cards de relatórios
+   ========================================================== */
+
+.reports-page .stats-card {
+  min-height: 8rem;
+}
+
+/* ==========================================================
+   CONTEÚDO
+   ========================================================== */
+
+.reports-page .stats-card__content {
+  padding: var(--space-5) var(--space-6);
+  padding-left: 6rem;
+  padding-right: var(--space-6);
+  justify-content: center;
+}
+.reports-page .stats-card__label {
+  margin-bottom: var(--space-1);
+}
+
+/* ==========================================================
+   ÍCONE
+   ========================================================== */
+
+.reports-page .stats-card__icon {
+  position: absolute;
+
+  left: var(--space-5);
+  right: auto;
+  top: 50%;
+  bottom: auto;
+
+  transform: translateY(-50%);
+
+  width: 3.75rem;
+  height: 3.75rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: var(--radius-md);
+
+  font-size: 1.9rem;
+
+  opacity: 1;
+
+  z-index: 0;
+}
+
+/* ==========================================================
+   RECEITAS
+   ========================================================== */
+
+.reports-page .stats-card.success .stats-card__icon {
+  color: var(--color-success);
+  background: var(--color-success-subtle);
+}
+
+.reports-page .stats-card.success .stats-card__value {
+  color: var(--color-success);
+}
+
+/* ==========================================================
+   DESPESAS
+   ========================================================== */
+
+.reports-page .stats-card.danger .stats-card__icon {
+  color: var(--color-danger);
+  background: var(--color-danger-subtle);
+}
+
+.reports-page .stats-card.danger .stats-card__value {
+  color: var(--color-danger);
+}
+
+/* ==========================================================
+   ECONOMIA
+   ========================================================== */
+
+.reports-page .stats-card.primary .stats-card__icon {
+  color: var(--color-primary-600);
+  background: var(--color-primary-subtle);
+}
+
+.reports-page .stats-card.primary .stats-card__value {
+  color: var(--color-primary-600);
+}
+
+/* ==========================================================
+   META
+   ========================================================== */
+
+.reports-page .stats-card.warning .stats-card__icon {
+  color: var(--color-warning);
+  background: var(--color-warning-subtle);
+}
+
+.reports-page .stats-card.warning .stats-card__value {
+  color: var(--color-warning);
+}
+
+/* ==========================================================
+   VALOR
+   ========================================================== */
+
+.reports-page .stats-card__value {
+  font-size: var(--font-size-xl);
+  line-height: 1.2;
+}
+.reports-page .stats-card__subtitle {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-xs);
+}
+/* ==========================================================
+   MINI GRÁFICO — STATS CARD
+========================================================== */
+
+.stats-card__chart {
+  position: absolute;
+
+  right: var(--space-5);
+  top: 45%;
+
+  transform: translateY(-50%);
+
+  width: 7.5rem;
+  height: 3rem;
+
+  z-index: 1;
+
+  pointer-events: none;
+}
+
+.stats-card__sparkline {
+  width: 120px;
+  height: 45px !important;
+}
+.stats-card__chart--meta {
+  width: 90px;
+  height: 90px;
+}
+.stats-card__chart--meta .stats-card__sparkline {
+  width: 100% !important;
+  height: 100% !important;
+}
+/* ==========================================================
+   RESPONSIVO
+   ========================================================== */
+
+@media (max-width: 575.98px) {
+  .reports-page .stats-card__content {
+    padding-right: calc(var(--space-5) + 5rem);
+  }
+
+  .reports-page .stats-card__icon {
+    left: var(--space-5);
+
+    width: 3.5rem;
+    height: 3.5rem;
+
+    border-radius: var(--radius-md);
+
+    font-size: 1.8rem;
+  }
+  .reports-page .stats-card__chart {
+    right: var(--space-4);
+    bottom: var(--space-3);
+
+    width: 5rem;
+    height: 2rem;
   }
 }

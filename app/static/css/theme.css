@@ -11,7 +11,7 @@
   --color-white: #ffffff;
   --color-success: #159b67;
   --color-danger: #df4a55;
-  --color-warning: #d08811;
+  --color-warning: #fd7e14;
   --color-info: #3178d4;
   --color-bg: #eef2f7;
   --color-surface: #ffffff;
@@ -25,6 +25,13 @@
   --color-topbar-bg: rgba(245, 247, 251, 0.9);
   --color-topbar-mobile-bg: rgba(255, 255, 255, 0.94);
   --color-overlay: rgba(23, 16, 57, 0.45);
+
+  /* Soft semantic surfaces */
+  --color-primary-subtle: #f5f3ff;
+  --color-success-subtle: #ecfdf5;
+  --color-danger-subtle: #fef2f2;
+  --color-warning-subtle: #fffbeb;
+  --color-info-subtle: #eff6ff;
 
   /* Typography */
   --font-sans:
@@ -59,6 +66,10 @@
   --transition-fast: 150ms ease;
   --transition-base: 220ms ease;
   --transition-slow: 320ms ease;
+
+  /* Component sizing */
+
+  --stats-card-min-height: 9.75rem;
 
   /* Shell */
   --sidebar-width: 80px;

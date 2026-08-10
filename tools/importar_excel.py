@@ -4,7 +4,7 @@ from datetime import date
 from decimal import Decimal
 from app import create_app
 from app.models import db, MovimentacaoCartao, Categoria, MeioPagamento, Usuario
-from app.routes.faturas import calcular_fatura_para_compra
+from app.services.cartao_service import calcular_fatura_para_compra
 from dateutil.relativedelta import relativedelta
 
 app = create_app()
@@ -17,17 +17,22 @@ meses_map = {
 
 # Colei os seus dados exatamente como você mandou
 dados_brutos = """
-25/jul	Remédio	Remédios Nubank 	 R$ 9,99 
-25/jul	Uber/99	Uber/99	Nubank 	 R$ 15,49 
-25/jul	Uber/99	Uber/99	Nubank 	 R$ 7,47 
-25/jul	Meia	Roupas/Calçados	Nubank 	 R$ 19,20 
-25/jul	Ifood	Lanches/Besteiras Nubank 	 R$ 40,97 
-24/jul	Padaria	Padaria	Nubank 	 R$ 6,50 
-24/jul	Milk Moo	Lanches/Besteiras	Nubank 	 R$ 36,00 
-24/jul	Sukiya	Bar/Restaurante	Nubank 	 R$ 66,30 
-23/jul	Padaria	Padaria	Nubank 	 R$ 14,30 
-22/jul	Claro	Contas de Casa	Nubank 	 R$ 19,99 
-
+03/ago	Lojas Americanas	Lanches/Besteiras	Nubank 	 R$ 16,98 
+02/ago	Cinema	Lazer	Nubank 	 R$ 36,48 
+27/jul	Uber/99	Uber/99	Pic Pay	 R$ 7,74 
+27/jul	Uber/99	Uber/99	Pic Pay	 R$ 8,82 
+31/jul	Atual Moda	Roupas/Calçados	Nubank 	 R$ 79,99 
+30/jul	Xereta	Lanches/Besteiras	Nubank 	 R$ 4,49 
+30/jul	Xereta	Lanches/Besteiras	Nubank 	 R$ 11,50 
+30/jul	Caedu	Gastos não previstos	Nubank 	 R$ 12,92 
+30/jul	Uber/99	Uber/99	Nubank 	 R$ 7,06 
+29/jul	Salgados	Lanches/Besteiras	Nubank 	 R$ 5,00 
+29/jul	Sorvete	Lanches/Besteiras	Nubank 	 R$ 9,98 
+28/jul	Bolo	Lanches/Besteiras	Nubank 	 R$ 12,00 
+28/jul	Doces	Lanches/Besteiras	Nubank 	 R$ 7,00 
+28/jul	Uber/99	Uber/99	Nubank 	 R$ 17,94 
+28/jul	Uber/99	Uber/99	Nubank 	 R$ 6,93 
+28/jul	Padaria	Padaria	Nubank 	 R$ 12,00 
 
 """
 
@@ -91,8 +96,7 @@ with app.app_context():
         data_parcela = data_compra + relativedelta(months=(parcela_atual - 1))
 
         # Calcula a fatura correta baseada na DATA DA PARCELA (e não na compra original)
-        fatura = calcular_fatura_para_compra(cartao.id, data_parcela)
-
+        fatura = calcular_fatura_para_compra(cartao.id, data_parcela, usuario.familia_id)
         # Cria a movimentação
         nova_mov = MovimentacaoCartao(
             descricao=descricao,

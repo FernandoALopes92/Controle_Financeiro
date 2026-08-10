@@ -58,6 +58,9 @@ def relatorios():
     anos = list(range(2026, max(ano_atual + 2, 2028)))
     meses_nomes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
 
+    # Mês destacado no relatório
+    mes_destaque = datetime.today().month if ano_filtro == ano_atual else None
+
 # --- PROCESSAMENTO DAS RECEITAS (AGRUPADO POR CATEGORIA) ---
     receitas_query = db.session.query(
         Categoria.nome, Movimentacao.descricao, extract('month', Movimentacao.data).label('mes'), func.sum(Movimentacao.valor)
@@ -146,6 +149,13 @@ def relatorios():
         total_despesas_mes[mes] += val
         total_despesas_ano += val
 
+    despesas_por_categoria = dict(
+    sorted(
+        despesas_por_categoria.items(),
+        key=lambda item: item[0].casefold()
+        )
+    )
+
     # --- CÁLCULO DE METAS E SOBRAS MÊS A MÊS ---
     meta_valor_mes = {m: 0.0 for m in range(1, 13)}
     sobra_mes = {m: 0.0 for m in range(1, 13)}
@@ -163,6 +173,15 @@ def relatorios():
         
         if total_receitas_mes[m] > 0:
             cumpriu_meta[m] = sobra_mes[m] >= meta_valor_mes[m]
+
+        # Economia realizada somente até o mês atual
+        if ano_filtro == ano_atual:
+            economia_realizada = sum(
+                sobra_mes[m]
+                for m in range(1, datetime.today().month + 1)
+            )
+        else:
+            economia_realizada = sobra_ano
 
     # =======================================================
     # DETALHAMENTO DE GASTOS (AGRUPADO CONTAS / INDIVIDUAL CARTÕES)
@@ -204,11 +223,28 @@ def relatorios():
         gastos_do_mes.sort(key=lambda x: x[1], reverse=True)
         top_7_por_mes[m] = [item[0] for item in gastos_do_mes[:7]]
 
+    historico_receitas = [
+    total_receitas_mes[m] for m in range(1, 13)
+    ]
+
+    historico_despesas = [
+        total_despesas_mes[m] for m in range(1, 13)
+    ]
+
+    historico_economia = [
+        sobra_mes[m] for m in range(1, 13)
+    ]
+
+    historico_meta = [
+        meta_valor_mes[m] for m in range(1, 13)
+    ]
+
     return render_template('navbar/relatorios.html',
         ano_filtro=ano_filtro, meta_meses=meta_meses, anos=anos, meses_nomes=meses_nomes,
         receitas_por_categoria=receitas_por_categoria, total_receitas_mes=total_receitas_mes, total_receitas_ano=total_receitas_ano,
         despesas_por_categoria=despesas_por_categoria, total_despesas_mes=total_despesas_mes, total_despesas_ano=total_despesas_ano,
         meta_valor_mes=meta_valor_mes, meta_ano=meta_ano, sobra_mes=sobra_mes, sobra_ano=sobra_ano, cumpriu_meta=cumpriu_meta,
         total_gastos_contas_mes=total_gastos_contas_mes, total_gastos_contas_ano=total_gastos_contas_ano, gastos_por_cartao=gastos_por_cartao,
-        top_7_por_mes=top_7_por_mes
+        top_7_por_mes=top_7_por_mes, mes_destaque=mes_destaque, historico_receitas=historico_receitas, historico_despesas=historico_despesas,
+        historico_economia=historico_economia, historico_meta=historico_meta, economia_realizada=economia_realizada
     )

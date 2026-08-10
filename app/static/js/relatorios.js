@@ -10,6 +10,15 @@ document.addEventListener('DOMContentLoaded', function () {
   // 2. LÓGICA DO DASHBOARD EXECUTIVO
   if (window.dadosRelatorio) {
     const dados = window.dadosRelatorio;
+
+    document
+      .querySelectorAll('.stats-card__sparkline')
+      .forEach(function (canvas) {
+        const tipo = canvas.dataset.chartType;
+
+        criarMiniGrafico(canvas, dados, tipo);
+      });
+
     const totalReceitas = dados.totalReceitasAno;
     const totalDespesas = dados.totalDespesasAno;
     const totalSobra = totalReceitas - totalDespesas;
@@ -186,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          cutout: '70%',
+          cutout: '68%',
           plugins: {
             legend: { display: false },
             tooltip: {
@@ -202,6 +211,249 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
+function hexToRgba(hex, alpha) {
+  hex = hex.replace('#', '');
+
+  if (hex.length === 3) {
+    hex = hex
+      .split('')
+      .map((char) => char + char)
+      .join('');
+  }
+
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function criarMiniGrafico(canvas, dados, tipo) {
+  if (!canvas || !dados) {
+    return;
+  }
+
+  const cores = {
+    receitas: 'var(--color-success)',
+    despesas: 'var(--color-danger)',
+    economia: 'var(--color-primary-500)',
+    meta: 'var(--color-warning)',
+  };
+
+  const cor = getComputedStyle(document.documentElement)
+    .getPropertyValue(
+      tipo === 'receitas'
+        ? '--color-success'
+        : tipo === 'despesas'
+          ? '--color-danger'
+          : tipo === 'economia'
+            ? '--color-primary-500'
+            : '--color-warning',
+    )
+    .trim();
+
+  const series = {
+    receitas: dados.receitas,
+    despesas: dados.despesas,
+    economia: dados.sobras,
+  };
+
+  const valores = series[tipo];
+
+  // ==========================================================
+  // META — GRÁFICO DE ROSCA
+  // ==========================================================
+  if (tipo === 'meta') {
+    const metaTotal = Number(dados.metaAno || 0);
+
+    const mesAtual = dados.mesAtual || 12;
+
+    const realizado = dados.sobras
+      .slice(0, mesAtual)
+      .reduce((total, valor) => total + Number(valor || 0), 0);
+
+    if (metaTotal <= 0) {
+      return;
+    }
+
+    const realizadoLimitado = Math.max(0, Math.min(realizado, metaTotal));
+
+    const restante = Math.max(0, metaTotal - realizadoLimitado);
+
+    const percentual =
+      metaTotal > 0 ? (realizadoLimitado / metaTotal) * 100 : 0;
+
+    const ctx = canvas.getContext('2d');
+
+    const textoCentro = {
+      id: 'textoCentroMeta',
+
+      afterDraw(chart) {
+        const { ctx, chartArea } = chart;
+
+        const x = (chartArea.left + chartArea.right) / 2;
+        const y = (chartArea.top + chartArea.bottom) / 2;
+
+        ctx.save();
+
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        ctx.fillStyle = getComputedStyle(document.documentElement)
+          .getPropertyValue('--color-warning')
+          .trim();
+
+        ctx.font = '800 1.1rem sans-serif';
+
+        ctx.fillText(`${Math.round(percentual)}%`, x, y);
+
+        ctx.restore();
+      },
+    };
+
+    new Chart(ctx, {
+      type: 'doughnut',
+
+      plugins: [textoCentro],
+
+      data: {
+        labels: ['Realizado', 'Restante'],
+
+        datasets: [
+          {
+            data: [realizadoLimitado, restante],
+
+            backgroundColor: [cor, 'rgba(0, 0, 0, 0.06)'],
+
+            borderWidth: 0,
+
+            hoverOffset: 0,
+          },
+        ],
+      },
+
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+
+        cutout: '72%',
+
+        plugins: {
+          legend: {
+            display: false,
+          },
+
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                const valor = Number(context.raw || 0);
+
+                return (
+                  context.label +
+                  ': R$ ' +
+                  valor.toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                  })
+                );
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return;
+  }
+
+  // ==========================================================
+  // GRÁFICOS DE LINHA — RECEITAS / DESPESAS / ECONOMIA
+  // ==========================================================
+
+  if (!valores || !valores.length) {
+    return;
+  }
+
+  const ctx = canvas.getContext('2d');
+
+  const gradiente = ctx.createLinearGradient(0, 0, 0, canvas.height);
+
+  gradiente.addColorStop(0, hexToRgba(cor, 0.2));
+
+  gradiente.addColorStop(1, hexToRgba(cor, 0.0));
+
+  new Chart(ctx, {
+    type: 'line',
+
+    data: {
+      labels: dados.meses,
+
+      datasets: [
+        {
+          data: valores,
+
+          borderColor: cor,
+          backgroundColor: gradiente,
+
+          borderWidth: 2,
+
+          pointRadius: 0,
+          pointHoverRadius: 3,
+
+          tension: 0.4,
+
+          fill: true,
+        },
+      ],
+    },
+
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+
+      plugins: {
+        legend: {
+          display: false,
+        },
+
+        tooltip: {
+          enabled: true,
+
+          callbacks: {
+            label: function (context) {
+              return (
+                'R$ ' +
+                Number(context.raw || 0).toLocaleString('pt-BR', {
+                  minimumFractionDigits: 2,
+                })
+              );
+            },
+          },
+        },
+      },
+
+      scales: {
+        x: {
+          display: false,
+          grid: {
+            display: false,
+          },
+        },
+
+        y: {
+          display: false,
+          grid: {
+            display: false,
+          },
+        },
+      },
+
+      interaction: {
+        intersect: false,
+        mode: 'index',
+      },
+    },
+  });
+}
 
 // Nova função inteligente que abre/fecha qualquer bloco passando o nome da classe
 function toggleLinhaExpandivel(targetClass, iconId) {
@@ -222,5 +474,38 @@ function toggleLinhaExpandivel(targetClass, iconId) {
       icon.classList.remove('bi-minus-square-fill');
       icon.classList.add('bi-plus-square-fill');
     }
+  }
+}
+
+function toggleSecaoRelatorio(button) {
+  const section = button.closest('.report-section');
+
+  if (!section) {
+    return;
+  }
+
+  const tableWrapper = section.querySelector('.report-table-wrapper');
+
+  if (!tableWrapper) {
+    return;
+  }
+
+  const chevron = button.querySelector('.report-section__chevron');
+  const label = button.querySelector('span');
+
+  const isHidden = tableWrapper.classList.toggle('d-none');
+
+  if (isHidden) {
+    label.innerHTML =
+      '<i class="bi bi-layout-text-window-reverse"></i> Ver detalhes';
+
+    chevron.classList.remove('bi-chevron-up');
+    chevron.classList.add('bi-chevron-down');
+  } else {
+    label.innerHTML =
+      '<i class="bi bi-layout-text-window-reverse"></i> Ocultar detalhes';
+
+    chevron.classList.remove('bi-chevron-down');
+    chevron.classList.add('bi-chevron-up');
   }
 }

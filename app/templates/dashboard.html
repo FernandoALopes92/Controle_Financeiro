@@ -33,20 +33,68 @@
 
 
 <section class="row g-3 mb-4" aria-label="Indicadores financeiros">
-  <div class="col-12 col-sm-6 col-xl-3"><article class="card dashboard-metric dashboard-metric--balance h-100"><div class="card-body"><div class="dashboard-metric__icon"><i class="bi bi-wallet2"></i></div><p class="dashboard-metric__label">Saldo disponível</p><p class="dashboard-metric__value">R$ {{ saldo_total | brl }}</p><span class="dashboard-metric__hint">Saldo atual das contas</span></div></article></div>
-  <div class="col-12 col-sm-6 col-xl-3"><article class="card dashboard-metric dashboard-metric--income h-100"><div class="card-body"><div class="dashboard-metric__icon"><i class="bi bi-cash-stack"></i></div><p class="dashboard-metric__label">Receitas no mês</p><p class="dashboard-metric__value">R$ {{ receitas_mes | brl }}</p><span class="dashboard-metric__hint">Entradas do período selecionado</span></div></article></div>
-  <div class="col-12 col-sm-6 col-xl-3"><article class="card dashboard-metric dashboard-metric--expense h-100"><div class="card-body"><div class="dashboard-metric__icon"><i class="bi bi-credit-card"></i></div><p class="dashboard-metric__label">Gastos no mês</p><p class="dashboard-metric__value">R$ {{ despesas_totais | brl }}</p><span class="dashboard-metric__hint">Contas, PIX e cartões</span></div></article></div>
-  <div class="col-12 col-sm-6 col-xl-3">
-    <article class="card dashboard-metric {% if balanco_mes >= 0 %} dashboard-metric--available {% else %} dashboard-metric--expense {% endif %}h-100"><div class="card-body">
-      <div class="dashboard-metric__icon">
+
+    <div class="col-12 col-sm-6 col-xl-3">
+
+        {% set modifier = "primary" %}
+        {% set icon = "bi-wallet2" %}
+        {% set label = "Saldo disponível" %}
+        {% set value = "R$ " ~ (saldo_total | brl) %}
+        {% set subtitle = "Saldo atual das contas" %}
+
+        {% include "components/stats_card.html" %}
+
+    </div>
+
+
+    <div class="col-12 col-sm-6 col-xl-3">
+
+        {% set modifier = "success" %}
+        {% set icon = "bi-cash-stack" %}
+        {% set label = "Receitas no mês" %}
+        {% set value = "R$ " ~ (receitas_mes | brl) %}
+        {% set subtitle = "Entradas do período selecionado" %}
+
+        {% include "components/stats_card.html" %}
+
+    </div>
+
+
+    <div class="col-12 col-sm-6 col-xl-3">
+
+        {% set modifier = "danger" %}
+        {% set icon = "bi-credit-card" %}
+        {% set label = "Gastos no mês" %}
+        {% set value = "R$ " ~ (despesas_totais | brl) %}
+        {% set subtitle = "Contas, PIX e cartões" %}
+
+        {% include "components/stats_card.html" %}
+
+    </div>
+
+
+    <div class="col-12 col-sm-6 col-xl-3">
+
         {% if balanco_mes >= 0 %}
-            <i class="bi bi-graph-up-arrow"></i>
+
+            {% set modifier = "success" %}
+            {% set icon = "bi-graph-up-arrow" %}
+
         {% else %}
-            <i class="bi bi-graph-down-arrow"></i>
+
+            {% set modifier = "danger" %}
+            {% set icon = "bi-graph-down-arrow" %}
+
         {% endif %}
-      </div>
-    <p class="dashboard-metric__label">Resultado no mês</p>
-    <p class="dashboard-metric__value">R$ {{ balanco_mes | brl }}</p><span class="dashboard-metric__hint">Receitas menos despesas do período</span></div></article></div>
+
+        {% set label = "Resultado no mês" %}
+        {% set value = "R$ " ~ (balanco_mes | brl) %}
+        {% set subtitle = "Receitas menos despesas do período" %}
+
+        {% include "components/stats_card.html" %}
+
+    </div>
+
 </section>
 
 <section class="row g-4 mb-4" aria-label="Situação financeira do mês">

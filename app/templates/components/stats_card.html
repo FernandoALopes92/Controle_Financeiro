@@ -1,0 +1,34 @@
+<div class="stats-card {{ modifier }}">
+
+    <div class="stats-card__content">
+
+        <p class="stats-card__label">
+            {{ label }}
+        </p>
+
+        <p class="stats-card__value">
+            {{ value }}
+        </p>
+
+        {% if subtitle %}
+        <span class="stats-card__subtitle">
+            {{ subtitle }}
+        </span>
+        {% endif %}
+
+    </div>
+
+    {% if chart_type %}
+    <div class="stats-card__chart {% if chart_type == 'meta' %}stats-card__chart--meta{% endif %}">
+        <canvas
+            class="stats-card__sparkline"
+            data-chart-type="{{ chart_type }}">
+        </canvas>
+    </div>
+    {% endif %}
+
+    <div class="stats-card__icon">
+        <i class="bi {{ icon }}" aria-hidden="true"></i>
+    </div>
+
+</div>
