@@ -5,7 +5,7 @@ from sqlalchemy.orm import joinedload
 from datetime import datetime, timedelta
 from app.models import db, Movimentacao, Categoria, MovimentacaoCartao, Fatura, MeioPagamento, Conta, OrcamentoMensal
 from app.utils.db_utils import filtrar_por_mes_ano, get_contas, get_categorias, get_meios_pagamento
-from app.routes.cartao import gerar_cor_pastel_por_nome
+from app.routes.cartao import gerar_cor_categoria
 
 main_bp = Blueprint('main', __name__)
 
@@ -165,7 +165,7 @@ def _top_5_categorias(familia_id: int, mes_filtro: int, ano_filtro: int, filtro_
         for nome, valor in cat_ordenadas[:5]:
             pct = (valor / despesas_totais * 100)
             top_5_categorias.append({
-                'nome': nome, 'valor': valor, 'percentual': round(pct, 1), 'cor': gerar_cor_pastel_por_nome(nome)
+                'nome': nome, 'valor': valor, 'percentual': round(pct, 1), 'cor': gerar_cor_categoria(nome)
             })
 
     return top_5_categorias, cat_ordenadas
@@ -295,7 +295,7 @@ def dashboard():
     # Dados para os gráficos do dashboard
     nomes_cats_chart = [item[0] for item in cat_ordenadas if item[0]]
     valores_cats_chart = [item[1] for item in cat_ordenadas if item[0]]
-    cores_cats_chart = [gerar_cor_pastel_por_nome(item[0]) for item in cat_ordenadas if item[0]]
+    cores_cats_chart = [gerar_cor_categoria(item[0]) for item in cat_ordenadas if item[0]]
 
     contas = get_contas()
     categorias = get_categorias()

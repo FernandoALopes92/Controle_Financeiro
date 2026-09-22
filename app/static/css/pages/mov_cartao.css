@@ -1,0 +1,912 @@
+/* ==========================================================
+   1. TABS MODERNAS (Estilo da aba com linha roxa)
+========================================================== */
+.modern-tabs .nav-link {
+  color: #6c757d !important;
+  border: none !important;
+  background: none !important;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 8px 16px;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.modern-tabs .nav-link:hover {
+  color: var(--color-primary-600) !important;
+}
+
+.modern-tabs .nav-link.active {
+  color: var(--color-primary-600) !important;
+  font-weight: 700;
+  background-color: var(--color-surface) !important;
+}
+
+.modern-tabs .nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--color-primary-600);
+  border-radius: 3px;
+}
+
+/* ==========================================================
+   2. LAYOUT PRINCIPAL
+========================================================== */
+.movimentacoes-layout {
+  margin-bottom: 0;
+}
+
+.movimentacoes-col-principal {
+  flex: 0 0 68%;
+  max-width: 68%;
+  margin-bottom: 0;
+}
+
+.movimentacoes-col-lateral {
+  flex: 0 0 32%;
+  max-width: 32%;
+  margin-bottom: 0;
+}
+
+.movimentacoes-card {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-sm);
+  margin-top: -0.5rem;
+}
+
+/* ==========================================================
+   3. CABEÇALHO E AÇÕES
+========================================================== */
+.tab-action-buttons {
+  margin-right: 3px;
+}
+
+.tab-action-buttons .btn {
+  width: 200px;
+  min-width: 200px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+/* ==========================================================
+   4. TOOLBAR E PESQUISA
+========================================================== */
+.cartao-tabs-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 40px;
+  gap: var(--space-4);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cartao-tab-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.cartao-tab-search i {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  pointer-events: none;
+}
+
+.cartao-tab-search input {
+  width: 300px;
+  height: 36px;
+  padding: 0 0.75rem 0 2.05rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  box-shadow: var(--shadow-xs);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.cartao-tab-search input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.cartao-tab-search input:focus {
+  border-color: var(--color-primary-300);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-subtle);
+}
+
+/* ==========================================================
+   5. TABELA DE CARTÕES
+========================================================== */
+.movimentacoes-table-cartao {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.movimentacoes-table-cartao > :not(caption) > * > * {
+  padding-top: 0.72rem;
+  padding-bottom: 0.72rem;
+  vertical-align: middle;
+}
+
+.movimentacoes-table-cartao thead th {
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* Larguras e Alinhamentos das Colunas */
+.movimentacoes-table-cartao th:nth-child(1),
+.movimentacoes-table-cartao td:nth-child(1) {
+  width: 11%;
+}
+
+.movimentacoes-table-cartao td:nth-child(1) {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.movimentacoes-table-cartao th:nth-child(2),
+.movimentacoes-table-cartao td:nth-child(2) {
+  width: 31%;
+  text-align: left;
+}
+
+.movimentacoes-table-cartao td:nth-child(2) {
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.movimentacoes-table-cartao th:nth-child(3),
+.movimentacoes-table-cartao td:nth-child(3) {
+  width: 20%;
+}
+
+.movimentacoes-table-cartao td:nth-child(3) {
+  white-space: nowrap;
+}
+
+.movimentacoes-table-cartao th:nth-child(4),
+.movimentacoes-table-cartao td:nth-child(4) {
+  width: 16%;
+}
+
+.movimentacoes-table-cartao td:nth-child(4) {
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.movimentacoes-table-cartao th:nth-child(5),
+.movimentacoes-table-cartao td:nth-child(5) {
+  width: 10%;
+}
+
+.movimentacoes-table-cartao td:nth-child(5) {
+  white-space: nowrap;
+}
+
+.movimentacoes-table-cartao th:nth-child(6),
+.movimentacoes-table-cartao td:nth-child(6) {
+  width: 12%;
+}
+
+.movimentacoes-table-cartao td:nth-child(6) {
+  white-space: nowrap;
+}
+
+/* Botões de Ação na Tabela */
+.movimentacoes-table-cartao .btn-editar,
+.movimentacoes-table-cartao .btn-excluir {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.74rem;
+  border-radius: var(--radius-sm);
+}
+
+.movimentacoes-table-cartao .btn-excluir:hover {
+  color: var(--color-danger);
+  background-color: var(--color-danger-subtle);
+  border-color: var(--color-danger-subtle);
+}
+
+/* ==========================================================
+   6. FILTROS DA COLUNA
+========================================================== */
+.th-com-filtro {
+  position: relative;
+}
+
+.filtro-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  position: relative;
+}
+
+.filtro-icon {
+  color: var(--color-text-muted);
+  font-size: 0.58rem;
+  cursor: pointer;
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.filtro-icon:hover {
+  color: var(--color-primary-600);
+  transform: translateY(-1px);
+}
+
+.filtro-dropdown {
+  position: absolute;
+  z-index: 100;
+  top: calc(100% + 8px);
+  left: 50%;
+  width: 190px;
+  padding: 0.75rem;
+  transform: translateX(-50%);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  text-align: left;
+}
+
+.filtro-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  width: 11px;
+  height: 11px;
+  transform: translateX(-50%) rotate(45deg);
+  border-top: 1px solid var(--color-border);
+  border-left: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.filtro-dropdown .small {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.filtro-dropdown select {
+  width: 100%;
+  min-height: 34px;
+  font-size: var(--font-size-xs);
+}
+
+/* ==========================================================
+   7. RODAPÉ E PAGINAÇÃO
+========================================================== */
+.movimentacoes-table__footer {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  min-height: 58px;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border: none !important;
+  background: var(--color-bg);
+}
+
+.cartao-page-size-control {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.cartao-page-size-control__label {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cartao-table-toolbar__select {
+  width: 42px;
+  min-width: 42px;
+  height: 30px;
+  margin: 0;
+  padding: 0 0.1rem 0 0rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+  text-align-last: right;
+  box-shadow: none;
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.cartao-table-toolbar__select:hover {
+  border-color: var(--color-primary-300);
+  color: var(--color-primary-600);
+  background: var(--color-primary-50);
+}
+
+.cartao-table-toolbar__select:focus {
+  border-color: var(--color-primary-300);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-subtle);
+}
+
+.movimentacoes-table__count {
+  justify-self: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.movimentacoes-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.3rem;
+}
+
+.movimentacoes-pagination__button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.movimentacoes-pagination__button:hover {
+  color: var(--color-primary-600);
+  background: var(--color-primary-50);
+  transform: translateY(-1px);
+}
+
+.movimentacoes-pagination__button.active {
+  border-color: var(--color-primary-600);
+  background: var(--color-primary-600);
+  color: #fff;
+}
+
+.movimentacoes-pagination__ellipsis {
+  padding: 0 0.15rem;
+  color: var(--color-text-muted);
+}
+
+/* ==========================================================
+   8. RESUMO DE FATURAS
+========================================================== */
+.invoice-summary-card {
+  overflow: hidden;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-lg) !important;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm) !important;
+  margin-bottom: 1rem;
+}
+
+.invoice-summary-card__header {
+  display: flex;
+  align-items: center;
+  min-height: 45px;
+  padding: 0.4rem 0.8rem !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.invoice-summary-card__title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.invoice-summary-card__body {
+  padding: 0.65rem 0.75rem 0.75rem;
+}
+
+.invoice-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.invoice-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 135px 90px;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 52px;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.invoice-item:hover {
+  background: var(--color-surface-subtle);
+  border-color: var(--color-primary-200);
+}
+
+.invoice-item__identity {
+  grid-column: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.invoice-item__logo {
+  width: 28px;
+  height: 28px;
+  padding: 3px;
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  background: white;
+  box-shadow: var(--shadow-xs);
+}
+
+.invoice-item__logo-fallback {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-subtle);
+  color: var(--color-text-muted);
+}
+
+.invoice-item__name {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.invoice-item__value {
+  grid-column: 3;
+  width: 90px;
+  min-width: 90px;
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+  font-weight: 800;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.invoice-item__actions {
+  grid-column: 2;
+  width: 135px;
+  min-width: 135px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+.invoice-item__actions .badge {
+  padding: 0.42em 0.72em;
+  border-radius: 999px;
+  font-size: var(--font-size-xs);
+  font-weight: 750;
+}
+
+.invoice-item__actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  font-size: 0.68rem;
+}
+
+.invoice-summary-card__total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.65rem;
+  padding: 0.7rem 0.7rem 0.05rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.invoice-summary-card__total span {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.invoice-summary-card__total strong {
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: 800;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ==========================================================
+   9. GASTOS POR CATEGORIA
+========================================================== */
+.category-expenses-card {
+  overflow: hidden;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-lg) !important;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.category-expenses-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 50px;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.category-expenses-card__title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.category-expenses-card__count {
+  flex-shrink: 0;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.category-expenses-card__body {
+  padding: 0.8rem 1rem 0.9rem;
+}
+
+.category-expense-item {
+  margin-bottom: 0.9rem;
+}
+
+.category-expense-item:last-child {
+  margin-bottom: 0;
+}
+
+.category-expense-item__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.category-expense-item__name {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.category-expense-item__value {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.category-expense-item__separator {
+  color: var(--color-text-muted);
+}
+
+.category-expense-item__percentage {
+  color: var(--color-primary-600);
+  font-weight: 800;
+}
+
+.category-expense-item__progress {
+  width: 100%;
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-surface-subtle);
+  box-shadow: none !important;
+}
+
+.category-expense-item__progress .progress-bar {
+  width: 0;
+  height: 100%;
+  border-radius: 999px;
+  background-color: var(--categoria-cor);
+  transition: width 1s ease-in-out 0.3s;
+}
+
+/* ==========================================================
+   10. BADGES E COMPONENTES GERAIS
+========================================================== */
+.parcela-badge {
+  font-size: 0.7rem;
+}
+
+.categoria-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.52rem;
+  border-radius: 999px;
+  color: #f1f3f5;
+  background-color: var(--categoria-cor);
+  border: none;
+  font-size: 0.66rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: none;
+}
+
+.categoria-badge--ajuste {
+  letter-spacing: 0.3px;
+}
+
+.cartao-logo,
+.movimentacoes-table-cartao td:nth-child(5) img {
+  width: 24px;
+  height: 24px;
+  padding: 2px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  background: white;
+  box-shadow: var(--shadow-xs);
+}
+
+.invoice-status-clickable,
+.invoice-action-clickable {
+  cursor: pointer;
+}
+
+.categoria-progress-bar {
+  width: 0%;
+  background-color: var(--categoria-cor);
+  transition: width 1s ease-in-out 0.3s;
+}
+
+/* ==========================================================
+   11. MOBILE
+========================================================== */
+.movimentacao-cartao-mobile-card {
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.movimentacao-cartao-mobile-card .card-body {
+  padding: 0.9rem !important;
+}
+
+.cartao-mobile-card-info {
+  font-size: 0.85rem;
+}
+
+.cartao-mobile-logo {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  border-radius: 3px;
+}
+
+.movimentacao-mobile-date {
+  font-size: 0.85rem;
+}
+
+.movimentacao-mobile-value {
+  color: var(--color-primary-600);
+  font-size: 1.05rem;
+}
+
+.movimentacao-mobile-divider {
+  opacity: 0.1;
+}
+
+/* ==========================================================
+   12. RESPONSIVIDADE
+========================================================== */
+@media (max-width: 1199.98px) {
+  .movimentacoes-col-principal {
+    flex: 0 0 65%;
+    max-width: 65%;
+  }
+
+  .movimentacoes-col-lateral {
+    flex: 0 0 35%;
+    max-width: 35%;
+  }
+
+  .cartao-table-search input {
+    width: 170px;
+  }
+
+  .invoice-item {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .invoice-item__actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .movimentacoes-col-principal,
+  .movimentacoes-col-lateral {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .movimentacoes-col-lateral {
+    margin-top: 1rem;
+  }
+
+  .cartao-tabs-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .cartao-tab-search {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .categoria-progress-bar {
+    transition-duration: 0.8s;
+  }
+
+  .cartao-tabs-toolbar {
+    min-height: auto;
+    padding: 0.7rem 0;
+  }
+
+  .cartao-tab-search {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .cartao-tab-search input {
+    width: 100%;
+  }
+
+  .movimentacoes-table__footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.8rem;
+  }
+
+  .movimentacoes-pagination {
+    align-self: flex-end;
+  }
+
+  .invoice-item {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .invoice-item__value {
+    font-size: 0.82rem;
+  }
+
+  .invoice-item__actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+
+  .category-expense-item__header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .category-expense-item__value {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .invoice-item {
+    padding: 0.6rem;
+  }
+
+  .invoice-item__logo,
+  .invoice-item__logo-fallback {
+    width: 28px;
+    height: 28px;
+  }
+
+  .invoice-item__name {
+    font-size: 0.8rem;
+  }
+
+  .invoice-item__value {
+    font-size: 0.78rem;
+  }
+
+  .category-expenses-card__header {
+    align-items: flex-start;
+  }
+}

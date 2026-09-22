@@ -1,23 +1,45 @@
 (() => {
+  // Lê os tokens de cor direto do theme.css, para o gráfico nunca
+  // dessincronizar da paleta usada no resto da interface.
+  function corToken(nomeVar, fallback) {
+    const valor = getComputedStyle(document.documentElement)
+      .getPropertyValue(nomeVar)
+      .trim();
+    return valor || fallback;
+  }
+
   function criarGraficoReceitasDespesas(
     idCanvas,
     totalReceitas,
     totalDespesas,
+    totalSaldo,
   ) {
     const canvas = document.getElementById(idCanvas);
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
 
-    // Gradiente Receitas (roxo)
-    const gradientReceitas = ctx.createLinearGradient(0, 0, 0, 200);
-    gradientReceitas.addColorStop(0, '#6C3DF4');
-    gradientReceitas.addColorStop(1, '#A88BFC');
+    const corPrimaria = corToken('--color-primary-600', '#6c4cf1');
+    const corPrimariaClara = corToken('--color-primary-300', '#c4b5fd');
+    const corDanger = corToken('--color-danger', '#df4a55');
+    const corDangerSubtle = corToken('--color-danger-subtle', '#fef2f2');
+    const corSuccess = corToken('--color-success', '#159b67');
+    const corSuccessSubtle = corToken('--color-success-subtle', '#ecfdf5');
 
-    // Gradiente Despesas (vermelho pastel)
+    // Gradiente Receitas (primary)
+    const gradientReceitas = ctx.createLinearGradient(0, 0, 0, 200);
+    gradientReceitas.addColorStop(0, corPrimaria);
+    gradientReceitas.addColorStop(1, corPrimariaClara);
+
+    // Gradiente Despesas (danger)
     const gradientDespesas = ctx.createLinearGradient(0, 0, 0, 200);
-    gradientDespesas.addColorStop(0, '#F27878');
-    gradientDespesas.addColorStop(1, '#FFC1C1');
+    gradientDespesas.addColorStop(0, corDanger);
+    gradientDespesas.addColorStop(1, corDangerSubtle);
+
+    // Gradiente Saldo (success)
+    const gradientSaldo = ctx.createLinearGradient(0, 0, 0, 200);
+    gradientSaldo.addColorStop(0, corSuccess);
+    gradientSaldo.addColorStop(1, corSuccessSubtle);
 
     if (window.graficoReceitasDespesasInstance) {
       window.graficoReceitasDespesasInstance.destroy();
@@ -26,12 +48,16 @@
     window.graficoReceitasDespesasInstance = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: ['Receitas', 'Despesas'],
+        labels: ['Receitas', 'Despesas', 'Saldo'],
         datasets: [
           {
             label: 'Valor (R$)',
-            data: [totalReceitas || 0, totalDespesas || 0],
-            backgroundColor: [gradientReceitas, gradientDespesas],
+            data: [totalReceitas || 0, totalDespesas || 0, totalSaldo || 0],
+            backgroundColor: [
+              gradientReceitas,
+              gradientDespesas,
+              gradientSaldo,
+            ],
             borderRadius: 6,
             barThickness: 40,
           },
@@ -186,10 +212,12 @@
     if (canvas) {
       const totalReceitas = parseFloat(canvas.dataset.receitas) || 0;
       const totalDespesas = parseFloat(canvas.dataset.despesas) || 0;
+      const totalSaldo = parseFloat(canvas.dataset.saldo) || 0;
       criarGraficoReceitasDespesas(
         'graficoReceitasDespesas',
         totalReceitas,
         totalDespesas,
+        totalSaldo,
       );
     }
 
@@ -306,4 +334,262 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+});
+
+// ============================================================
+// PESQUISA E PAGINAÇÃO INSTANTÂNEAS — MOVIMENTAÇÕES
+// ============================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+  const tabela = document.getElementById('tabelaMovimentacoes');
+  const campoPesquisa = document.getElementById('movimentacoes-table-search');
+  const contador = document.getElementById('movimentacoes-table-count');
+  const paginacao = document.getElementById('movimentacoes-pagination');
+  const pageSizeSelect = document.getElementById('movimentacoes-page-size');
+
+  if (!tabela || !campoPesquisa || !contador || !paginacao) {
+    return;
+  }
+
+  const linhas = Array.from(tabela.querySelectorAll('tbody tr'));
+
+  let tamanhoPagina = parseInt(pageSizeSelect?.value || '10', 10);
+
+  let paginaAtual = 1;
+
+  function obterLinhasFiltradas() {
+    const pesquisa = campoPesquisa.value.trim().toLowerCase();
+
+    if (!pesquisa) {
+      return linhas;
+    }
+
+    return linhas.filter((linha) =>
+      linha.textContent.trim().toLowerCase().includes(pesquisa),
+    );
+  }
+
+  function criarBotaoPagina(texto, pagina, ativo = false, ariaLabel = '') {
+    const botao = document.createElement('button');
+
+    botao.type = 'button';
+
+    botao.className = `movimentacoes-pagination__button${
+      ativo ? ' active' : ''
+    }`;
+
+    botao.textContent = texto;
+
+    if (ariaLabel) {
+      botao.setAttribute('aria-label', ariaLabel);
+    }
+
+    botao.addEventListener('click', () => {
+      paginaAtual = pagina;
+      atualizarTabela();
+    });
+
+    return botao;
+  }
+
+  function atualizarPaginacao(totalPaginas) {
+    paginacao.innerHTML = '';
+
+    if (totalPaginas <= 1) {
+      return;
+    }
+
+    if (paginaAtual > 1) {
+      paginacao.appendChild(
+        criarBotaoPagina('‹', paginaAtual - 1, false, 'Página anterior'),
+      );
+    }
+
+    for (let numero = 1; numero <= totalPaginas; numero += 1) {
+      paginacao.appendChild(
+        criarBotaoPagina(numero, numero, numero === paginaAtual),
+      );
+    }
+
+    if (paginaAtual < totalPaginas) {
+      paginacao.appendChild(
+        criarBotaoPagina('›', paginaAtual + 1, false, 'Próxima página'),
+      );
+    }
+  }
+
+  function atualizarTabela() {
+    const linhasFiltradas = obterLinhasFiltradas();
+
+    const total = linhasFiltradas.length;
+
+    const totalPaginas = Math.max(1, Math.ceil(total / tamanhoPagina));
+
+    if (paginaAtual > totalPaginas) {
+      paginaAtual = totalPaginas;
+    }
+
+    linhas.forEach((linha) => {
+      linha.style.display = 'none';
+    });
+
+    const inicio = (paginaAtual - 1) * tamanhoPagina;
+
+    const fim = Math.min(inicio + tamanhoPagina, total);
+
+    linhasFiltradas.slice(inicio, fim).forEach((linha) => {
+      linha.style.display = '';
+    });
+
+    if (total === 0) {
+      contador.textContent = 'Nenhuma movimentação encontrada';
+    } else {
+      contador.textContent = `Mostrando ${inicio + 1} a ${fim} de ${total} movimentações`;
+    }
+
+    atualizarPaginacao(totalPaginas);
+  }
+
+  campoPesquisa.addEventListener('input', () => {
+    paginaAtual = 1;
+    atualizarTabela();
+  });
+
+  pageSizeSelect?.addEventListener('change', () => {
+    tamanhoPagina = parseInt(pageSizeSelect.value, 10);
+
+    paginaAtual = 1;
+
+    atualizarTabela();
+  });
+
+  atualizarTabela();
+});
+
+// ======================================================
+// PESQUISA E PAGINAÇÃO INSTANTÂNEAS — TRANSFERÊNCIAS
+// ======================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+  const tabela = document.getElementById('tabelaTransferencias');
+  const campoPesquisa = document.getElementById('movimentacoes-table-search');
+  const contador = document.getElementById('transferencias-table-count');
+  const paginacao = document.getElementById('transferencias-pagination');
+  const pageSizeSelect = document.getElementById('transferencias-page-size');
+
+  if (!tabela || !campoPesquisa || !contador || !paginacao) return;
+
+  const linhas = Array.from(tabela.querySelectorAll('tbody tr'));
+
+  let tamanhoPagina = parseInt(pageSizeSelect?.value || '10', 10);
+  let paginaAtual = 1;
+
+  function obterLinhasFiltradas() {
+    const pesquisa = campoPesquisa.value.trim().toLowerCase();
+
+    if (!pesquisa) {
+      return linhas;
+    }
+
+    return linhas.filter((linha) =>
+      linha.textContent.trim().toLowerCase().includes(pesquisa),
+    );
+  }
+
+  function criarBotaoPagina(texto, pagina, ativo = false, ariaLabel = '') {
+    const botao = document.createElement('button');
+
+    botao.type = 'button';
+    botao.className = `movimentacoes-pagination__button${
+      ativo ? ' active' : ''
+    }`;
+
+    botao.textContent = texto;
+
+    if (ariaLabel) {
+      botao.setAttribute('aria-label', ariaLabel);
+    }
+
+    botao.addEventListener('click', () => {
+      paginaAtual = pagina;
+      atualizarTabela();
+    });
+
+    return botao;
+  }
+
+  function atualizarPaginacao(totalPaginas) {
+    paginacao.innerHTML = '';
+
+    if (totalPaginas <= 1) {
+      return;
+    }
+
+    if (paginaAtual > 1) {
+      paginacao.appendChild(
+        criarBotaoPagina('‹', paginaAtual - 1, false, 'Página anterior'),
+      );
+    }
+
+    for (let numero = 1; numero <= totalPaginas; numero += 1) {
+      paginacao.appendChild(
+        criarBotaoPagina(numero, numero, numero === paginaAtual),
+      );
+    }
+
+    if (paginaAtual < totalPaginas) {
+      paginacao.appendChild(
+        criarBotaoPagina('›', paginaAtual + 1, false, 'Próxima página'),
+      );
+    }
+  }
+
+  function atualizarTabela() {
+    const linhasFiltradas = obterLinhasFiltradas();
+    const total = linhasFiltradas.length;
+
+    const totalPaginas = Math.max(1, Math.ceil(total / tamanhoPagina));
+
+    if (paginaAtual > totalPaginas) {
+      paginaAtual = totalPaginas;
+    }
+
+    // Esconde todas as linhas
+    linhas.forEach((linha) => {
+      linha.style.display = 'none';
+    });
+
+    // Mostra somente as linhas da página atual
+    const inicio = (paginaAtual - 1) * tamanhoPagina;
+    const fim = Math.min(inicio + tamanhoPagina, total);
+
+    linhasFiltradas.slice(inicio, fim).forEach((linha) => {
+      linha.style.display = '';
+    });
+
+    // Atualiza contador
+    if (total === 0) {
+      contador.textContent = 'Nenhuma transferência encontrada';
+    } else {
+      contador.textContent = `Mostrando ${inicio + 1} a ${fim} de ${total} transferências`;
+    }
+
+    atualizarPaginacao(totalPaginas);
+  }
+
+  // Pesquisa instantânea
+  campoPesquisa.addEventListener('input', () => {
+    paginaAtual = 1;
+    atualizarTabela();
+  });
+
+  // Alteração da quantidade por página
+  pageSizeSelect?.addEventListener('change', () => {
+    tamanhoPagina = parseInt(pageSizeSelect.value, 10);
+    paginaAtual = 1;
+    atualizarTabela();
+  });
+
+  // Estado inicial
+  atualizarTabela();
 });

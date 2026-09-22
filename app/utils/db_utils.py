@@ -26,7 +26,7 @@ def get_contas():
     return Conta.query.filter_by(
         familia_id=current_user.familia_id, 
         status=True
-    ).order_by(Conta.nome.asc()).all()
+    ).order_by(Conta.saldo_atual.desc()).all()
 
 def filtrar_por_mes_ano(query, campo_data, mes, ano):
     """Filtra uma query pelo campo de data, mês e ano."""

@@ -18,6 +18,16 @@
 
         </a>
 
+        <a class="nav-link {% if request.endpoint == 'relatorios.relatorios' %}active{% endif %}"
+           href="{{ url_for('relatorios.relatorios') }}"
+           data-title="Relatórios">
+
+            <i class="bi bi-bar-chart-line"></i>
+
+            <span>Relatórios</span>
+
+        </a>
+
         <a class="nav-link {% if request.endpoint == 'movimentacoes.lista' %}active{% endif %}"
            href="{{ url_for('movimentacoes.lista') }}"
            data-title="Movimentações">
@@ -35,16 +45,6 @@
             <i class="bi bi-credit-card"></i>
 
             <span>Cartões</span>
-
-        </a>
-
-        <a class="nav-link {% if request.endpoint == 'relatorios.relatorios' %}active{% endif %}"
-           href="{{ url_for('relatorios.relatorios') }}"
-           data-title="Relatórios">
-
-            <i class="bi bi-bar-chart-line"></i>
-
-            <span>Relatórios</span>
 
         </a>
 

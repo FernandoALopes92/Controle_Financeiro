@@ -17,23 +17,109 @@ meses_map = {
 
 # Colei os seus dados exatamente como você mandou
 dados_brutos = """
-03/ago	Lojas Americanas	Lanches/Besteiras	Nubank 	 R$ 16,98 
-02/ago	Cinema	Lazer	Nubank 	 R$ 36,48 
-27/jul	Uber/99	Uber/99	Pic Pay	 R$ 7,74 
-27/jul	Uber/99	Uber/99	Pic Pay	 R$ 8,82 
-31/jul	Atual Moda	Roupas/Calçados	Nubank 	 R$ 79,99 
-30/jul	Xereta	Lanches/Besteiras	Nubank 	 R$ 4,49 
-30/jul	Xereta	Lanches/Besteiras	Nubank 	 R$ 11,50 
-30/jul	Caedu	Gastos não previstos	Nubank 	 R$ 12,92 
-30/jul	Uber/99	Uber/99	Nubank 	 R$ 7,06 
-29/jul	Salgados	Lanches/Besteiras	Nubank 	 R$ 5,00 
-29/jul	Sorvete	Lanches/Besteiras	Nubank 	 R$ 9,98 
-28/jul	Bolo	Lanches/Besteiras	Nubank 	 R$ 12,00 
-28/jul	Doces	Lanches/Besteiras	Nubank 	 R$ 7,00 
-28/jul	Uber/99	Uber/99	Nubank 	 R$ 17,94 
-28/jul	Uber/99	Uber/99	Nubank 	 R$ 6,93 
-28/jul	Padaria	Padaria	Nubank 	 R$ 12,00 
-
+20/ago	Mercado Livre	Outros	Pic Pay	 R$ 38,00 
+26/ago	Uber/99	Uber/99	Nubank 	 R$ 6,38 
+26/ago	Uber/99	Uber/99	Nubank 	 R$ 5,21 
+26/ago	Jrea Cafeteria	Lanches/Besteiras	Nubank 	 R$ 3,00 
+26/ago	Marcelo Santana	Lanches/Besteiras	Nubank 	 R$ 3,50 
+25/ago	Mrt Distribuidora	Lanches/Besteiras	Nubank 	 R$ 6,50 
+25/ago	Uber/99	Uber/99	Nubank 	 R$ 5,26 
+25/ago	Mercado União	Lanches/Besteiras	Nubank 	 R$ 6,98 
+25/ago	Uber/99	Uber/99	Nubank 	 R$ 4,93 
+25/ago	Marcelo Santana	Lanches/Besteiras	Nubank 	 R$ 3,50 
+25/ago	Bolo	Lanches/Besteiras	Nubank 	 R$ 12,00 
+25/ago	Uber/99	Uber/99	Nubank 	 R$ 5,96 
+25/ago	Uber/99	Uber/99	Nubank 	 R$ 5,68 
+25/ago	Keetah Sushi	Lanches/Besteiras	Nubank 	 R$ 39,87 
+24/ago	Açaí	Lanches/Besteiras	Nubank 	 R$ 9,00 
+24/ago	Gás	Contas de Casa	Nubank 	 R$ 110,00 
+24/ago	Pequena Artesã	Presentes	Nubank 	 R$ 80,00 
+23/ago	Jogo PSN 	Lazer	Nubank 	 R$ 15,95 
+22/ago	Marcelo Santana	Lanches/Besteiras	Nubank 	 R$ 2,00 
+22/ago	Uber/99	Uber/99	Nubank 	 R$ 6,96 
+22/ago	Salgado	Lanches/Besteiras	Nubank 	 R$ 13,00 
+22/ago	Salgados Nene	Lanches/Besteiras	Nubank 	 R$ 7,00 
+22/ago	Takahashi	Mercado	Nubank 	 R$ 8,98 
+22/ago	Uber/99	Uber/99	Nubank 	 R$ 6,95 
+21/ago	Supermercado x	Lanches/Besteiras	Nubank 	 R$ 7,98 
+21/ago	Marcelo Santana	Lanches/Besteiras	Nubank 	 R$ 2,00 
+21/ago	Uber/99	Uber/99	Nubank 	 R$ 6,96 
+13/ago	Mercado Livre	Roupas/Calçados	Pic Pay	 R$ 46,39 
+12/ago	Via naturale	Lanches/Besteiras	Pic Pay	 R$ 14,00 
+11/ago	Sampa Tatoo	Piercings/Bijuterias	Pic Pay	 R$ 50,00 
+11/ago	RPG Comercio de alimentos	Lanches/Besteiras	Pic Pay	 R$ 33,00 
+11/ago	Itaquera Lanches	Lanches/Besteiras	Pic Pay	 R$ 6,00 
+11/ago	Uber/99	Uber/99	Pic Pay	 R$ 6,14 
+10/ago	Uber/99	Uber/99	Pic Pay	 R$ 11,07 
+10/ago	Uber/99	Uber/99	Pic Pay	 R$ 5,24 
+09/ago	Uber/99	Uber/99	Pic Pay	 R$ 16,30 
+08/ago	Sushi	Lanches/Besteiras	Pic Pay	 R$ 38,75 
+08/ago	Adega	Lanches/Besteiras	Pic Pay	 R$ 12,00 
+07/ago	Salgados	Lanches/Besteiras	Pic Pay	 R$ 6,00 
+07/ago	Uber/99	Uber/99	Pic Pay	 R$ 6,37 
+07/ago	Hikari	Lanches/Besteiras	Pic Pay	 R$ 9,50 
+20/ago	Bolo	Lanches/Besteiras	Nubank 	 R$ 12,00 
+20/ago	Uber/99	Uber/99	Nubank 	 R$ 9,77 
+20/ago	Uber/99	Uber/99	Nubank 	 R$ 6,93 
+20/ago	Uber/99	Uber/99	Nubank 	 R$ 6,96 
+20/ago	Sorvete	Lanches/Besteiras	Nubank 	 R$ 4,50 
+19/ago	Drogaria SP	Remédios	Nubank 	 R$ 9,59 
+19/ago	Supermix	Lanches/Besteiras	Nubank 	 R$ 6,75 
+19/ago	Uber/99	Uber/99	Nubank 	 R$ 5,96 
+19/ago	May bustani	Lanches/Besteiras	Nubank 	 R$ 20,00 
+18/ago	Uber/99	Uber/99	Nubank 	 R$ 6,94 
+18/ago	Tokai variedades	Lanches/Besteiras	Nubank 	 R$ 10,00 
+18/ago	Salgados	Lanches/Besteiras	Nubank 	 R$ 13,00 
+18/ago	Thatas confeitaria	Lanches/Besteiras	Nubank 	 R$ 8,50 
+18/ago	Uber/99	Uber/99	Nubank 	 R$ 6,96 
+17/ago	Uber/99	Uber/99	Nubank 	 R$ 6,10 
+17/ago	Rosangela dos santos	Feira	Nubank 	 R$ 5,00 
+17/ago	Aracadão	Mercado	Nubank 	 R$ 536,05 
+17/ago	Frutas/legumes	Feira	Nubank 	 R$ 10,00 
+17/ago	Caldo de Cana	Lanches/Besteiras	Nubank 	 R$ 10,00 
+17/ago	Café	Lanches/Besteiras	Nubank 	 R$ 2,00 
+17/ago	Uber/99	Uber/99	Nubank 	 R$ 7,62 
+17/ago	Shopee	Papelaria	Nubank 	 R$ 31,90 
+17/ago	Uber/99	Uber/99	Nubank 	 R$ 6,02 
+17/ago	Padaria Wagmar	Padaria	Nubank 	 R$ 33,10 
+16/ago	Lenilza	Lanches/Besteiras	Nubank 	 R$ 2,00 
+16/ago	Kiko Alimentos	Lanches/Besteiras	Nubank 	 R$ 45,43 
+15/ago	Uber/99	Uber/99	Nubank 	 R$ 5,97 
+15/ago	Marcelo Santana	Lanches/Besteiras	Nubank 	 R$ 2,00 
+15/ago	Rei do comercio	Lanches/Besteiras	Nubank 	 R$ 10,00 
+15/ago	Salgados	Lanches/Besteiras	Nubank 	 R$ 6,00 
+15/ago	Rei do comercio	Lanches/Besteiras	Nubank 	 R$ 3,00 
+14/ago	Bolo	Lanches/Besteiras	Nubank 	 R$ 12,00 
+14/ago	Uber/99	Uber/99	Nubank 	 R$ 5,20 
+13/ago	Uber/99	Uber/99	Nubank 	 R$ 4,72 
+12/ago	Uber/99	Uber/99	Nubank 	 R$ 5,20 
+12/ago	Uber/99	Uber/99	Nubank 	 R$ 13,82 
+12/ago	Uber/99	Uber/99	Nubank 	 R$ 5,22 
+12/ago	Bolo	Lanches/Besteiras	Nubank 	 R$ 12,00 
+06/ago	Uber/99	Uber/99	Pic Pay	 R$ 4,72 
+06/ago	Uber/99	Uber/99	Pic Pay	 R$ 5,95 
+05/ago	Veneno Formiga 	Consertos/Manutenção	Pic Pay	 R$ 6,00 
+05/ago	Uber/99	Uber/99	Pic Pay	 R$ 4,72 
+04/ago	Uber/99	Uber/99	Pic Pay	 R$ 5,20 
+03/ago	Bolo	Lanches/Besteiras	Pic Pay	 R$ 12,00 
+02/ago	Milk Moo	Lanches/Besteiras	Pic Pay	 R$ 26,00 
+02/ago	Pipoca	Lanches/Besteiras	Pic Pay	 R$ 41,00 
+02/ago	Nagumo	Lanches/Besteiras	Pic Pay	 R$ 27,85 
+01/ago	Salao Glamour	Beleza/Estética	Pic Pay	 R$ 213,00 
+31/jul	Refrigerante	Lanches/Besteiras	Pic Pay	 R$ 8,00 
+31/jul	Padaria	Padaria	Pic Pay	 R$ 31,20 
+31/jul	Caldo de Cana	Lanches/Besteiras	Pic Pay	 R$ 7,00 
+31/jul	Frutas/legumes	Feira	Pic Pay	 R$ 5,00 
+31/jul	Frutas/legumes	Feira	Pic Pay	 R$ 5,00 
+31/jul	Frutas/legumes	Feira	Pic Pay	 R$ 20,00 
+31/jul	Frutas/legumes	Feira	Pic Pay	 R$ 12,00 
+31/jul	Takahashi	Lanches/Besteiras	Pic Pay	 R$ 13,97 
+31/jul	Açaí	Lanches/Besteiras	Pic Pay	 R$ 15,00 
+31/jul	Roupas	Roupas/Calçados	Pic Pay	 R$ 39,98 
+22/ago	Estorno Temu	Piercings/Bijuterias	Nubank 	-R$38,95 
+22/ago	Estorno Temu	Piercings/Bijuterias	Nubank 	-R$10,00 
+22/ago	Estorno Temu	Piercings/Bijuterias	Nubank 	-R$48,85 
+18/ago	Estorno calcinha	Roupas/Calçados	Nubank 	-R$94,10 
 """
 
 # Defina o ano em que essas compras aconteceram

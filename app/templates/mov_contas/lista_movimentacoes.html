@@ -2,563 +2,1036 @@
 
 {% block title %}Controle de Caixa{% endblock %}
 
-{% block page_header %}
-  {% set page_eyebrow = 'Operações' %}
-  {% set page_title = 'Caixa e movimentações' %}
-  {% set page_subtitle = 'Acompanhe entradas, saídas e transferências em um só lugar.' %}
-  {% include "components/page_header.html" %}
+{% block page_styles %}
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/pages/mov_contas.css') }}"
+/>
 {% endblock %}
 
+
+{% block page_header %}
+
+    {% set page_eyebrow = 'Operações' %}
+    {% set page_title = 'Caixa e movimentações' %}
+    {% set page_subtitle = 'Acompanhe entradas, saídas e transferências em um só lugar.' %}
+
+    {% set page_actions %}
+
+        <div class="tab-action-buttons">
+
+            <button
+                id="btn-nova-movimentacao"
+                class="btn btn-purple btn-sm px-4 shadow-sm fw-bold"
+                data-bs-toggle="modal"
+                data-bs-target="#modalMovimentacaoConta">
+
+                <i class="bi bi-plus-circle me-1"></i>
+                Nova Movimentação
+
+            </button>
+
+
+            <button
+                id="btn-nova-transferencia"
+                class="btn btn-sm btn-roxo-azulado px-4 shadow-sm fw-bold d-none"
+                data-bs-toggle="modal"
+                data-bs-target="#modalTransferencia">
+
+                <i class="bi bi-arrow-left-right me-1"></i>
+                Nova Transferência
+
+            </button>
+
+        </div>
+
+
+        <form
+            method="GET"
+            action="{{ url_for('movimentacoes.lista') }}"
+            class="page-header__form">
+
+            <div class="filter-group">
+
+                <select
+                    id="filtro-ano"
+                    name="ano"
+                    class="form-select"
+                    aria-label="Ano">
+
+                    {% for ano_item in anos %}
+
+                        <option
+                            value="{{ ano_item }}"
+                            {% if ano_item == ano_filtro %}
+                                selected
+                            {% endif %}>
+
+                            {{ ano_item }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <select
+                    id="filtro-mes"
+                    name="mes"
+                    class="form-select"
+                    aria-label="Mês">
+
+                    {% for nome, numero in meses %}
+
+                        <option
+                            value="{{ numero }}"
+                            {% if numero == mes_filtro %}
+                                selected
+                            {% endif %}>
+
+                            {{ nome }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <button
+                class="btn btn-primary page-header__form-button"
+                type="submit">
+
+                <i class="bi bi-funnel me-1"></i>
+                Filtrar
+
+            </button>
+
+        </form>
+
+    {% endset %}
+
+    {% include "components/page_header.html" %}
+
+{% endblock %}
+
+
 {% block content %}
-<div class="container-fluid business-page business-page--movements">
 
-  <div class="row">
 
-    <!-- ========================================== -->
-    <!-- LADO ESQUERDO: Título, Botões e Tabelas    -->
-    <!-- ========================================== -->
-    <div class="col-md-8">
+<div class="row movimentacoes-layout">
 
-      <!-- Cabeçalho idêntico ao mov_cartao.html -->
-      <div class="row mb-3">
-        <div class="col-md-7">
-          <h2 class="mb-0 fw-bold">Caixa e Movimentações</h2>
-        </div>
+    <!-- ======================================================
+         LADO ESQUERDO
+    ======================================================= -->
 
-        <div class="col-md-5">
-          <div class="tab-action-buttons">
-            <button id="btn-nova-movimentacao" class="btn btn-purple btn-sm px-4 shadow-sm fw-bold float-end" data-bs-toggle="modal" data-bs-target="#modalMovimentacaoConta">
-              <i class="bi bi-plus-circle me-1"></i> Nova Movimentação
-            </button>
-            <button id="btn-nova-transferencia" class="btn btn-sm btn-roxo-azulado px-4 shadow-sm fw-bold float-end d-none" data-bs-toggle="modal" data-bs-target="#modalTransferencia">
-              <i class="bi bi-arrow-left-right me-1"></i> Nova Transferência
-            </button>
-          </div>
-        </div>
-      </div>
+    <div class="movimentacoes-col-principal">
 
-      <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-        <ul class="nav nav-tabs border-0 modern-tabs mb-0" id="movimentacoesTabs" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active pb-2" id="entradas-tab" data-bs-toggle="tab" data-bs-target="#entradas" type="button" role="tab" aria-selected="true">
-              <i class="bi bi-arrow-down-up me-1"></i> Entradas e Saídas
-            </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link pb-2" id="transferencias-tab" data-bs-toggle="tab" data-bs-target="#transferencias" type="button" role="tab" aria-selected="false">
-              <i class="bi bi-arrow-left-right me-1"></i> Transferências
-            </button>
-          </li>
-        </ul>
-      </div>
 
-      <div class="tab-content mt-0 mb-4" id="movimentacoesTabsContent">
+        <!-- ABAS + PESQUISA -->
+        <div class="movimentacoes-tabs-toolbar">
 
-        <div class="tab-pane fade show active" id="entradas" role="tabpanel" aria-labelledby="entradas-tab">
+            <ul
+                class="nav nav-tabs border-0 modern-tabs mb-0"
+                id="movimentacoesTabs"
+                role="tablist">
 
-          {% if movimentacoes %}
+                <!-- ENTRADAS E SAÍDAS -->
+                <li class="nav-item" role="presentation">
 
-          <div class="card border-0 shadow-sm rounded-3">
+                    <button
+                        class="nav-link {% if aba_atual == 'movimentacoes' %}active{% endif %} pb-2"
+                        id="entradas-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#entradas"
+                        type="button"
+                        role="tab"
+                        aria-selected="{{ 'true' if aba_atual == 'movimentacoes' else 'false' }}">
 
-            <div class="table-responsive">
+                        <i class="bi bi-arrow-down-up me-1"></i>
+                        Entradas e Saídas
 
-              <table class="table table-hover text-center align-middle mb-0">
+                    </button>
 
-                <thead class="table-light text-muted">
+                </li>
 
-                  <tr>
+                <!-- TRANSFERÊNCIAS -->
+                <li class="nav-item" role="presentation">
 
-                    <th class="fw-semibold">Data</th>
+                    <button
+                        class="nav-link {% if aba_atual == 'transferencias' %}active{% endif %} pb-2"
+                        id="transferencias-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#transferencias"
+                        type="button"
+                        role="tab"
+                        aria-selected="{{ 'true' if aba_atual == 'transferencias' else 'false' }}">
 
-                    <th class="fw-semibold">Descrição</th>
+                        <i class="bi bi-arrow-left-right me-1"></i>
+                        Transferências
 
-                    <th class="fw-semibold">Categoria</th>
+                    </button>
 
-                    <th class="fw-semibold">Valor</th>
+                </li>
 
-                    <th class="fw-semibold">Conta</th>
+            </ul>
 
-                    <th class="fw-semibold">Status</th>
 
-                    <th class="fw-semibold">Ações</th>
+            <!-- PESQUISA -->
+            <div class="movimentacoes-tab-search">
 
-                  </tr>
+                <i class="bi bi-search"></i>
 
-                </thead>
-
-                <tbody>
-
-                  {% for m in movimentacoes %}
-
-                  <tr>
-
-                    <td class="text-secondary">{{ m.data.strftime('%d/%m/%Y') }}</td>
-
-                    <td class="fw-medium text-start">{{ m.descricao }}</td>
-
-                    <td>
-
-                      {% set badge_class = 'badge-ajuste' %}
-
-                      {% set cat_nome = 'Ajuste de Caixa' %}
-
-
-
-                      {% if m.tipo == 'transferencia' or 'Transferência' in m.descricao %}
-
-                        {% set badge_class = 'badge-transferencia' %}
-
-                        {% set cat_nome = 'Transferência' %}
-
-                      {% elif m.tipo == 'receita' %}
-
-                        {% set badge_class = 'badge-receita' %}
-
-                        {% set cat_nome = m.categoria.nome if m.categoria else 'Receita' %}
-
-                      {% elif m.tipo == 'despesa' %}
-
-                        {% set badge_class = 'badge-despesa' %}
-
-                        {% set cat_nome = m.categoria.nome if m.categoria else 'Despesa' %}
-
-                      {% endif %}
-
-
-
-                      <span class="badge {{ badge_class }} px-2 py-1 shadow-sm" style="letter-spacing: 0.3px;">
-
-                        {{ cat_nome }}
-
-                      </span>
-
-                    </td>
-
-                    <td class="fw-bold {{ m.cor_valor }}">R$ {{ m.valor | brl }}</td>  
-
-                    <td class="text-center align-middle">
-
-                      {% if m.conta and m.conta.logo %}
-
-                        <img src="{{ url_for('static', filename='logos/contas/' ~ m.conta.logo) }}" alt="{{ m.conta.nome }}" title="{{ m.conta.nome }}" style="width: 28px; height: 28px; object-fit: contain; background: white; padding: 2px;" class="rounded shadow-sm">
-
-                      {% else %}
-
-                        <span class="text-muted small">{{ m.conta.nome if m.conta else '-' }}</span>
-
-                      {% endif %}
-
-                    </td>
-
-                    <td>
-
-                      {% if m.pago is true %}
-
-                        <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Pago</span>
-
-                      {% elif m.pago is false %}
-
-                        <span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i>Pendente</span>
-
-                      {% else %}
-
-                        <span class="text-muted">-</span>
-
-                      {% endif %}
-
-                    </td>
-
-                    <td>
-
-                      {% if not m.pagamento_fatura_id and not m.descricao.startswith('Entrada - Transferência') and not m.descricao.startswith('Saída - Transferência') and not m.descricao.startswith('Fatura ') %}
-
-                        <button type="button" class="btn btn-sm btn-outline-roxo-azulado btn-editar" data-id="{{ m.id }}" title="Editar">
-
-                          <i class="bi bi-pencil-fill"></i>
-
-                        </button>
-
-                        <button class="btn btn-sm btn-outline-purple btn-excluir" data-id="{{ m.id }}" title="Excluir">
-
-                          <i class="bi bi-trash3"></i>
-
-                        </button>
-
-                      {% else %}
-
-                        <span class="text-muted small" title="Lançamento automático do sistema"><i class="bi bi-lock"></i></span>
-
-                      {% endif %}
-
-                    </td>
-
-                  </tr>
-
-                  {% endfor %}
-
-                </tbody>
-
-              </table>
+                <input
+                    type="search"
+                    id="movimentacoes-table-search"
+                    placeholder="Pesquisar movimentações..."
+                    autocomplete="off"
+                >
 
             </div>
 
-          </div>
-
-          {% else %}
-
-          <div class="alert alert-light text-center border shadow-sm py-4 mb-0" role="alert">
-
-            <i class="bi bi-inbox fs-1 text-muted d-block mb-2"></i>Nenhuma movimentação registrada neste período.
-
-          </div>
-
-          {% endif %}
-
         </div>
 
 
 
-        <div class="tab-pane fade" id="transferencias" role="tabpanel" aria-labelledby="transferencias-tab">
+        <div
+            class="tab-content mt-0 mb-4"
+            id="movimentacoesTabsContent">
 
-          {% if transferencias %}
 
-          <div class="card border-0 shadow-sm rounded-3">
+            <!-- ==================================================
+                 ABA ENTRADAS E SAÍDAS
+            =================================================== -->
 
-            <div class="table-responsive">
+            <div
+                class="tab-pane fade {% if aba_atual == 'movimentacoes' %}show active{% endif %}"
+                id="entradas"
+                role="tabpanel"
+                aria-labelledby="entradas-tab">
 
-              <table class="table table-hover text-center align-middle mb-0">
 
-                <thead class="table-light text-muted">
+                {% if movimentacoes %}
 
-                  <tr>
+                <div class="card border-0 shadow-sm rounded-3">
 
-                    <th class="fw-semibold">Data</th>
 
-                    <th class="fw-semibold">Origem</th>
+                    <div class="table-responsive">
 
-                    <th class="fw-semibold">Destino</th>
+                        <table id="tabelaMovimentacoes" class="table table-hover text-center align-middle mb-0 movimentacoes-table">
 
-                    <th class="fw-semibold">Valor</th>
+                            <thead class="table-light text-muted">
 
-                    <th class="fw-semibold">Observações</th>
+                                <tr>
 
-                    <th class="fw-semibold">Ações</th>
+                                    <th class="fw-semibold">Data</th>
 
-                  </tr>
+                                    <th class="fw-semibold">Descrição</th>
 
-                </thead>
+                                    <th class="fw-semibold">Categoria</th>
 
-                <tbody>
+                                    <th class="fw-semibold">Valor</th>
 
-                  {% for t in transferencias %}
+                                    <th class="fw-semibold">Conta</th>
 
-                  <tr>
+                                    <th class="fw-semibold">Status</th>
 
-                    <td class="text-secondary">{{ t.data_transferencia.strftime('%d/%m/%Y') }}</td>
+                                    <th class="fw-semibold">Ações</th>
 
-                    <td class="fw-medium text-danger"><i class="bi bi-arrow-up-right-circle me-1"></i>{{ t.conta_origem.nome }}</td>
+                                </tr>
 
-                    <td class="fw-medium text-success"><i class="bi bi-arrow-down-right-circle me-1"></i>{{ t.conta_destino.nome }}</td>
+                            </thead>
 
-                    <td class="fw-bold">R$ {{t.valor}}</td>
 
-                    <td class="text-muted small text-start">{{ t.observacoes or 'Sem observações' }}</td>
+                            <tbody>
 
-                    <td>
+                                {% for m in movimentacoes %}
 
-                      <button class="btn btn-sm btn-outline-roxo-azulado btn-editar-transf"
+                                <tr>
 
-                              data-id="{{ t.id }}"
+                                    <td class="text-secondary">
+                                        {{ m.data.strftime('%d/%m/%Y') }}
+                                    </td>
 
-                              data-origem="{{ t.conta_origem.id }}"
 
-                              data-destino="{{ t.conta_destino.id }}"
+                                    <td class="fw-medium text-start">
+                                        {{ m.descricao }}
+                                    </td>
 
-                              data-valor="{{ t.valor }}"
 
-                              data-data="{{ t.data_transferencia.strftime('%Y-%m-%d') }}"
+                                    <td>
 
-                              data-observacoes="{{ t.observacoes or '' }}"
+                                        {% set badge_class = 'badge-ajuste' %}
+                                        {% set cat_nome = 'Ajuste de Caixa' %}
 
-                              title="Editar"
 
-                              data-bs-toggle="modal"
+                                        {% if m.tipo == 'transferencia' or 'Transferência' in m.descricao %}
 
-                              data-bs-target="#modalTransferencia">
+                                            {% set badge_class = 'badge-transferencia' %}
+                                            {% set cat_nome = 'Transferência' %}
 
-                        <i class="bi bi-pencil-fill"></i>
 
-                      </button>
+                                        {% elif m.tipo == 'receita' %}
 
-                      <form method="POST" action="{{ url_for('transferencias.excluir_transferencia', id=t.id) }}" class="d-inline" onsubmit="return confirm('Excluir esta transferência? O dinheiro será devolvido à conta de origem.');">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                        <button type="submit" class="btn btn-sm btn-outline-purple" title="Excluir"><i class="bi bi-trash3"></i></button>
+                                            {% set badge_class = 'badge-receita' %}
+                                            {% set cat_nome = m.categoria.nome if m.categoria else 'Receita' %}
 
-                      </form>
 
-                    </td>
+                                        {% elif m.tipo == 'despesa' %}
 
-                  </tr>
+                                            {% set badge_class = 'badge-despesa' %}
+                                            {% set cat_nome = m.categoria.nome if m.categoria else 'Despesa' %}
 
-                  {% endfor %}
+                                        {% endif %}
 
-                </tbody>
 
-              </table>
+                                        <span
+                                            class="badge {{ badge_class }} px-2 py-1 shadow-sm"
+                                            style="letter-spacing: 0.3px;">
 
-            </div>
+                                            {{ cat_nome }}
 
-          </div>
+                                        </span>
 
-          {% else %}
+                                    </td>
 
-          <div class="alert alert-light text-center border shadow-sm py-4 mb-0" role="alert">
 
-            <i class="bi bi-arrow-left-right fs-1 text-muted d-block mb-2"></i>Nenhuma transferência registrada neste período.
+                                    <td class="fw-bold {{ m.cor_valor }}">
+                                        R$ {{ m.valor | brl }}
+                                    </td>
 
-          </div>
 
-          {% endif %}
+                                    <td class="text-center align-middle">
 
-        </div>
+                                        {% if m.conta and m.conta.logo %}
 
-      </div>
+                                            <img
+                                                src="{{ url_for('static', filename='logos/contas/' ~ m.conta.logo) }}"
+                                                alt="{{ m.conta.nome }}"
+                                                title="{{ m.conta.nome }}"
+                                                style="
+                                                    width: 28px;
+                                                    height: 28px;
+                                                    object-fit: contain;
+                                                    background: white;
+                                                    padding: 2px;
+                                                "
+                                                class="rounded shadow-sm">
 
-    </div>
+                                        {% else %}
 
-    <!-- ========================================== -->
-    <!-- LADO DIREITO: Filtros, Saldos e Gráficos   -->
-    <!-- ========================================== -->
-    <div class="col-md-4">
-      
-      <!-- Filtros movidos para o topo da coluna direita -->
-      <form method="GET" action="{{ url_for('movimentacoes.lista') }}" class="mb-3">
-        <div class="row g-2">
-          <div class="col-4">
-            <select name="ano" class="form-select form-select-sm text-center shadow-sm">
-              {% for ano in anos %}
-                <option value="{{ ano }}" {% if ano == ano_filtro %} selected {% endif %}>{{ ano }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="col-5">
-            <select name="mes" class="form-select form-select-sm text-center shadow-sm">
-              {% for nome, numero in meses %}
-                <option value="{{ numero }}" {% if numero == mes_filtro %} selected {% endif %}>{{ nome }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="col-3">
-            <button type="submit" class="btn btn-sm btn-purple w-100 shadow-sm fw-medium" style="font-weight: 500;">Filtrar</button>
-          </div>
-        </div>
-      </form>
+                                            <span class="text-muted small">
+                                                {{ m.conta.nome if m.conta else '-' }}
+                                            </span>
 
-      <div class="card border-0 shadow-sm rounded-3 mb-4 mt-0">
+                                        {% endif %}
 
-        <div class="card-header bg-white border-bottom-0 pt-2 pb-0">
+                                    </td>
 
-          <h6 class="fw-bold mb-2 text-muted text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Saldos Atuais</h6>
 
-        </div>
+                                    <td>
 
-        <div class="card-body p-0">
+                                        {% if m.pago is true %}
 
-          <div class="table-responsive">
+                                            <span class="badge badge-pago px-2 py-1 shadow-sm">
 
-            <table class="table table-borderless align-middle mb-0">
+                                                <i class="bi bi-check-circle me-1"></i>
+                                                Pago
 
-              <tbody>
+                                            </span>
 
-                {% for conta in contas %}
+                                        {% elif m.pago is false %}
 
-                <tr class="border-bottom">            
+                                            <span class="badge badge-pendente px-2 py-1 shadow-sm">
 
-                  <td class="text-start ps-3 py-2">
+                                                <i class="bi bi-clock me-1"></i>
+                                                Pendente
 
-                    <div class="d-flex align-items-center">
+                                            </span>
 
-                      {% if conta.logo %}
+                                        {% else %}
 
-                        <img src="{{ url_for('static', filename='logos/contas/' ~ conta.logo) }}" alt="{{ conta.nome }}" class="rounded shadow-sm me-2" style="width: 24px; height: 24px; object-fit: contain; background: white; padding: 2px;">
+                                            <span class="text-muted">
+                                                -
+                                            </span>
 
-                      {% else %}
+                                        {% endif %}
 
-                        <i class="bi bi-bank text-secondary fs-5 me-2"></i>
+                                    </td>
 
-                      {% endif %}
 
-                      <span class="fw-semibold text-dark" style="font-size: 0.9rem;">{{ conta.nome }}</span>
+                                    <td>
+
+                                        {% if
+                                            not m.pagamento_fatura_id
+                                            and not m.descricao.startswith('Entrada - Transferência')
+                                            and not m.descricao.startswith('Saída - Transferência')
+                                            and not m.descricao.startswith('Fatura ')
+                                        %}
+
+                                            <button
+                                                type="button"
+                                                class="btn btn-sm btn-outline-roxo-azulado btn-editar"
+                                                data-id="{{ m.id }}"
+                                                title="Editar">
+
+                                                <i class="bi bi-pencil-fill"></i>
+
+                                            </button>
+
+
+                                            <button
+                                                class="btn btn-sm btn-outline-purple btn-excluir"
+                                                data-id="{{ m.id }}"
+                                                title="Excluir">
+
+                                                <i class="bi bi-trash3"></i>
+
+                                            </button>
+
+                                        {% else %}
+
+                                            <span
+                                                class="text-muted small"
+                                                title="Lançamento automático do sistema">
+
+                                                <i class="bi bi-lock"></i>
+
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
 
                     </div>
 
-                  </td>
+                    <!-- PAGINAÇÃO MOVIMENTAÇÕES -->
 
-                  <td class="text-end pe-3 fw-bold style=font-size: 0.9rem; {% if conta.saldo_atual < 0 %}text-danger{% else %}text-success{% endif %}">
+                    <div class="movimentacoes-table__footer">
+                        
+                        <!-- Quantidade por página -->
+                        <div class="movimentacoes-page-size-control">
 
-                    R$ {{ conta.saldo_atual | brl }}
+                            <select
+                                id="movimentacoes-page-size"
+                                class="form-select movimentacoes-table-toolbar__select"
+                                aria-label="Quantidade de resultados por página">
 
-                  </td>
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="999999">Tudo</option>
 
-                </tr>
+                            </select>
 
-                {% endfor %}
+                            <span class="movimentacoes-page-size-control__label">
+                                por página
+                            </span>
 
-              </tbody>
+                        </div>
 
-            </table>
+                        <span class="movimentacoes-table__count" id="movimentacoes-table-count">
+                            Mostrando 0 a 0 de 0 movimentações
+                        </span>
 
-          </div>
+                        <div
+                            class="movimentacoes-pagination"
+                            id="movimentacoes-pagination">
+                        </div>
 
+                    </div>
+
+
+                </div>
+
+
+                {% else %}
+
+                    <div
+                        class="alert alert-light text-center border shadow-sm py-4 mb-0"
+                        role="alert">
+
+                        <i class="bi bi-inbox fs-1 text-muted d-block mb-2"></i>
+
+                        Nenhuma movimentação registrada neste período.
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+
+            <!-- ==================================================
+                ABA TRANSFERÊNCIAS
+            =================================================== -->
+
+            <div
+                class="tab-pane fade {% if aba_atual == 'transferencias' %}show active{% endif %}"
+                id="transferencias"
+                role="tabpanel"
+                aria-labelledby="transferencias-tab">
+
+                {% if transferencias %}
+
+                <div class="card border-0 shadow-sm rounded-3">
+
+                    <div class="table-responsive">
+
+                        <table
+                            id="tabelaTransferencias"
+                            class="table table-hover text-center align-middle mb-0 movimentacoes-table movimentacoes-table-transferencias">
+
+                            <thead class="table-light text-muted">
+
+                                <tr>
+
+                                    <th class="fw-semibold">Data</th>
+
+                                    <th class="fw-semibold">Origem</th>
+
+                                    <th class="fw-semibold">Destino</th>
+
+                                    <th class="fw-semibold">Valor</th>
+
+                                    <th class="fw-semibold">Observações</th>
+
+                                    <th class="fw-semibold">Ações</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {% for t in transferencias %}
+
+                                <tr>
+
+                                    <td class="text-secondary">
+                                        {{ t.data_transferencia.strftime('%d/%m/%Y') }}
+                                    </td>
+
+                                    <td class="conta-origem text-start">
+
+                                        <i class="bi bi-arrow-up-right-circle me-1"></i>
+
+                                        {{ t.conta_origem.nome }}
+
+                                    </td>
+
+                                    <td class="conta-destino text-start">
+
+                                        <i class="bi bi-arrow-down-right-circle me-1"></i>
+
+                                        {{ t.conta_destino.nome }}
+
+                                    </td>
+
+                                    <td class="valor-transferencia">
+
+                                        R$ {{ t.valor | brl }}
+
+                                    </td>
+
+                                    <td class="observacoes text-start">
+
+                                        {{ t.observacoes or 'Sem observações' }}
+
+                                    </td>
+
+                                    <td>
+
+                                        <button
+                                            class="btn btn-sm btn-outline-roxo-azulado btn-editar-transf"
+                                            data-id="{{ t.id }}"
+                                            data-origem="{{ t.conta_origem.id }}"
+                                            data-destino="{{ t.conta_destino.id }}"
+                                            data-valor="{{ t.valor }}"
+                                            data-data="{{ t.data_transferencia.strftime('%Y-%m-%d') }}"
+                                            data-observacoes="{{ t.observacoes or '' }}"
+                                            title="Editar"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalTransferencia">
+
+                                            <i class="bi bi-pencil-fill"></i>
+
+                                        </button>
+
+                                        <form
+                                            method="POST"
+                                            action="{{ url_for('transferencias.excluir_transferencia', id=t.id) }}"
+                                            class="d-inline"
+                                            onsubmit="return confirm('Excluir esta transferência? O dinheiro será devolvido à conta de origem.');">
+
+                                            <input
+                                                type="hidden"
+                                                name="csrf_token"
+                                                value="{{ csrf_token() }}"/>
+
+                                            <button
+                                                type="submit"
+                                                class="btn btn-sm btn-outline-purple"
+                                                title="Excluir">
+
+                                                <i class="bi bi-trash3"></i>
+
+                                            </button>
+
+                                        </form>
+
+                                    </td>
+
+                                </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- PAGINAÇÃO TRANSFERÊNCIAS -->
+
+                    <div class="movimentacoes-table__footer">
+
+                        <!-- Quantidade por página -->
+
+                        <div class="movimentacoes-page-size-control">
+
+                            <select
+                                id="transferencias-page-size"
+                                class="form-select movimentacoes-table-toolbar__select"
+                                aria-label="Quantidade de resultados por página">
+
+                                <option value="10" selected>10</option>
+
+                                <option value="25">25</option>
+
+                                <option value="50">50</option>
+
+                                <option value="999999">Tudo</option>
+
+                            </select>
+
+                            <span class="movimentacoes-page-size-control__label">
+                                por página
+                            </span>
+
+                        </div>
+
+
+                        <span
+                            class="movimentacoes-table__count"
+                            id="transferencias-table-count">
+
+                            Mostrando 0 a 0 de 0 transferências
+
+                        </span>
+
+
+                        <div
+                            class="movimentacoes-pagination"
+                            id="transferencias-pagination">
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+                {% else %}
+
+                <div
+                    class="alert alert-light text-center border shadow-sm py-4 mb-0"
+                    role="alert">
+
+                    <i class="bi bi-arrow-left-right fs-1 text-muted d-block mb-2"></i>
+
+                    Nenhuma transferência registrada neste período.
+
+                </div>
+
+                {% endif %}
+
+            </div>
         </div>
-
-      </div>
-
-
-
-      <div class="card p-3 border-0 shadow-sm rounded-3">
-
-        <h6 class="text-center mb-3 fw-bold text-muted text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Comparativo do Mês</h6>
-
-        <div style="height: 180px;">
-
-          <canvas id="graficoReceitasDespesas" data-receitas="{{ total_receitas | default(0) }}" data-despesas="{{ total_despesas | default(0) }}"></canvas>
-
-        </div>
-
-      </div>
-
     </div>
 
-  </div>
+
+
+    <!-- ======================================================
+         LADO DIREITO
+    ======================================================= -->
+
+    <div class="movimentacoes-col-lateral">
+
+
+        <!-- SALDOS ATUAIS -->
+
+        <div class="balance-card">
+
+            <div class="balance-card__header">
+
+                <h6 class="balance-card__title">
+                    Saldos Atuais
+                </h6>
+
+
+                <button
+                    type="button"
+                    id="btn-toggle-saldos"
+                    class="btn-toggle-saldos"
+                    title="Ocultar/exibir saldos"
+                    aria-pressed="false">
+
+                    <i class="bi bi-eye"></i>
+
+                </button>
+
+            </div>
+
+
+            <div class="balance-card__body">
+
+
+                <!-- CONTAS COM SALDO -->
+
+                <div class="balance-featured">
+
+                    {% for conta in contas %}
+
+                        {% if conta.saldo_atual != 0 %}
+
+                        <div class="balance-featured__item">
+
+
+                            <div class="balance-featured__identity">
+
+                                {% if conta.logo %}
+
+                                    <img
+                                        src="{{ url_for('static', filename='logos/contas/' ~ conta.logo) }}"
+                                        alt="{{ conta.nome }}"
+                                        class="balance-featured__logo">
+
+                                {% else %}
+
+                                    <span class="balance-featured__fallback">
+
+                                        <i class="bi bi-bank"></i>
+
+                                    </span>
+
+                                {% endif %}
+
+
+                                <span class="balance-featured__name">
+                                    {{ conta.nome }}
+                                </span>
+
+                            </div>
+
+
+                            <strong
+                                class="
+                                    balance-featured__value
+                                    valor-sigiloso
+                                    {% if conta.saldo_atual < 0 %}
+                                        text-danger
+                                    {% else %}
+                                        text-success
+                                    {% endif %}
+                                "
+                                data-valor="R$ {{ conta.saldo_atual | brl }}">
+
+                                R$ {{ conta.saldo_atual | brl }}
+
+                            </strong>
+
+
+                        </div>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- CONTAS ZERADAS -->
+
+                <div
+                    class="balance-zero-list d-none"
+                    id="balance-zero-list">
+
+                    {% for conta in contas %}
+
+                        {% if conta.saldo_atual == 0 %}
+
+                        <div class="balance-zero-list__item">
+
+
+                            <div class="balance-zero-list__identity">
+
+                                {% if conta.logo %}
+
+                                    <img
+                                        src="{{ url_for('static', filename='logos/contas/' ~ conta.logo) }}"
+                                        alt="{{ conta.nome }}"
+                                        class="balance-zero-list__logo">
+
+                                {% else %}
+
+                                    <i class="bi bi-bank balance-zero-list__fallback"></i>
+
+                                {% endif %}
+
+
+                                <span>
+                                    {{ conta.nome }}
+                                </span>
+
+                            </div>
+
+
+                            <span class="balance-zero-list__value">
+                                R$ 0,00
+                            </span>
+
+                        </div>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="btn-toggle-contas-zeradas"
+                    class="balance-card__details"
+                    aria-expanded="false">
+
+                    <span>
+                        Mostrar contas zeradas
+                    </span>
+
+                    <i class="bi bi-chevron-down"></i>
+
+                </button>
+
+
+            </div>
+
+        </div>
 
 
 
-  {% include 'mov_contas/form_movimentacao.html' %}
+        <!-- ATIVIDADE DO PERÍODO -->
 
-  {% include 'transferencias/form_transferencias.html' %}
+        <div class="activity-card">
 
 
+            {% set ns = namespace(
+                total=0,
+                receitas=0,
+                despesas=0,
+                pendentes=0,
+                valor_pendente=0
+            ) %}
+
+
+            {% for m in movimentacoes %}
+
+                {% set ns.total = ns.total + 1 %}
+
+
+                {% if m.tipo == 'receita' %}
+
+                    {% set ns.receitas = ns.receitas + 1 %}
+
+                {% elif m.tipo == 'despesa' %}
+
+                    {% set ns.despesas = ns.despesas + 1 %}
+
+                {% endif %}
+
+
+                {% if m.pago is false %}
+
+                    {% set ns.pendentes = ns.pendentes + 1 %}
+                    {% set ns.valor_pendente = ns.valor_pendente + m.valor %}
+
+                {% endif %}
+
+            {% endfor %}
+
+
+            {% set ns_transfer = namespace(
+                quantidade=0,
+                valor=0
+            ) %}
+
+
+            {% for t in transferencias %}
+
+                {% set ns_transfer.quantidade =
+                    ns_transfer.quantidade + 1 %}
+
+                {% set ns_transfer.valor =
+                    ns_transfer.valor + t.valor %}
+
+            {% endfor %}
+
+
+            <div class="activity-card__header">
+
+                <h6 class="activity-card__title">
+                    Atividade do período
+                </h6>
+
+            </div>
+
+
+            <div class="activity-card__body">
+
+
+                <div class="activity-card__total">
+
+                    <strong>
+                        {{ ns.total }}
+                    </strong>
+
+                    <span>
+                        Movimentações
+                    </span>
+
+                </div>
+
+
+                <div class="activity-card__stats">
+
+
+                    <div class="activity-stat activity-stat--success">
+
+                        <strong>
+                            {{ ns.receitas }}
+                        </strong>
+
+                        <div>
+
+                            <span>
+                                Receitas
+                            </span>
+
+                            <small>
+                                R$ {{ total_receitas | default(0) | brl }}
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="activity-stat activity-stat--danger">
+
+                        <strong>
+                            {{ ns.despesas }}
+                        </strong>
+
+                        <div>
+
+                            <span>
+                                Despesas
+                            </span>
+
+                            <small>
+                                R$ {{ total_despesas | default(0) | brl }}
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="activity-stat activity-stat--warning">
+
+                        <strong>
+                            {{ ns.pendentes }}
+                        </strong>
+
+                        <div>
+
+                            <span>
+                                Pendentes
+                            </span>
+
+                            <small>
+                                R$ {{ ns.valor_pendente | brl }}
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="activity-stat activity-stat--primary">
+
+                        <strong>
+                            {{ ns_transfer.quantidade }}
+                        </strong>
+
+                        <div>
+
+                            <span>
+                                Transferências
+                            </span>
+
+                            <small>
+                                R$ {{ ns_transfer.valor | brl }}
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
 
 </div>
 
 
 
-<style>
+{% include 'mov_contas/form_movimentacao.html' %}
 
-  .modern-tabs .nav-link {
-
-    color: #6c757d !important;
-
-    border: none !important;
-
-    background: none !important;
-
-    font-weight: 600;
-
-    font-size: 0.95rem;
-
-    padding: 8px 16px;
-
-    position: relative;
-
-    transition: color 0.2s ease;
-
-  }
-
-
-
-  .modern-tabs .nav-link:hover {
-
-    color: #6f42c1 !important;
-
-  }
-
-
-
-  /* Aba Ativa: Texto Roxo e Linha Marcante exatamente em cima da divisória */
-
-  .modern-tabs .nav-link.active {
-
-    color: #6f42c1 !important;
-
-    font-weight: 700;
-
-    background-color: #fff !important;  
-
-  }
-
-
-
-  .modern-tabs .nav-link.active::after {
-
-    content: '';
-
-    position: absolute;
-
-    bottom: -10px; /* Alinha perfeitamente sobre a linha cinza do border-bottom */
-
-    left: 0;
-
-    width: 100%;
-
-    height: 3px;
-
-    background-color: #6f42c1;
-
-    border-radius: 3px;
-
-  }
-
-  /* Badges Premium para Categorias */
-
-  .badge-receita {
-
-    background-color: #e6f4ea !important;
-
-    color: #1e8e3e !important;
-
-    border: 1px solid #ceead6;
-
-  }
-
-  
-
-  .badge-despesa {
-
-    background-color: #fce8e6 !important;
-
-    color: #d93025 !important;
-
-    border: 1px solid #fad2cf;
-
-  }
-
-  
-
-  .badge-transferencia {
-
-    background-color: #e8f0fe !important;
-
-    color: #1a73e8 !important;
-
-    border: 1px solid #d2e3fc;
-
-  }
-
-  
-
-  .badge-ajuste {
-
-    background-color: #f8f9fa !important;
-
-    color: #6c757d !important;
-
-    border: 1px solid #dee2e6;
-
-  }
-
-</style>
+{% include 'transferencias/form_transferencias.html' %}
 
 
 
@@ -572,41 +1045,211 @@
 
 <script>
 
-  document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-    const entradasTab = document.getElementById("entradas-tab");
+    // ======================================================
+    // ABAS
+    // ======================================================
 
-    const transferenciasTab = document.getElementById("transferencias-tab");
+    const entradasTab =
+        document.getElementById("entradas-tab");
 
-    const btnMov = document.getElementById("btn-nova-movimentacao");
+    const transferenciasTab =
+        document.getElementById("transferencias-tab");
 
-    const btnTransf = document.getElementById("btn-nova-transferencia");
+    const btnMov =
+        document.getElementById("btn-nova-movimentacao");
 
-
-
-    if (entradasTab && transferenciasTab && btnMov && btnTransf) {
-
-      entradasTab.addEventListener("shown.bs.tab", () => {
-
-        btnMov.classList.remove("d-none");
-
-        btnTransf.classList.add("d-none");
-
-      });
+    const btnTransf =
+        document.getElementById("btn-nova-transferencia");
 
 
+    if (
+        entradasTab &&
+        transferenciasTab &&
+        btnMov &&
+        btnTransf
+    ) {
 
-      transferenciasTab.addEventListener("shown.bs.tab", () => {
+        entradasTab.addEventListener(
+            "shown.bs.tab",
+            () => {
 
-        btnMov.classList.add("d-none");
+                btnMov.classList.remove("d-none");
+                btnTransf.classList.add("d-none");
 
-        btnTransf.classList.remove("d-none");
+            }
+        );
 
-      });
+
+        transferenciasTab.addEventListener(
+            "shown.bs.tab",
+            () => {
+
+                btnMov.classList.add("d-none");
+                btnTransf.classList.remove("d-none");
+
+            }
+        );
 
     }
 
-  });
+
+    // ======================================================
+    // OCULTAR / EXIBIR SALDOS
+    // ======================================================
+
+    const btnToggleSaldos =
+        document.getElementById("btn-toggle-saldos");
+
+    const valoresSigilosos =
+        document.querySelectorAll(".valor-sigiloso");
+
+
+    if (
+        btnToggleSaldos &&
+        valoresSigilosos.length
+    ) {
+
+        btnToggleSaldos.addEventListener(
+            "click",
+            () => {
+
+                const oculto =
+                    btnToggleSaldos.getAttribute(
+                        "aria-pressed"
+                    ) === "true";
+
+
+                const icone =
+                    btnToggleSaldos.querySelector("i");
+
+
+                valoresSigilosos.forEach(
+                    (el) => {
+
+                        el.textContent =
+                            oculto
+                                ? el.dataset.valor
+                                : "R$ ••••••";
+
+                    }
+                );
+
+
+                btnToggleSaldos.setAttribute(
+                    "aria-pressed",
+                    String(!oculto)
+                );
+
+
+                icone.classList.toggle(
+                    "bi-eye",
+                    oculto
+                );
+
+                icone.classList.toggle(
+                    "bi-eye-slash",
+                    !oculto
+                );
+
+            }
+        );
+
+    }
+
+
+    // ======================================================
+    // MOSTRAR / OCULTAR CONTAS ZERADAS
+    // ======================================================
+
+    const btnToggleContasZeradas =
+        document.getElementById(
+            "btn-toggle-contas-zeradas"
+        );
+
+
+    const listaContasZeradas =
+        document.getElementById(
+            "balance-zero-list"
+        );
+
+
+    if (
+        btnToggleContasZeradas &&
+        listaContasZeradas
+    ) {
+
+        btnToggleContasZeradas.addEventListener(
+            "click",
+            () => {
+
+                const estaAberto =
+                    btnToggleContasZeradas
+                        .getAttribute(
+                            "aria-expanded"
+                        ) === "true";
+
+
+                listaContasZeradas.classList.toggle(
+                    "d-none"
+                );
+
+
+                btnToggleContasZeradas.setAttribute(
+                    "aria-expanded",
+                    String(!estaAberto)
+                );
+
+
+                const texto =
+                    btnToggleContasZeradas.querySelector(
+                        "span"
+                    );
+
+
+                const icone =
+                    btnToggleContasZeradas.querySelector(
+                        "i"
+                    );
+
+
+                if (!estaAberto) {
+
+                    texto.textContent =
+                        "Ocultar contas zeradas";
+
+
+                    icone.classList.remove(
+                        "bi-chevron-down"
+                    );
+
+                    icone.classList.add(
+                        "bi-chevron-up"
+                    );
+
+                } else {
+
+                    texto.textContent =
+                        "Mostrar contas zeradas";
+
+
+                    icone.classList.remove(
+                        "bi-chevron-up"
+                    );
+
+                    icone.classList.add(
+                        "bi-chevron-down"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+});
 
 </script>
 

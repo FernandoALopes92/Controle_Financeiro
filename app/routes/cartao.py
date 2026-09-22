@@ -13,7 +13,6 @@ from app.services.cartao_service import (
     NovaMovimentacaoInput,
     EditarMovimentacaoInput,
     converter_valor_para_decimal,
-    # gerar_cor_pastel_por_nome,  # se mover gerar_cor para utils depois
 )
 
 def _resposta_cartao(is_ajax, *, sucesso, msg, tipo="info", status=200):
@@ -28,13 +27,32 @@ def _resposta_cartao(is_ajax, *, sucesso, msg, tipo="info", status=200):
 
 cartao_bp = Blueprint("cartao", __name__, url_prefix="/cartao")
 
-def gerar_cor_pastel_por_nome(nome):
+def gerar_cor_categoria(nome):
+
     if not nome:
         return "hsl(0, 0%, 90%)"
-    hash_obj = hashlib.md5(nome.encode('utf-8'))
+
+    cores = [
+        "hsl(173, 72%, 42%)",  # Turquesa
+        "hsl(340, 72%, 52%)",  # Rosa
+        "hsl(8, 78%, 55%)",    # Coral
+        "hsl(48, 88%, 48%)",   # Amarelo
+        "hsl(142, 58%, 42%)",  # Verde
+        "hsl(265, 58%, 55%)",  # Violeta
+        "hsl(215, 78%, 52%)",  # Azul
+        "hsl(24, 82%, 52%)",   # Laranja
+        "hsl(195, 72%, 44%)",  # Azul petróleo
+        "hsl(320, 62%, 52%)",  # Magenta
+        "hsl(0, 72%, 52%)",    # Vermelho
+        "hsl(290, 52%, 55%)"   # Roxo
+    ]
+
+    hash_obj = hashlib.md5(nome.encode("utf-8"))
     hash_int = int(hash_obj.hexdigest()[:8], 16)
-    hue = hash_int % 360 
-    return f"hsl({hue}, 70%, 80%)"
+
+    indice = hash_int % len(cores)
+
+    return cores[indice]
 
 
 @cartao_bp.route("/mov_cartao")
@@ -100,7 +118,7 @@ def listar_movimentacoes_cartao():
             if (f.ano, f.mes) > (atual.ano, atual.mes):
                 faturas_unicas[f.cartao_id] = f
 
-    faturas_ordenadas = sorted(faturas_unicas.values(), key=lambda f: f.cartao.nome.lower())
+    faturas_ordenadas = sorted(faturas_unicas.values(), key=lambda f: (f.data_vencimento is None, f.data_vencimento or date.max))
 
     # Calcular saldo total por cartão (Geral do mês, independente do filtro visual)
     total_saldo = {meio.id: 0.00 for meio in meios}
@@ -126,7 +144,7 @@ def listar_movimentacoes_cartao():
             'nome': nome,
             'valor': round(valor, 2),
             'percentual': round(percentual, 1),
-            'cor': gerar_cor_pastel_por_nome(nome)
+            'cor': gerar_cor_categoria(nome)
         })
 
     categorias_valores.sort(key=lambda x: x['valor'], reverse=True)
@@ -144,14 +162,14 @@ def listar_movimentacoes_cartao():
         meios=meios,
         categorias=categorias,
         contas=contas,
-        faturas=faturas_unicas.values(),
+        faturas=faturas_ordenadas,
         total_saldo=total_saldo,
         total_saldo_total=total_saldo_total,
         categorias_valores=categorias_valores,
         cartoes_usados=cartoes_usados,
         categorias_usadas=categorias_usadas,
         date=date,
-        gerar_cor_pastel=gerar_cor_pastel_por_nome
+        gerar_cor_pastel=gerar_cor_categoria
     )
 
 

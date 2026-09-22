@@ -126,42 +126,10 @@ body {
   cursor: not-allowed;
 }
 
-.btn-light-purple {
-  background-color: #9b59b6;
-  color: white;
-  border: none;
+.bg-purple {
+  background-color: var(--color-primary-600) !important;
+  color: white !important;
 }
-
-.btn-light-purple:hover {
-  background-color: #8e44ad;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-}
-
-.btn-roxo-azulado {
-  background-color: #7f65f2;
-  color: white;
-  border: none;
-}
-.btn-roxo-azulado:hover,
-.btn-outline-roxo-azulado:hover {
-  background-color: #6a52d8;
-  color: white;
-}
-
-.btn-outline-roxo-azulado {
-  background-color: transparent;
-  border-color: #7f65f2;
-  color: #7f65f2;
-  padding: 4px 8px;
-  font-size: 1.1rem; /* Ícone um pouquinho maior para dar presença */
-  transition: transform 0.2s ease;
-  cursor: pointer;
-  font-size: 12px;
-  border-radius: 50%;
-}
-
 .bg-lavanda {
   background-color: #b892f6 !important;
   color: white !important;

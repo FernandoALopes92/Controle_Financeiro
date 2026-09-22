@@ -5,7 +5,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import login_required, current_user
 from sqlalchemy import extract, func
 
-from app.models import db, Movimentacao, Transferencia
+from app.models import db, Movimentacao, Transferencia, Categoria, Conta
 from app.utils.db_utils import get_meios_pagamento, get_categorias, get_contas, filtrar_por_mes_ano
 from app.services import movimentacao_service as mov_service
 
@@ -71,78 +71,284 @@ def criar():
         contas=contas
     )
 
-
 @movimentacoes_bp.route('/')
 @login_required
 def lista():
-    # 1. Captura primeiro a data atual e os parâmetros da URL
+    # ==========================================================
+    # 1. DATA E FILTROS
+    # ==========================================================
     agora = datetime.now()
-    mes = request.args.get("mes", default=agora.month, type=int)
-    ano = request.args.get("ano", default=agora.year, type=int)
 
-    # 2. Carrega as funções auxiliares de contas e categorias
+    mes = request.args.get(
+        "mes",
+        default=agora.month,
+        type=int
+    )
+
+    ano = request.args.get(
+        "ano",
+        default=agora.year,
+        type=int
+    )
+
+    aba = request.args.get(
+        "aba",
+        default="movimentacoes",
+        type=str
+    )
+
+    if aba not in ("movimentacoes", "transferencias"):
+        aba = "movimentacoes"
+
+
+    # ==========================================================
+    # 2. DADOS AUXILIARES
+    # ==========================================================
     contas = get_contas()
     categorias = get_categorias()
 
-    # 3. Executa a busca filtrada de Movimentações (Aba 1)
-    query = db.session.query(Movimentacao)
-    if mes and ano:
-        query = filtrar_por_mes_ano(query, Movimentacao.data, mes, ano)
-    movimentacoes = query.order_by(Movimentacao.data.desc()).all()
+    # ==========================================================
+    # 3. MOVIMENTAÇÕES DO PERÍODO
+    # ==========================================================
 
-    # 4. Executa a busca filtrada de Transferências (Aba 2)
-    query_transf = db.session.query(Transferencia).filter_by(familia_id=current_user.familia_id)
-    if mes and ano:
-        query_transf = filtrar_por_mes_ano(query_transf, Transferencia.data_transferencia, mes, ano)
-    transferencias = query_transf.order_by(Transferencia.data_transferencia.desc()).all()
+    # ----------------------------------------------------------
+    # 3.1 - Lista completa do período
+    # ----------------------------------------------------------
+    query_mov_periodo = (
+        db.session
+        .query(Movimentacao)
+        .filter(
+            Movimentacao.familia_id == current_user.familia_id,
+            Movimentacao.tipo != "transferencia"
+        )
+    )
 
-    # 5. Gera as opções disponíveis para os seletores de filtros
-    anos_query = db.session.query(extract('year', Movimentacao.data).label('ano'))\
-        .distinct().order_by('ano')
-    anos = [int(row.ano) for row in anos_query]
+    if mes and ano:
+        query_mov_periodo = filtrar_por_mes_ano(
+            query_mov_periodo,
+            Movimentacao.data,
+            mes,
+            ano
+        )
+
+    # Lista completa, sem pesquisa.
+    # Usada pelos cards e resumos da página.
+    movimentacoes_periodo = (
+        query_mov_periodo
+        .order_by(
+            Movimentacao.data.desc(),
+            Movimentacao.id.desc()
+        )
+        .all()
+    )
+
+
+    # ----------------------------------------------------------
+    # 3.2 - Lista para a tabela
+    # ----------------------------------------------------------
+    query_mov = (
+        Movimentacao.query
+        .filter(
+            extract("month", Movimentacao.data) == mes,
+            extract("year", Movimentacao.data) == ano,
+            Movimentacao.tipo != "transferencia"
+        )
+        .order_by(Movimentacao.data.desc(), Movimentacao.id.desc())
+    )
+
+    movimentacoes = query_mov.all()
+
+    if mes and ano:
+        query_mov = filtrar_por_mes_ano(
+            query_mov,
+            Movimentacao.data,
+            mes,
+            ano
+        )
+
+
+    # Lista filtrada pela pesquisa.
+    # Esta é a lista usada pela tabela e pela paginação.
+    movimentacoes = (
+        query_mov
+        .order_by(
+            Movimentacao.data.desc(),
+            Movimentacao.id.desc()
+        )
+        .all()
+    )
+
+    # ==========================================================
+    # 4. TODAS AS TRANSFERÊNCIAS DO PERÍODO
+    # ==========================================================
+    query_transf = (
+        db.session
+        .query(Transferencia)
+        .filter(
+            Transferencia.familia_id == current_user.familia_id
+        )
+    )
+
+    if mes and ano:
+        query_transf = filtrar_por_mes_ano(
+            query_transf,
+            Transferencia.data_transferencia,
+            mes,
+            ano
+        )
+
+    transferencias = (
+        query_transf
+        .order_by(
+            Transferencia.data_transferencia.desc(),
+            Transferencia.id.desc()
+        )
+        .all()
+    )
+
+    # ==========================================================
+    # 6. ANOS DISPONÍVEIS
+    # ==========================================================
+    anos_query = (
+        db.session
+        .query(
+            extract(
+                "year",
+                Movimentacao.data
+            ).label("ano")
+        )
+        .filter(
+            Movimentacao.familia_id == current_user.familia_id
+        )
+        .distinct()
+        .order_by("ano")
+    )
+
+    anos = [
+        int(row.ano)
+        for row in anos_query
+        if row.ano is not None
+    ]
 
     if not anos:
         anos = [agora.year]
 
-    meses_query = db.session.query(
-        extract('month', Movimentacao.data).label('mes')
-    ).distinct().order_by('mes')
+    # ==========================================================
+    # 7. MESES DISPONÍVEIS
+    # ==========================================================
+    meses_query = (
+        db.session
+        .query(
+            extract(
+                "month",
+                Movimentacao.data
+            ).label("mes")
+        )
+        .filter(
+            Movimentacao.familia_id == current_user.familia_id
+        )
+        .distinct()
+        .order_by("mes")
+    )
 
     meses_nomes = [
-        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+        "Janeiro",
+        "Fevereiro",
+        "Março",
+        "Abril",
+        "Maio",
+        "Junho",
+        "Julho",
+        "Agosto",
+        "Setembro",
+        "Outubro",
+        "Novembro",
+        "Dezembro"
     ]
-    meses = [(meses_nomes[int(row.mes)-1], int(row.mes)) for row in meses_query]
+
+    meses = [
+        (
+            meses_nomes[int(row.mes) - 1],
+            int(row.mes)
+        )
+        for row in meses_query
+        if row.mes is not None
+    ]
 
     if not meses:
-        meses = [(meses_nomes[agora.month - 1], agora.month)]
+        meses = [
+            (
+                meses_nomes[agora.month - 1],
+                agora.month
+            )
+        ]
 
-    # 6. Cálculos estatísticos do gráfico de barras lateral
-    query_receitas = db.session.query(func.sum(Movimentacao.valor)).filter(
-        Movimentacao.tipo == 'receita'
+    # ==========================================================
+    # 8. TOTAIS DO PERÍODO
+    # ==========================================================
+    query_receitas = (
+        db.session
+        .query(func.sum(Movimentacao.valor))
+        .filter(
+            Movimentacao.tipo == "receita",
+            Movimentacao.familia_id == current_user.familia_id
+        )
     )
-    query_receitas = filtrar_por_mes_ano(query_receitas, Movimentacao.data, mes, ano)
 
-    query_despesas = db.session.query(func.sum(Movimentacao.valor)).filter(
-        Movimentacao.tipo == 'despesa'
+    query_receitas = filtrar_por_mes_ano(
+        query_receitas,
+        Movimentacao.data,
+        mes,
+        ano
     )
-    query_despesas = filtrar_por_mes_ano(query_despesas, Movimentacao.data, mes, ano)
+
+    query_despesas = (
+        db.session
+        .query(func.sum(Movimentacao.valor))
+        .filter(
+            Movimentacao.tipo == "despesa",
+            Movimentacao.familia_id == current_user.familia_id
+        )
+    )
+
+    query_despesas = filtrar_por_mes_ano(
+        query_despesas,
+        Movimentacao.data,
+        mes,
+        ano
+    )
 
     total_receitas = query_receitas.scalar() or 0
     total_despesas = query_despesas.scalar() or 0
+    total_saldo = total_receitas - total_despesas
 
-    return render_template('mov_contas/lista_movimentacoes.html',
-                           movimentacoes=movimentacoes,
-                           transferencias=transferencias,
-                           contas=contas,
-                           categorias=categorias,
-                           total_receitas=total_receitas,
-                           total_despesas=total_despesas,
-                           meses=meses,
-                           anos=anos,
-                           mes_filtro=mes,
-                           ano_filtro=ano)
+    # ==========================================================
+    # 9. RENDERIZAÇÃO
+    # ==========================================================
+    return render_template(
+        "mov_contas/lista_movimentacoes.html",
 
+        # LISTAS COMPLETAS
+        movimentacoes=movimentacoes_periodo,
+        transferencias=transferencias,
+
+        # ABA ATIVA
+        aba_atual=aba,
+
+        # DADOS DA PÁGINA
+        contas=contas,
+        categorias=categorias,
+
+        total_receitas=total_receitas,
+        total_despesas=total_despesas,
+        total_saldo=total_saldo,
+
+        meses=meses,
+        anos=anos,
+
+        mes_filtro=mes,
+        ano_filtro=ano
+    )
 
 @movimentacoes_bp.route('/<int:id>/json')
 @login_required
