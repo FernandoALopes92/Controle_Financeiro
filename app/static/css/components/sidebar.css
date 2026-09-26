@@ -16,8 +16,8 @@
   padding: 24px 0;
 
   background:
-    radial-gradient(circle at top, rgba(172, 145, 255, 0.35), transparent 35%),
-    linear-gradient(180deg, #4b2aaa, #34157c);
+    radial-gradient(circle at top, rgba(139, 92, 246, 0.35), transparent 35%),
+    linear-gradient(180deg, var(--color-primary-700), var(--color-primary-900));
 
   box-shadow: 10px 0 25px rgba(0, 0, 0, 0.12);
 
@@ -104,8 +104,6 @@
 
   position: relative;
 
-  transition: 0.2s;
-
   transition:
     background 0.22s,
     color 0.22s,
@@ -125,10 +123,8 @@
 }
 
 .sidebar-nav .nav-link.active {
-  background: white;
-
-  color: #5b3df5;
-
+  background: var(--color-white);
+  color: var(--color-primary-600);
   box-shadow:
     0 8px 18px rgba(0, 0, 0, 0.12),
     0 0 18px rgba(255, 255, 255, 0.18);

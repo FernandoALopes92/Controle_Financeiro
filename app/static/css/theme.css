@@ -13,7 +13,9 @@
   --color-danger: #df4a55;
   --color-warning: #fd7e14;
   --color-info: #3178d4;
-  --color-bg: #eef2f7;
+  --color-bg: #eeedf3;
+  /* --color-bg: #eceaf3; */
+  /* --color-bg: #e2e8f0; */
   --color-surface: #ffffff;
   --color-surface-subtle: #fafbff;
   --color-text: #1f2937;

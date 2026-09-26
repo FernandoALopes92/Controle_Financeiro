@@ -2,15 +2,7 @@
 .business-page {
   max-width: var(--content-max-width);
 }
-/* Esta página aninha um .container-fluid dentro do .container-fluid do
-   layout base (navbar/base.html), então o reset de padding feito em
-   ".app-page > .container-fluid" (layout.css) não alcança este elemento
-   e ele ficava com o padding padrão do Bootstrap (12px), empurrando toda
-   a tabela e a coluna lateral para a direita em relação ao cabeçalho. */
-.container-fluid.business-page {
-  padding-left: 0;
-  padding-right: 0;
-}
+
 .business-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -52,10 +44,10 @@
 }
 .business-page .table td,
 .business-page .table th {
-  text-align: inherit;
+  text-align: center;
 }
 .business-page .table thead {
-  text-align: left;
+  text-align: center;
 }
 .business-page .table-dark,
 .business-page .table-light {
@@ -63,8 +55,15 @@
   --bs-table-color: var(--color-text);
 }
 .business-page .table .btn-sm {
-  min-height: 2rem;
-  padding: 0.3rem 0.55rem;
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  font-size: 0.74rem;
 }
 .business-page .list-group-item {
   border-color: var(--color-border);
@@ -74,13 +73,13 @@
   border: 0;
   border-radius: 0;
 }
-.business-page--movements > .row > .col-md-8 > .row:first-child h2,
+/* .business-page--movements > .row > .col-md-8 > .row:first-child h2,
 .business-page--credit-cards > .row > .col-md-8 > .row:first-child h2,
 .business-page--accounts > .row:first-child h2,
 .business-page--categories > .row:first-child h2,
 .business-page--payment-methods > .row:first-child h2 {
   display: none;
-}
+} */
 .business-summary-card {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -107,6 +106,10 @@
 }
 .business-page img.logo-img,
 .business-page .logo-img {
+  width: 40px;
+  height: 40px;
+  padding: 3px;
+  object-fit: contain;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   background: var(--color-surface);

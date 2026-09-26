@@ -1,26 +1,28 @@
 {% extends "navbar/base.html" %}
+{% block title %}xxx{% endblock %}
+{% block page_styles %}<link rel="stylesheet" href="" />{% endblock %}
+
+
 {% block page_header %}
   {% set page_eyebrow = 'Organização' %}
   {% set page_title = 'Minhas contas' %}
   {% set page_subtitle = 'Gerencie saldos, tipos e disponibilidade das suas contas.' %}
-  {% include "components/page_header.html" %}
-{% endblock %}
-{% block content %}
-<div class="container business-page business-page--accounts">
-  <div class="row mb-4">
-    <div class="col-md-9">
-      <h2 class="mb-4">Minhas Contas</h2>
-    </div>
-    <div class="col-md-3 p-0">
-      <!-- Botão para abrir modal de adicionar conta -->
+  {% set page_actions %}
+    <div class="page-header__action">
       <button
-        class="btn btn-purple w-100 mb-3"
+        class=" btn btn-primary page-header__form-button"
         data-bs-toggle="modal"
         data-bs-target="#modalNovaConta"
       >
-        + Nova Conta
+        <i class="bi bi-plus-lg me-1"></i>
+        Nova Conta
       </button>
     </div>
+  {% endset %}
+  {% include "components/page_header.html" %}
+{% endblock %}
+{% block content %}
+<div class="business-page business-page--accounts">
 
     <!-- Flash messages -->
     {% with messages = get_flashed_messages(with_categories=true) %} {% if
@@ -40,8 +42,8 @@
     {% endfor %} {% endif %} {% endwith %}
 
     <!-- Tabela de contas -->
-    <div class="table-responsive"><table class="table table-hover text-center align-middle mx-auto">
-      <thead class="table-dark">
+    <div class="table-responsive"><table class="table table-hover">
+      <thead class="">
         <tr>
           <th>Nome</th>
           <th>Data</th>
@@ -66,24 +68,22 @@
             <img
               src="{{ url_for('static', filename='logos/contas/' ~ conta.logo) }}"
               alt="{{ conta.nome }} logo"
-              width="40"
-              height="40"
-              class="me-2 align-middle"
+              class="logo-img"
             />
             {% else %} - {% endif %}
           </td>
           <td>
             {% if conta.status %}
-            <span class="badge bg-success fs-8 px-4 py-2">Ativo</span>
+            <span class="badge bg-success px-3 py-2">Ativo</span>
             {% else %}
-            <span class="badge bg-secondary fs-8 px-4 py-2">Inativo</span>
+            <span class="badge bg-secondary px-3 py-2">Inativo</span>
             {% endif %}
           </td>
 
           <td>
             <!-- Botão Editar -->
             <button
-              class="btn btn-sm btn-roxo-azulado btn-editar"
+              class="btn btn-sm btn-outline-roxo-azulado btn-editar"
               title="Editar"
               data-bs-toggle="modal"
               data-bs-target="#modalEditarConta{{ conta.id }}"
@@ -93,7 +93,7 @@
 
             <!-- Botão Excluir -->
             <button
-              class="btn btn-sm btn-purple btn-excluir"
+              class="btn btn-sm btn-outline-roxo-azulado btn-excluir"
               data-bs-toggle="modal"
               data-bs-target="#modalExcluirConta{{ conta.id }}"
             >
@@ -243,7 +243,6 @@
         {% endfor %}
       </tbody>
     </table></div>
-  </div>
 
   <!-- Modal Nova Conta -->
   <div

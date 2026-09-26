@@ -62,23 +62,6 @@
 }
 
 /* ==========================================================
-   3. CABEÇALHO E AÇÕES
-========================================================== */
-.tab-action-buttons {
-  margin-right: 3px;
-}
-
-.tab-action-buttons .btn {
-  width: 200px;
-  min-width: 200px;
-  height: 40px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-}
-
-/* ==========================================================
    4. TOOLBAR E PESQUISA
 ========================================================== */
 .cartao-tabs-toolbar {
@@ -221,24 +204,9 @@
   white-space: nowrap;
 }
 
-/* Botões de Ação na Tabela */
-.movimentacoes-table-cartao .btn-editar,
-.movimentacoes-table-cartao .btn-excluir {
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.74rem;
-  border-radius: var(--radius-sm);
-}
 
-.movimentacoes-table-cartao .btn-excluir:hover {
-  color: var(--color-danger);
-  background-color: var(--color-danger-subtle);
-  border-color: var(--color-danger-subtle);
-}
+
+
 
 /* ==========================================================
    6. FILTROS DA COLUNA

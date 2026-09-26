@@ -60,16 +60,6 @@
 
         </a>
 
-        <a class="nav-link {% if request.endpoint == 'categorias.listar' %}active{% endif %}"
-           href="{{ url_for('categorias.listar') }}"
-           data-title="Categorias">
-
-            <i class="bi bi-tags"></i>
-
-            <span>Categorias</span>
-
-        </a>
-
         <a class="nav-link {% if request.endpoint == 'meios_pagamento.listar' %}active{% endif %}"
            href="{{ url_for('meios_pagamento.listar') }}"
            data-title="Meios de pagamento">
@@ -77,6 +67,16 @@
             <i class="bi-credit-card-fill"></i>
 
             <span>Meios de pagamento</span>
+
+        </a>
+
+        <a class="nav-link {% if request.endpoint == 'categorias.listar' %}active{% endif %}"
+           href="{{ url_for('categorias.listar') }}"
+           data-title="Categorias">
+
+            <i class="bi bi-tags"></i>
+
+            <span>Categorias</span>
 
         </a>
 

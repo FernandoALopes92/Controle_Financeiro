@@ -1,24 +1,28 @@
 {% extends 'navbar/base.html' %}
+{% block title %}xxx{% endblock %}
 
 {% block page_header %}
   {% set page_eyebrow = 'Organização' %}
   {% set page_title = 'Categorias' %}
   {% set page_subtitle = 'Organize receitas e despesas para acompanhar melhor seus hábitos.' %}
+  {% set page_actions %}
+    <div class="page-header__action">
+      <button
+        class="btn btn-purple px-4"
+        data-bs-toggle="modal"
+        data-bs-target="#adicionarModal"
+      >
+        <i class="bi bi-plus-lg me-1"></i>
+        Nova Categoria
+      </button>
+    </div>
+  {% endset %}
   {% include "components/page_header.html" %}
 {% endblock %}
 {% block content %}
-<div class="container business-page business-page--categories">
-  <div class="row mb-4">
-    <div class="col-md-9">
-      <h2 class="mb-4">Categorias</h2>
-    </div>
-    <div class="col-md-3 p-0">
-      <button class="btn btn-purple w-100 mb-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#adicionarModal">
-        <i class="bi bi-plus-lg me-1"></i> Nova Categoria
-      </button>
-    </div>
-  </div>
+<div class="business-page business-page--categories">
   
+      <!-- Flash messages -->
   {% with messages = get_flashed_messages(with_categories=true) %} 
     {% if messages %} 
       {% for category, message in messages %} 
@@ -30,8 +34,8 @@
     {% endif %} 
   {% endwith %}
 
-  <div class="table-responsive"><table class="table table-hover align-middle mx-auto shadow-sm" style="background-color: white; border-radius: 8px; overflow: hidden;">
-    <thead class="table-dark text-center">
+  <div class="table-responsive"><table class="table table-hover">
+    <thead>
       <tr>
         <th class="text-start ps-4">Nome da Categoria</th>
         <th>Tipo</th>
@@ -43,13 +47,13 @@
         <tr class="table-light">
           <td class="fw-bold text-start ps-4 text-primary">{{ cat.nome }}</td>
           <td class="text-center">
-            <span class="badge {% if cat.tipo == 'receita' %}bg-success{% else %}bg-danger{% endif %} px-3 py-2">
+            <span class="badge {% if cat.tipo == 'receita' %}bg-success{% else %}bg-danger{% endif %} px-3 py-1">
               {{ cat.tipo | title }}
             </span>
           </td>
-          <td class="text-center" style="width: 20%;">
-            <button class="btn btn-sm btn-roxo-azulado btn-editar" title="Editar" data-bs-toggle="modal" data-bs-target="#editarModal{{ cat.id }}"><i class="bi bi-pencil-fill"></i></button>
-            <button class="btn btn-sm btn-purple btn-excluir" title="Excluir" data-bs-toggle="modal" data-bs-target="#excluirModal{{ cat.id }}"><i class="bi bi-trash3"></i></button>
+          <td class="text-center">
+            <button class="btn btn-sm btn-outline-roxo-azulado btn-editar" title="Editar" data-bs-toggle="modal" data-bs-target="#editarModal{{ cat.id }}"><i class="bi bi-pencil-fill"></i></button>
+            <button class="btn btn-sm btn-outline-roxo-azulado btn-excluir" title="Excluir" data-bs-toggle="modal" data-bs-target="#excluirModal{{ cat.id }}"><i class="bi bi-trash3"></i></button>
           </td>
         </tr>
 
@@ -58,13 +62,13 @@
           <tr>
             <td class="text-start ps-5 text-muted"><i class="bi bi-arrow-return-right me-2"></i>{{ sub.nome }}</td>
             <td class="text-center">
-              <span class="badge bg-secondary px-3 py-2">
+              <span class="badge bg-secondary px-3 py-1">
                 {{ sub.tipo | title }}
               </span>
             </td>
             <td class="text-center">
-              <button class="btn btn-sm btn-roxo-azulado btn-editar" title="Editar" data-bs-toggle="modal" data-bs-target="#editarModal{{ sub.id }}"><i class="bi bi-pencil-fill"></i></button>
-              <button class="btn btn-sm btn-purple btn-excluir" title="Excluir" data-bs-toggle="modal" data-bs-target="#excluirModal{{ sub.id }}"><i class="bi bi-trash3"></i></button>
+              <button class="btn btn-sm btn-outline-roxo-azulado btn-editar" title="Editar" data-bs-toggle="modal" data-bs-target="#editarModal{{ sub.id }}"><i class="bi bi-pencil-fill"></i></button>
+              <button class="btn btn-sm btn-outline-roxo-azulado btn-excluir" title="Excluir" data-bs-toggle="modal" data-bs-target="#excluirModal{{ sub.id }}"><i class="bi bi-trash3"></i></button>
             </td>
           </tr>
           {% endif %}

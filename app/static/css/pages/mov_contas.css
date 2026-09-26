@@ -282,66 +282,9 @@
   white-space: nowrap;
 }
 
-.movimentacoes-table .btn-editar,
-.movimentacoes-table .btn-excluir {
-  width: 32px;
-  height: 32px;
 
-  padding: 0;
 
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 
-  font-size: 0.74rem;
-  border-radius: var(--radius-sm);
-}
-
-.movimentacoes-table .btn-excluir:hover {
-  color: var(--color-danger);
-  background-color: var(--color-danger-subtle);
-  border-color: var(--color-danger-subtle);
-}
-
-/* ==========================================================
-   AÇÕES — TRANSFERÊNCIAS
-========================================================== */
-
-#transferencias .btn-editar-transf,
-#transferencias form .btn-outline-purple {
-  width: 32px;
-  height: 32px;
-
-  padding: 0;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 0.74rem;
-
-  border-radius: var(--radius-sm);
-}
-
-/* ==========================================================
-   CABEÇALHO — botões de ação + formulário de filtro lado a lado
-========================================================== */
-
-.tab-action-buttons {
-  margin-right: 3px;
-}
-
-.tab-action-buttons .btn {
-  width: 200px;
-  min-width: 200px;
-  height: 40px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  white-space: nowrap;
-}
 
 /* ==========================================================
    SALDOS ATUAIS — toggle de visibilidade

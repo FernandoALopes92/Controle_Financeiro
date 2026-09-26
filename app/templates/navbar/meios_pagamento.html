@@ -1,25 +1,28 @@
 {% extends 'navbar/base.html' %}
+{% block title %}xxx{% endblock %}
+
+
+
 {% block page_header %}
   {% set page_eyebrow = 'Organização' %}
   {% set page_title = 'Meios de pagamento' %}
   {% set page_subtitle = 'Cadastre e acompanhe os cartões usados no seu dia a dia.' %}
-  {% include "components/page_header.html" %}
-{% endblock %}
-{% block content %}
-<div class="container business-page business-page--payment-methods">
-  <div class="row mb-4">
-    <div class="col-md-9">
-      <h2 class="mb-4">Cartões de Crédito</h2>
-    </div>
-    <div class="col-md-3 p-0">
+   {% set page_actions %}
+    <div class="page-header__action">
       <button
-        class="btn btn-purple w-100 mb-3"
+        class="btn btn-purple px-4"
         data-bs-toggle="modal"
         data-bs-target="#cadastroModal"
       >
-        Novo Cartão de Crédito
+        <i class="bi bi-plus-lg me-1"></i>
+        Novo Meio de Pagamento
       </button>
     </div>
+  {% endset %}
+  {% include "components/page_header.html" %}
+{% endblock %}
+{% block content %}
+<div class="business-page business-page--payment-methods">
 
     {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for
     category, message in messages %} 
@@ -29,8 +32,8 @@
       </div>
     {% endfor %} {% endif %} {% endwith %}
 
-    <div class="table-responsive"><table class="table table-hover text-center align-middle mx-auto">
-      <thead class="table-dark">
+    <div class="table-responsive"><table class="table table-hover">
+      <thead>
         <tr>
           <th>Cartão</th>
           <th>Logo</th>
@@ -44,14 +47,13 @@
         {% for meio in meios_pagamento %}
         <tr>
           <td>{{ meio.nome }}</td>
+
           <td>
             {% if meio.logo %}
             <img
               src="{{ url_for('static', filename='logos/cartoes/' ~ meio.logo) }}"
               alt="{{ meio.nome }} logo"
-              width="40"
-              height="40"
-              class="me-2 align-middle"
+              class="logo-img"
             />
             {% else %} - {% endif %}
           </td>
@@ -60,7 +62,7 @@
           <td>{% if meio.limite %}R$ {{ meio.limite | brl }}{% else %}- {% endif %}</td>
           <td>
             <button
-              class="btn btn-sm btn-roxo-azulado btn-editar"
+              class="btn btn-sm btn-outline-roxo-azulado btn-editar"
               title="Editar"
               data-bs-toggle="modal"
               data-bs-target="#editarModal{{ meio.id }}"
@@ -68,7 +70,7 @@
               <i class="bi bi-pencil-fill"></i>
             </button>
             <button
-              class="btn btn-sm btn-purple btn-excluir"
+              class="btn btn-sm btn-outline-roxo-azulado btn-excluir"
               title="Excluir"
               data-bs-toggle="modal"
               data-bs-target="#excluirModal{{ meio.id }}"
@@ -95,7 +97,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="editarModalLabel{{ meio.id }}">
-                    Editar Cartão de Crédito
+                    Editar Meio de Pagamento
                   </h5>
                   <button
                     type="button"
@@ -181,7 +183,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="excluirModalLabel{{ meio.id }}">
-                    Excluir Cartão de Crédito
+                    Excluir Meio de Pagamento
                   </h5>
                   <button
                     type="button"
@@ -191,7 +193,7 @@
                   ></button>
                 </div>
                 <div class="modal-body">
-                  Tem certeza que deseja excluir o cartão de crédito
+                  Tem certeza que deseja excluir o Meio de Pagamento
                   <strong>{{ meio.nome }}</strong>?
                 </div>
                 <div class="modal-footer">
@@ -206,7 +208,7 @@
         </div>
         {% endfor %}
       </tbody>
-    </table></div>
+    </table>
   </div>
 
   <div
@@ -221,7 +223,7 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="cadastroModalLabel">Cadastrar Cartão de Crédito</h5>
+            <h5 class="modal-title" id="cadastroModalLabel">Cadastrar Meio de Pagamento</h5>
             <button
               type="button"
               class="btn-close"
@@ -232,7 +234,7 @@
           <input type="hidden" name="tipo" value="cartao_credito" />
           <div class="modal-body">
             <div class="mb-3">
-              <label for="nome" class="form-label">Nome do Cartão</label>
+              <label for="nome" class="form-label">Nome do Meio de Pagamento</label>
               <input type="text" class="form-control" id="nome" name="nome" required />
             </div>
             <div class="mb-3">
