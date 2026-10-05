@@ -266,8 +266,8 @@
         const form = document.querySelector('#modalMovimentacaoConta form');
         form.action = `/movimentacoes/${id}/editar`;
 
-        document.getElementById('modalMovimentacaoContaLabel').innerHTML =
-          '<i class="bi bi-pencil-square me-2"></i>Editar Movimentação';
+        document.getElementById('modalMovimentacaoContaLabel').textContent =
+          'Editar Movimentação';
         form.querySelector('button[type="submit"]').innerText = 'Atualizar';
 
         // Abre o modal
@@ -285,8 +285,8 @@
         const form = document.querySelector('#modalMovimentacaoConta form');
         form.reset();
         form.action = '/movimentacoes/nova';
-        document.getElementById('modalMovimentacaoContaLabel').innerHTML =
-          '<i class="bi bi-journal-plus me-2"></i>Nova Movimentação';
+        document.getElementById('modalMovimentacaoContaLabel').textContent =
+          'Nova Movimentação';
         form.querySelector('button[type="submit"]').innerText = 'Salvar';
 
         // Esconde saldo conta
@@ -304,37 +304,11 @@
 
 // --- ATIVAÇÃO DO BOTÃO EXCLUIR ---
 document.addEventListener('DOMContentLoaded', () => {
-  if (typeof aplicarConfirmacaoExclusao === 'function') {
     aplicarConfirmacaoExclusao(
       '.btn-excluir',
       (id) => `/movimentacoes/${id}/excluir`,
     );
-  } else {
-    document.querySelectorAll('.btn-excluir').forEach((botao) => {
-      botao.addEventListener('click', () => {
-        const id = botao.dataset.id;
-        if (
-          confirm(
-            'Tem certeza que deseja excluir esta movimentação? O saldo da conta será recalculado automaticamente.',
-          )
-        ) {
-          fetch(`/movimentacoes/${id}/excluir`, {
-            method: 'POST',
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest',
-              'X-CSRFToken': getCsrfToken(),
-            },
-          })
-            .then((res) => {
-              if (res.ok) location.reload();
-              else alert('Erro ao tentar excluir a movimentação.');
-            })
-            .catch((err) => console.error('Erro:', err));
-        }
-      });
-    });
-  }
-});
+  }); 
 
 // ============================================================
 // PESQUISA E PAGINAÇÃO INSTANTÂNEAS — MOVIMENTAÇÕES

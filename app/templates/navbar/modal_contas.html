@@ -1,0 +1,89 @@
+<div class="mb-3">
+    <label for="nome" class="form-label">
+        Nome
+    </label>
+
+    <input
+        type="text"
+        class="form-control"
+        name="nome"
+        value="{{ conta.nome if conta else '' }}"
+        required
+    />
+</div>
+
+<div class="mb-3">
+    <label for="data" class="form-label">
+        Data
+    </label>
+
+    <input
+        type="date"
+        class="form-control"
+        name="data"
+        value="{{ conta.data.strftime('%Y-%m-%d') if conta and conta.data else '' }}"
+        required
+    />
+</div>
+
+<div class="mb-3">
+    <label for="saldo_inicial" class="form-label">
+        Saldo Inicial
+    </label>
+
+    <input
+        type="number"
+        step="0.01"
+        class="form-control"
+        name="saldo_inicial"
+        value="{{ conta.saldo_inicial if conta else '' }}"
+    />
+</div>
+
+<div class="mb-3">
+    <label for="tipo" class="form-label">
+        Tipo
+    </label>
+
+    <select
+        class="form-select"
+        name="tipo"
+        required
+    >
+        <option value="">Selecione</option>
+
+        <option
+            value="carteira"
+            {% if conta and conta.tipo == 'carteira' %}selected{% endif %}
+        >
+            Carteira
+        </option>
+
+        <option
+            value="conta_corrente"
+            {% if conta and conta.tipo == 'conta_corrente' %}selected{% endif %}
+        >
+            Conta Corrente
+        </option>
+
+        <option
+            value="investimento"
+            {% if conta and conta.tipo == 'investimento' %}selected{% endif %}
+        >
+            Investimento
+        </option>
+    </select>
+</div>
+
+<div class="mb-3">
+    <label for="logo" class="form-label">
+        Logo
+    </label>
+
+    <input
+        type="file"
+        class="form-control"
+        name="logo"
+        accept="image/*"
+    />
+</div>

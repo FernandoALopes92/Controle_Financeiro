@@ -119,7 +119,6 @@
     </nav>
 
     <!-- Conteúdo da página -->
-    <!-- Mensagens -->
     <main class="app-page">
       {% block page_header %}
         {% if page_title is defined %}{% include "components/page_header.html" %}{% endif %}
@@ -129,9 +128,7 @@
 
     <!-- Toast -->
     <div
-      class="toast-container position-fixed bottom-0 end-0 p-3"
-      style="z-index: 9999"
-    >
+      class="toast-container position-fixed bottom-0 end-0 p-3">
       <div
         id="liveToast"
         class="toast align-items-center text-bg-primary border-0"

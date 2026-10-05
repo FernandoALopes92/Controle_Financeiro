@@ -216,7 +216,7 @@ def nova_movimentacao_cartao():
 
     meios = get_meios_pagamento()
     categorias = Categoria.query.filter(Categoria.categoria_pai_id.isnot(None), Categoria.tipo == 'despesa').order_by(Categoria.nome.asc()).all()
-    return render_template("cartao/formAddDespesaCartao.html", meios=meios, categorias=categorias)
+    return render_template("cartao/modal_mov_cartao.html", meios=meios, categorias=categorias)
 
 
 @cartao_bp.route("/mov_cartao/<int:id>/edit", methods=["GET", "POST"])
@@ -270,7 +270,7 @@ def editar_movimentacao_cartao(id):
                 tipo="danger", status=500,
             )
 
-    return render_template("cartao/formAddDespesaCartao.html", meios=meios, categorias=categorias, mov=mov_cartao)
+    return render_template("cartao/modal_mov_cartao.html", meios=meios, categorias=categorias, mov=mov_cartao)
 
 @cartao_bp.route("/mov_cartao/<int:id>/excluir", methods=["POST"])
 @login_required

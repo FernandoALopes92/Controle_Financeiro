@@ -15,17 +15,50 @@ function fecharAlertsAutomaticamente(tempo = 1500) {
   }, tempo); // tempo em milissegundos
 }
 
-// Chama a função para fechar os alerts após 4 segundos
-fecharAlertsAutomaticamente(1500); // Passando 4 segundos como exemplo
+// Chama a função para fechar os alerts após 1.5 segundos
+fecharAlertsAutomaticamente(1500); //
+
+const tiposToast = {
+  success: 'success',
+  danger: 'danger',
+  warning: 'warning',
+  info: 'info',
+  primary: 'primary',
+};
+
+const temposToast = {
+  success: 4000,
+  primary: 3000,
+  info: 3000,
+  warning: 4000,
+  danger: 5000,
+};
 
 function exibirToast(mensagem, tipo = 'primary') {
   const toastEl = document.getElementById('liveToast');
   const toastBody = document.getElementById('toastMessage');
 
-  toastBody.textContent = mensagem;
-  toastEl.className = `toast align-items-center text-bg-${tipo} border-0`;
+  if (!toastEl || !toastBody) {
+    return;
+  }
 
-  const toast = new bootstrap.Toast(toastEl);
+  const classeToast = tiposToast[tipo] || 'primary';
+  const tempoToast = temposToast[tipo] || 3000;
+
+  toastBody.textContent = mensagem;
+  toastEl.className = `toast align-items-center text-bg-${classeToast} border-0`;
+
+  let toast = bootstrap.Toast.getInstance(toastEl);
+
+  if (toast) {
+    toast.dispose();
+  }
+
+  toast = new bootstrap.Toast(toastEl, {
+    autohide: true,
+    delay: tempoToast,
+  });
+
   toast.show();
 }
 
@@ -107,6 +140,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+function formatarMoeda(valor) {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(Number(valor));
+}
+
 function aplicarConfirmacaoExclusao(
   selector,
   urlBuilder,
@@ -115,18 +155,45 @@ function aplicarConfirmacaoExclusao(
   document.querySelectorAll(selector).forEach((botao) => {
     botao.addEventListener('click', () => {
       const id = botao.dataset.id;
+      const descricao = botao.dataset.descricao;
+      const valor = botao.dataset.valor;
+      const data = botao.dataset.data;
+
       const url =
         typeof urlBuilder === 'function' ? urlBuilder(id) : urlBuilder;
 
       Swal.fire({
-        title: 'Excluir?',
-        text: 'Essa ação não pode ser desfeita!',
+        title: 'Excluir movimentação?',
+        html: `
+          <div class="system-confirmation">
+
+
+            <div class="system-confirmation__content">
+              <span class="system-confirmation__label">
+                Você está prestes a excluir:
+              </span>
+
+              <strong class="system-confirmation__description">
+                ${descricao}
+              </strong>
+
+              <span class="system-confirmation__details">
+                ${data} · ${formatarMoeda(valor)}
+              </span>
+
+              <span class="system-confirmation__warning">
+                Essa ação não pode ser desfeita.
+              </span>
+            </div>
+          </div>
+        `,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#6f42c1',
         cancelButtonColor: '#adb5bd',
+        confirmButtonColor: '#df4a55',
         confirmButtonText: 'Sim, excluir',
         cancelButtonText: 'Cancelar',
+        reverseButtons: true,
       }).then((result) => {
         if (result.isConfirmed) {
           fetch(url, {

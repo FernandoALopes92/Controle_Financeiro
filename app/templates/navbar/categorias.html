@@ -1,5 +1,5 @@
 {% extends 'navbar/base.html' %}
-{% block title %}xxx{% endblock %}
+{% block title %}Cadastro Categorias{% endblock %}
 
 {% block page_header %}
   {% set page_eyebrow = 'Organização' %}
@@ -21,19 +21,6 @@
 {% endblock %}
 {% block content %}
 <div class="business-page business-page--categories">
-  
-      <!-- Flash messages -->
-  {% with messages = get_flashed_messages(with_categories=true) %} 
-    {% if messages %} 
-      {% for category, message in messages %} 
-        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      {% endfor %} 
-    {% endif %} 
-  {% endwith %}
-
   <div class="table-responsive"><table class="table table-hover">
     <thead>
       <tr>
@@ -78,108 +65,115 @@
   </table></div>
 
   {% for categoria in todas_categorias %}
-  
-    <div class="modal fade" id="editarModal{{ categoria.id }}" tabindex="-1">
-      <div class="modal-dialog">
-        <form method="POST" action="{{ url_for('categorias.editar_categoria', id=categoria.id) }}">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-          <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-purple text-white">
-              <h5 class="modal-title fw-bold"><i class="bi bi-tags me-2"></i>Editar Categoria</h5>
-              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4">
-              <div class="mb-3">
-                <label class="form-label text-muted fw-semibold">Nome</label>
-                <input type="text" class="form-control shadow-sm" name="nome" value="{{ categoria.nome }}" required>
-              </div>
-              <div class="mb-3">
-                <label class="form-label text-muted fw-semibold">Tipo de Fluxo</label>
-                <select class="form-select shadow-sm" name="tipo" required>
-                  <option value="receita" {% if categoria.tipo == 'receita' %}selected{% endif %}>Receita</option>
-                  <option value="despesa" {% if categoria.tipo == 'despesa' %}selected{% endif %}>Despesa</option>
-                </select>
-              </div>
-              <div class="mb-4">
-                <label class="form-label text-muted fw-semibold">Categoria Pai (Opcional)</label>
-                <select class="form-select shadow-sm" name="categoria_pai_id">
-                  <option value="">Nenhuma (É uma categoria principal)</option>
-                  {% for cat_pai in categorias %}
-                    {% if cat_pai.id != categoria.id %}
-                      <option value="{{ cat_pai.id }}" {% if categoria.categoria_pai_id == cat_pai.id %}selected{% endif %}>{{ cat_pai.nome }}</option>
-                    {% endif %}
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
-            <div class="modal-footer bg-light border-top-0">
-              <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
-              <button type="submit" class="btn btn-roxo-azulado px-4 shadow-sm">Salvar</button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
 
-    <div class="modal fade" id="excluirModal{{ categoria.id }}" tabindex="-1">
+
+    <!-- Modal Editar -->
+  {% set modal_id = 'editarModal' ~ categoria.id %}
+  {% set modal_title = 'Editar Categoria' %}
+  {% set modal_icon = 'bi-tags' %}
+  {% set modal_submit_text = 'Salvar' %}
+  {% set modal_submit_class = 'btn-roxo-azulado' %}
+
+  <div
+      class="modal fade"
+      id="editarModal{{ categoria.id }}"
+      tabindex="-1"
+      aria-labelledby="editarModal{{ categoria.id }}Label"
+      aria-hidden="true"
+  >
       <div class="modal-dialog">
-        <form method="POST" action="{{ url_for('categorias.excluir_categoria', id=categoria.id) }}">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-          <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-danger text-white">
-              <h5 class="modal-title fw-bold">Excluir Categoria</h5>
-              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4 text-center">
-              <p class="fs-5 mb-0">Tem certeza que deseja desativar a categoria <br><strong class="text-danger">{{ categoria.nome }}</strong>?</p>
-              <p class="text-muted mt-2 small">Ela deixará de aparecer em novos lançamentos, mas seu histórico será mantido.</p>
-            </div>
-            <div class="modal-footer bg-light border-top-0 justify-content-center">
-              <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
-              <button type="submit" class="btn btn-danger px-4 shadow-sm">Desativar</button>
-            </div>
-          </div>
-        </form>
+          <form
+              method="POST"
+              action="{{ url_for('categorias.editar_categoria', id=categoria.id) }}"
+          >
+              <input
+                  type="hidden"
+                  name="csrf_token"
+                  value="{{ csrf_token() }}"
+              />
+
+              <div class="modal-content">
+
+                  {% include "components/modal_header.html" %}
+
+                  <div class="modal-body p-4">
+                      {% include "navbar/modal_categorias.html" %}
+                  </div>
+
+                  {% include "components/modal_footer.html" %}
+
+              </div>
+          </form>
       </div>
-    </div>
+  </div>
+
+  <!-- Modal Excluir -->
+  {% set modal_id = 'excluirModal' ~ categoria.id %}
+  {% set modal_title = 'Desativar Categoria' %}
+  {% set modal_icon = 'bi-trash3' %}
+  {% set modal_submit_text = 'Desativar' %}
+  {% set modal_submit_class = 'btn-danger' %}
+
+  <div
+      class="modal fade"
+      id="excluirModal{{ categoria.id }}"
+      tabindex="-1"
+      aria-labelledby="excluirModal{{ categoria.id }}Label"
+      aria-hidden="true"
+  >
+      <div class="modal-dialog">
+          <form
+              method="POST"
+              action="{{ url_for('categorias.excluir_categoria', id=categoria.id) }}"
+          >
+              <input
+                  type="hidden"
+                  name="csrf_token"
+                  value="{{ csrf_token() }}"
+              />
+
+              <div class="modal-content">
+
+                  {% include "components/modal_header.html" %}
+
+                  <div class="modal-body p-4 text-center">
+                      <p class="fs-5 mb-0">
+                          Tem certeza que deseja desativar a categoria
+                          <br>
+                          <strong class="text-danger">{{ categoria.nome }}</strong>?
+                      </p>
+
+                      <p class="text-muted mt-2 small">
+                          Ela deixará de aparecer em novos lançamentos, mas seu histórico será mantido.
+                      </p>
+                  </div>
+
+                  {% include "components/modal_footer.html" %}
+
+              </div>
+          </form>
+      </div>
+  </div>
   {% endfor %}
 
+  <!-- Modal Nova Categoria -->
+  {% set modal_id = 'adicionarModal' %}
+  {% set modal_title = 'Nova Categoria' %}
+  {% set modal_icon = 'bi-tags-fill' %}
+  {% set modal_submit_text = 'Adicionar' %}
+  {% set modal_submit_class = 'btn-purple' %}
   <div class="modal fade" id="adicionarModal" tabindex="-1">
     <div class="modal-dialog">
       <form method="POST" action="{{ url_for('categorias.listar') }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-        <div class="modal-content border-0 shadow">
-          <div class="modal-header bg-purple text-white">
-            <h5 class="modal-title fw-bold"><i class="bi bi-tags-fill me-2"></i>Nova Categoria</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-          </div>
+        <div class="modal-content">
+          {% include "components/modal_header.html" %}
           <div class="modal-body p-4">
-            <div class="mb-3">
-              <label class="form-label text-muted fw-semibold">Nome da Categoria</label>
-              <input type="text" class="form-control shadow-sm" name="nome" placeholder="Ex: Alimentação, Mercado..." required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label text-muted fw-semibold">Tipo de Fluxo</label>
-              <select class="form-select shadow-sm" name="tipo" required>
-                <option value="">Selecione...</option>
-                <option value="receita">Receita (Entrada)</option>
-                <option value="despesa">Despesa (Saída)</option>
-              </select>
-            </div>
-            <div class="mb-4">
-              <label class="form-label text-muted fw-semibold">Categoria Pai (Subcategoria)</label>
-              <select class="form-select shadow-sm" name="categoria_pai_id">
-                <option value="">Nenhuma (Criar como Categoria Principal)</option>
-                {% for cat_pai in categorias %}
-                  <option value="{{ cat_pai.id }}">{{ cat_pai.nome }}</option>
-                {% endfor %}
-              </select>
-            </div>
+              {% with categoria = none %}
+                  {% include "navbar/modal_categorias.html" %}
+              {% endwith %}
           </div>
-          <div class="modal-footer bg-light border-top-0">
-            <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-purple px-4 shadow-sm">Adicionar</button>
-          </div>
+            {% include "components/modal_footer.html" %}
         </div>
       </form>
     </div>

@@ -1,0 +1,66 @@
+<div class="mb-3">
+    <label class="form-label text-muted fw-semibold">
+        Nome da Categoria
+    </label>
+
+    <input
+        type="text"
+        class="form-control shadow-sm"
+        name="nome"
+        value="{{ categoria.nome if categoria else '' }}"
+        placeholder="Ex: Alimentação, Mercado..."
+        required
+    >
+</div>
+
+<div class="mb-3">
+    <label class="form-label text-muted fw-semibold">
+        Tipo de Fluxo
+    </label>
+
+    <select
+        class="form-select shadow-sm"
+        name="tipo"
+        required
+    >
+        <option value="">Selecione...</option>
+
+        <option
+            value="receita"
+            {% if categoria and categoria.tipo == 'receita' %}selected{% endif %}
+        >
+            Receita (Entrada)
+        </option>
+
+        <option
+            value="despesa"
+            {% if categoria and categoria.tipo == 'despesa' %}selected{% endif %}
+        >
+            Despesa (Saída)
+        </option>
+    </select>
+</div>
+
+<div class="mb-4">
+    <label class="form-label text-muted fw-semibold">
+        Categoria Pai (Subcategoria)
+    </label>
+
+    <select
+        class="form-select shadow-sm"
+        name="categoria_pai_id"
+    >
+        <option value="">
+            Nenhuma (Criar como Categoria Principal)
+        </option>
+
+        {% for cat_pai in categorias %}
+            <option
+                value="{{ cat_pai.id }}"
+                {% if categoria and categoria.categoria_pai_id == cat_pai.id %}selected{% endif %}
+            >
+                {{ cat_pai.nome }}
+            </option>
+        {% endfor %}
+    </select>
+</div>

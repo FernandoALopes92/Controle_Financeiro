@@ -431,7 +431,10 @@
                                         mes=mes_filtro
                                     ) }}"
                                     class="d-inline form-excluir"
-                                    data-parcelas="{{ mov.numero_parcelas }}">
+                                    data-parcelas="{{ mov.numero_parcelas }}"
+                                    data-descricao="{{ mov.descricao }}"
+                                    data-valor="{{ mov.valor }}"
+                                    data-data="{{ mov.data_compra.strftime('%d/%m/%Y') }}">
 
                                     <input
                                         type="hidden"
@@ -650,7 +653,10 @@
                                 mes=mes_filtro
                             ) }}"
                             class="d-inline form-excluir"
-                            data-parcelas="{{ mov.numero_parcelas }}">
+                            data-parcelas="{{ mov.numero_parcelas }}"
+                            data-descricao="{{ mov.descricao }}"
+                            data-valor="{{ mov.valor }}"
+                            data-data="{{ mov.data_compra.strftime('%d/%m/%Y') }}">
 
                             <input
                                 type="hidden"
@@ -805,21 +811,9 @@
                                     />
 
                                     <span
-                                        class="badge bg-lavanda invoice-status-clickable"
+                                        class="badge bg-lavanda invoice-status-clickable btn-fechar-fatura"
                                         role="button"
-                                        onclick="
-                                            if (
-                                                confirm(
-                                                    'Tem certeza que deseja fechar esta fatura?'
-                                                )
-                                            ) {
-                                                document
-                                                    .getElementById(
-                                                        'form-fechar-{{ fatura.id }}'
-                                                    )
-                                                    .submit();
-                                            }
-                                        ">
+                                        data-form-id="form-fechar-{{ fatura.id }}">
 
                                         Aberta
 
@@ -856,12 +850,7 @@
 
                                     <button
                                         type="submit"
-                                        class="btn btn-sm btn-outline-danger py-0 px-1 border-0"
-                                        onclick="
-                                            return confirm(
-                                                'Deseja estornar o pagamento desta fatura?'
-                                            )
-                                        "
+                                        class="btn btn-sm btn-outline-danger py-0 px-1 border-0 btn-estornar-fatura"
                                         title="Estornar Pagamento">
 
                                         <i class="bi bi-arrow-counterclockwise"></i>
@@ -899,13 +888,8 @@
 
                                     <button
                                         type="submit"
-                                        class="btn btn-sm btn-outline-danger py-0 px-1 border-0"
-                                        onclick="
-                                            return confirm(
-                                                'Deseja estornar o pagamento parcial?'
-                                            )
-                                        "
-                                        title="Estornar Pagamento Parcial">
+                                        class="btn btn-sm btn-outline-danger py-0 px-1 border-0 btn-estornar-fatura"
+                                         title="Estornar Pagamento Parcial">
 
                                         <i class="bi bi-arrow-counterclockwise"></i>
 
@@ -935,21 +919,9 @@
                                     />
 
                                     <span
-                                        class="badge bg-secondary invoice-status-clickable"
+                                        class="badge bg-secondary invoice-status-clickable btn-reabrir-fatura"
                                         role="button"
-                                        onclick="
-                                            if (
-                                                confirm(
-                                                    'Deseja reabrir esta fatura?'
-                                                )
-                                            ) {
-                                                document
-                                                    .getElementById(
-                                                        'form-reabrir-{{ fatura.id }}'
-                                                    )
-                                                    .submit();
-                                            }
-                                        ">
+                                        data-form-id="form-reabrir-{{ fatura.id }}">
 
                                         Fechada
 
@@ -1107,7 +1079,7 @@
      MODAL NOVA COMPRA
 =========================================================== -->
 
-{% include 'cartao/formAddDespesaCartao.html' %}
+{% include 'cartao/modal_mov_cartao.html' %}
 
 
 <script src="{{ url_for('static', filename='js/movCartao.js')}}"></script>

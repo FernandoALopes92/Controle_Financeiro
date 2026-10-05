@@ -554,10 +554,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (novaCompraButton) {
     novaCompraButton.addEventListener('click', () => {
-      const form = document.getElementById('formAddDespesaCartao');
+      const form = document.getElementById('modal_mov_cartao');
 
       if (!form) return;
 
+      const modalTitulo = document.getElementById(
+        'modalMovimentacaoCartaoLabel',
+      );
+
+      if (modalTitulo) {
+        modalTitulo.textContent = 'Nova Compra no Cartão';
+      }
       // Reset padrão
       form.reset();
 
@@ -576,10 +583,10 @@ document.addEventListener('DOMContentLoaded', function () {
       form.removeAttribute('action');
 
       // Texto do botão
-      const btnSalvar = document.getElementById('btnSalvarMovimentacao');
+      const btnSalvar = form.querySelector('button[type="submit"]');
 
       if (btnSalvar) {
-        btnSalvar.innerText = 'Salvar';
+        btnSalvar.innerText = 'Salvar Compra';
       }
 
       // Seleciona primeiro item dos selects
@@ -717,7 +724,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const data = await res.json();
 
-        const form = document.getElementById('formAddDespesaCartao');
+        const form = document.getElementById('modal_mov_cartao');
 
         if (!form) {
           return;
@@ -728,6 +735,14 @@ document.addEventListener('DOMContentLoaded', function () {
         form.setAttribute('data-id', id);
 
         form.removeAttribute('action');
+
+        const modalTitulo = document.getElementById(
+          'modalMovimentacaoCartaoLabel',
+        );
+
+        if (modalTitulo) {
+          modalTitulo.textContent = 'Editar Compra no Cartão';
+        }
 
         // Descrição
         if (form.descricao) {
@@ -900,7 +915,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Botão atualizar
         // ==================================================
 
-        const btnSalvar = document.getElementById('btnSalvarMovimentacao');
+        const btnSalvar = form.querySelector('button[type="submit"]');
 
         if (btnSalvar) {
           btnSalvar.innerText = 'Atualizar';
@@ -948,10 +963,10 @@ document.addEventListener('DOMContentLoaded', function () {
   // SUBMIT DO FORMULÁRIO
   // ========================================================
 
-  const formAddDespesaCartao = document.getElementById('formAddDespesaCartao');
+  const modal_mov_cartao = document.getElementById('modal_mov_cartao');
 
-  if (formAddDespesaCartao) {
-    formAddDespesaCartao.addEventListener('submit', async function (e) {
+  if (modal_mov_cartao) {
+    modal_mov_cartao.addEventListener('submit', async function (e) {
       e.preventDefault();
 
       const form = this;
@@ -1028,7 +1043,6 @@ document.addEventListener('DOMContentLoaded', function () {
 // ==========================================================
 // EXCLUIR MOVIMENTAÇÃO
 // ==========================================================
-
 document.addEventListener('DOMContentLoaded', () => {
   const formsExcluir = document.querySelectorAll('.form-excluir');
 
@@ -1039,25 +1053,114 @@ document.addEventListener('DOMContentLoaded', () => {
       const numeroParcelas =
         parseInt(this.getAttribute('data-parcelas'), 10) || 1;
 
+      const descricao = this.getAttribute('data-descricao') || 'Movimentação';
+      const valor = this.getAttribute('data-valor') || '0';
+      const data = this.getAttribute('data-data') || '';
+
       const inputExcluirTodas = this.querySelector('.input-excluir-todas');
 
-      // Primeira confirmação
-      if (confirm('Tem certeza que deseja excluir este lançamento?')) {
-        // Segunda confirmação para parceladas
-        if (numeroParcelas > 1) {
-          const apagarTodas = confirm(
-            '⚠️ COMPRA PARCELADA DETECTADA!\n\n' +
-              '• Clique em [OK] se quiser apagar TODAS as parcelas desta compra.\n' +
-              '• Clique em [Cancelar] se quiser apagar APENAS esta parcela.',
-          );
+      // ======================================================
+      // MOVIMENTAÇÃO PARCELADA
+      // ======================================================
 
-          if (inputExcluirTodas) {
-            inputExcluirTodas.value = apagarTodas ? 'true' : 'false';
+      if (numeroParcelas > 1) {
+        Swal.fire({
+          title: 'Excluir compra parcelada?',
+          html: `
+            <div class="system-confirmation">
+              <div class="system-confirmation__content">
+                <span class="system-confirmation__label">
+                  Você está prestes a excluir:
+                </span>
+
+                <strong class="system-confirmation__description">
+                  ${descricao}
+                </strong>
+
+                <span class="system-confirmation__details">
+                  ${data} · ${formatarMoeda(valor)}<br>
+                  Esta compra possui
+                  <strong class="system-confirmation__highlight">
+                    ${numeroParcelas} parcelas.
+                  </strong>                  
+                </span>
+
+              <span class="system-confirmation__warning">
+                Essa ação não pode ser desfeita.
+              </span>
+              </div>
+            </div>
+          `,
+          icon: 'warning',
+          showCancelButton: true,
+          showDenyButton: true,
+          confirmButtonText: 'Todas as parcelas',
+          denyButtonText: 'Apenas esta',
+          cancelButtonText: 'Cancelar',
+          confirmButtonColor: '#df4a55',
+          denyButtonColor: '#6c4cf1',
+          cancelButtonColor: '#adb5bd',
+          reverseButtons: true,
+          focusCancel: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            if (inputExcluirTodas) {
+              inputExcluirTodas.value = 'true';
+            }
+
+            form.submit();
+          } else if (result.isDenied) {
+            if (inputExcluirTodas) {
+              inputExcluirTodas.value = 'false';
+            }
+
+            form.submit();
           }
-        }
+        });
 
-        this.submit();
+        return;
       }
+
+      // ======================================================
+      // MOVIMENTAÇÃO NORMAL
+      // ======================================================
+
+      Swal.fire({
+        title: 'Excluir lançamento?',
+        html: `
+          <div class="system-confirmation">
+            <div class="system-confirmation__content">
+              <span class="system-confirmation__label">
+                Você está prestes a excluir:
+              </span>
+
+              <strong class="system-confirmation__description">
+                ${descricao}
+              </strong>
+
+              <span class="system-confirmation__details">
+                ${data} · ${formatarMoeda(valor)}
+              </span>
+
+              <span class="system-confirmation__warning">
+                Essa ação não pode ser desfeita.
+              </span>
+            </div>
+          </div>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#df4a55',
+        cancelButtonColor: '#adb5bd',
+        confirmButtonText: 'Sim, excluir',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+        focusCancel: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          form.submit();
+        }
+      });
     });
   });
 });
@@ -1079,7 +1182,9 @@ function atualizarSaldoConta(faturaId) {
 
   const campoSaldo = document.getElementById('saldoConta_' + faturaId);
 
-  const botaoConfirmar = modal.querySelector('.btn.btn-purple');
+  const botaoConfirmar = document.getElementById(
+    'btnConfirmarPagamento_' + faturaId,
+  );
 
   if (!selectElement || !valorInput) {
     return;
@@ -1193,4 +1298,95 @@ document.addEventListener('click', function (e) {
       menuCartao.classList.add('d-none');
     }
   }
+});
+
+// ==========================================================
+// CONFIRMAR ESTORNO DE FATURA
+// ==========================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+  const botoesEstorno = document.querySelectorAll('.btn-estornar-fatura');
+
+  botoesEstorno.forEach((botao) => {
+    botao.addEventListener('click', (event) => {
+      event.preventDefault();
+
+      const form = botao.closest('form');
+
+      Swal.fire({
+        title: 'Estornar pagamento?',
+        text: 'O pagamento desta fatura será estornado.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#df4a55',
+        cancelButtonColor: '#adb5bd',
+        confirmButtonText: 'Sim, estornar',
+        cancelButtonText: 'Cancelar',
+      }).then((result) => {
+        if (result.isConfirmed && form) {
+          form.submit();
+        }
+      });
+    });
+  });
+});
+
+// ==========================================================
+// CONFIRMAR REABERTURA DE FATURA
+// ==========================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+  const botoesReabrir = document.querySelectorAll('.btn-reabrir-fatura');
+
+  botoesReabrir.forEach((botao) => {
+    botao.addEventListener('click', () => {
+      const formId = botao.dataset.formId;
+      const form = document.getElementById(formId);
+
+      Swal.fire({
+        title: 'Reabrir fatura?',
+        text: 'A fatura será reaberta para novas alterações.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#6c4cf1',
+        cancelButtonColor: '#adb5bd',
+        confirmButtonText: 'Sim, reabrir',
+        cancelButtonText: 'Cancelar',
+      }).then((result) => {
+        if (result.isConfirmed && form) {
+          form.submit();
+        }
+      });
+    });
+  });
+});
+
+// ==========================================================
+// CONFIRMAR FECHAMENTO DE FATURA
+// ==========================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+  const botoesFechar = document.querySelectorAll('.btn-fechar-fatura');
+
+  botoesFechar.forEach((botao) => {
+    botao.addEventListener('click', () => {
+      const formId = botao.dataset.formId;
+      const form = document.getElementById(formId);
+
+      Swal.fire({
+        title: 'Fechar fatura?',
+        text: 'A fatura será fechada para novos lançamentos.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#6c4cf1',
+        cancelButtonColor: '#adb5bd',
+        confirmButtonText: 'Sim, fechar',
+        cancelButtonText: 'Cancelar',
+      }).then((result) => {
+        if (result.isConfirmed && form) {
+          form.submit();
+        }
+      });
+    });
+  });
 });

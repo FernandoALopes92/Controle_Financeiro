@@ -1,5 +1,6 @@
 {% extends "navbar/base.html" %}
-{% block title %}xxx{% endblock %}
+
+{% block title %}Cadastro Contas{% endblock %}
 {% block page_styles %}<link rel="stylesheet" href="" />{% endblock %}
 
 
@@ -23,23 +24,6 @@
 {% endblock %}
 {% block content %}
 <div class="business-page business-page--accounts">
-
-    <!-- Flash messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %} {% for category, message in messages %}
-    <div
-      class="alert alert-{{ category }} alert-dismissible fade show"
-      role="alert"
-    >
-      {{ message }}
-      <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close"
-      ></button>
-    </div>
-    {% endfor %} {% endif %} {% endwith %}
 
     <!-- Tabela de contas -->
     <div class="table-responsive"><table class="table table-hover">
@@ -103,12 +87,18 @@
         </tr>
 
         <!------------------------------------------------------------------------------------------------------------------------->
+        {% set modal_id = 'modalEditarConta' ~ conta.id %}
+        {% set modal_title = 'Editar Conta' %}
+        {% set modal_icon = 'bi-pencil-square' %}
+        {% set modal_submit_text = 'Salvar' %}
+        {% set modal_submit_class = 'btn-roxo-azulado' %}
+        
         <!-- Modal Editar -->
         <div
           class="modal fade"
           id="modalEditarConta{{ conta.id }}"
           tabindex="-1"
-          aria-labelledby="modalEditarLabel{{ conta.id }}"
+          aria-labelledby="modalEditarConta{{ conta.id }}Label"
           aria-hidden="true"
         >
           <div class="modal-dialog">
@@ -119,122 +109,43 @@
             >
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
               <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title">Editar Conta</h5>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Fechar"
-                  ></button>
-                </div>
+                  {% include "components/modal_header.html" %}
                 <div class="modal-body">
-                  <div class="mb-3">
-                    <label for="nome" class="form-label">Nome</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      name="nome"
-                      value="{{ conta.nome }}"
-                      required
-                    />
-                  </div>
-
-                  <div class="mb-3">
-                    <label for="data" class="form-label">Data</label>
-                    <input
-                      type="date"
-                      class="form-control"
-                      name="data"
-                      value="{{ conta.data }}"
-                      required
-                    />
-                  </div>
-                  <div class="mb-3">
-                    <label for="saldo_inicial" class="form-label"
-                      >Saldo Inicial</label
-                    >
-                    <input
-                      type="number"
-                      step="0.01"
-                      class="form-control"
-                      name="saldo_inicial"
-                      value="{{ conta.saldo_inicial }}"
-                    />
-                  </div>
-                 <div class="mb-3">
-                    <label for="tipo" class="form-label">Tipo</label>
-                    <select class="form-select" name="tipo" required> 
-                      <option value="carteira" {% if conta.tipo == 'carteira' %}selected{% endif %}>Carteira</option>
-                      <option value="conta_corrente" {% if conta.tipo == 'conta_corrente' %}selected{% endif %}>Conta Corrente</option>
-                      <option value="investimento" {% if conta.tipo == 'investimento' %}selected{% endif %}>Investimento</option>
-                    </select>
-                  </div>
-                  <div class="mb-3">
-                    <label for="logo" class="form-label">Logo</label>
-                    <input
-                      type="file"
-                      class="form-control"
-                      name="logo"
-                      value="{{ conta.logo }}"
-                      accept="image/*"
-                    />
-                  </div>
+                  {% include "navbar/modal_contas.html" %}
                 </div>
-                <div class="modal-footer">
-                  <button type="submit" class="btn btn-roxo-azulado">Salvar</button>
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
-                    Cancelar
-                  </button>
-                </div>
+                  {% include "components/modal_footer.html" %}
               </div>
             </form>
           </div>
         </div>
 
+
+        {% set modal_id = 'modalExcluirConta' ~ conta.id %}
+        {% set modal_title = 'Confirmar Exclusão' %}
+        {% set modal_icon = 'bi-trash3' %}
+        {% set modal_submit_text = 'Excluir' %}
+        {% set modal_submit_class = 'btn-danger' %}
         <!-- Modal Excluir -->
         <div
           class="modal fade"
           id="modalExcluirConta{{ conta.id }}"
           tabindex="-1"
-          aria-labelledby="modalExcluirLabel{{ conta.id }}"
+          aria-labelledby="modalExcluirConta{{ conta.id }}Label"
           aria-hidden="true"
         >
           <div class="modal-dialog">
             <form
               method="POST"
-              enctype="multipart/form-data"
               action="{{ url_for('contas.excluir_conta', id=conta.id) }}"
             >
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
               <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title">Confirmar Exclusão</h5>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Fechar"
-                  ></button>
-                </div>
+                {% include "components/modal_header.html" %}
                 <div class="modal-body">
                   Tem certeza que deseja excluir a conta
-                  <strong>{{ conta.nome }}</strong>?
+                  <strong class="text-danger">{{ conta.nome }}</strong>?
                 </div>
-                <div class="modal-footer">
-                  <button type="submit" class="btn btn-danger">Excluir</button>
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
-                    Cancelar
-                  </button>
-                </div>
+                {% include "components/modal_footer.html" %}
               </div>
             </form>
           </div>
@@ -242,87 +153,51 @@
 
         {% endfor %}
       </tbody>
-    </table></div>
+    </table>
+  </div>
+
+
+  {% set modal_id = 'modalNovaConta' %}
+  {% set modal_title = 'Nova Conta' %}
+  {% set modal_icon = 'bi-wallet2' %}
+  {% set modal_submit_text = 'Cadastrar' %}
+  {% set modal_submit_class = 'btn-primary' %}
 
   <!-- Modal Nova Conta -->
   <div
-    class="modal fade"
-    id="modalNovaConta"
-    tabindex="-1"
-    aria-labelledby="modalNovaContaLabel"
-    aria-hidden="true"
+      class="modal fade"
+      id="modalNovaConta"
+      tabindex="-1"
+      aria-labelledby="modalNovaContaLabel"
+      aria-hidden="true"
   >
-    <div class="modal-dialog">
-      <form
-        method="POST"
-        enctype="multipart/form-data"
-        action="{{ url_for('contas.listar') }}"
-      >
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Nova Conta</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Fechar"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <div class="mb-3">
-              <label for="nome" class="form-label">Nome</label>
-              <input type="text" class="form-control" name="nome" required />
-            </div>
-            <div class="mb-3">
-              <label for="data" class="form-label">Data</label>
-              <input type="date" class="form-control" name="data" required />
-            </div>
-
-            <div class="mb-3">
-              <label for="saldo_inicial" class="form-label"
-                >Saldo Inicial</label
-              >
+      <div class="modal-dialog">
+          <form
+              method="POST"
+              enctype="multipart/form-data"
+              action="{{ url_for('contas.listar') }}"
+          >
               <input
-                type="number"
-                step="0.01"
-                class="form-control"
-                name="saldo_inicial"
+                  type="hidden"
+                  name="csrf_token"
+                  value="{{ csrf_token() }}"
               />
-            </div>
-            <div class="mb-3">
-              <label for="tipo" class="form-label">Tipo</label>
-              <select class="form-select" name="tipo" required>
-                <option value="">Selecione</option>
-                <option value="carteira">Carteira</option>
-                <option value="conta_corrente">Conta Corrente</option>
-                <option value="investimento">Investimento</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label for="logo" class="form-label">Logo</label>
-              <input
-                type="file"
-                class="form-control"
-                name="logo"
-                accept="image/*"
-              />
-            </div>
-          </div>
 
-          <div class="modal-footer">
-              <button type="submit" class="btn btn-purple">Cadastrar</button>
-              <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Cancelar
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
+              <div class="modal-content">
+
+                  {% include "components/modal_header.html" %}
+
+                  <div class="modal-body">
+                      {% with conta = none %}
+                          {% include "navbar/modal_contas.html" %}
+                      {% endwith %}
+                  </div>
+
+                  {% include "components/modal_footer.html" %}
+
+              </div>
+          </form>
+      </div>
   </div>
 </div>
 {% endblock %}

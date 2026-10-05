@@ -326,7 +326,7 @@ def lista():
     # 9. RENDERIZAÇÃO
     # ==========================================================
     return render_template(
-        "mov_contas/lista_movimentacoes.html",
+        "mov_contas/mov_contas.html",
 
         # LISTAS COMPLETAS
         movimentacoes=movimentacoes_periodo,

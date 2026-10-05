@@ -1,0 +1,438 @@
+{% set modal_id = 'modalMovimentacaoCartao' %}
+{% set modal_title = 'Nova Compra no Cartão' %}
+{% set modal_icon = 'bi-cart-plus' %}
+{% set modal_submit_text = 'Salvar Compra' %}
+{% set modal_submit_class = 'btn-purple' %}
+<div
+    class="modal fade"
+    id="{{ modal_id }}"
+    tabindex="-1"
+    aria-labelledby="{{ modal_id }}Label"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-xl modal-mov-cartao">
+        <div class="modal-content">
+
+            <form
+                id="modal_mov_cartao"
+                method="post"
+                action="{{ url_for('cartao.editar_movimentacao_cartao', id=mov.id) if mov else url_for('cartao.nova_movimentacao_cartao') }}"
+            >
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                />
+
+                {% include "components/modal_header.html" %}
+
+                <div class="modal-body">
+
+                    <!-- ==================================================
+                         FORMA DE PAGAMENTO
+                    =================================================== -->
+                    <div
+                        class="modal-mov-cartao__payment-type"
+                        id="tipoPagamentoContainer"
+                    >
+                        <label class="form-label">
+                            Forma de Pagamento:
+                        </label>
+
+                        <div class="form-check form-check-inline">
+                            <input
+                                class="form-check-input"
+                                type="radio"
+                                name="tipo_pagamento"
+                                id="avista"
+                                value="avista"
+                                {% if not mov or mov.tipo_pagamento == 'avista' %}checked{% endif %}
+                            >
+                            <label
+                                id="lblAvista"
+                                class="form-check-label"
+                                for="avista"
+                            >
+                                À vista
+                            </label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input
+                                class="form-check-input"
+                                type="radio"
+                                name="tipo_pagamento"
+                                id="parcelado"
+                                value="parcelado"
+                                {% if mov and mov.tipo_pagamento == 'parcelado' %}checked{% endif %}
+                            >
+                            <label
+                                id="lblParcelado"
+                                class="form-check-label"
+                                for="parcelado"
+                            >
+                                Parcelado
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- ==================================================
+                         DESCRIÇÃO / VALOR / ESTORNO
+                    =================================================== -->
+                    <div class="row g-3 mb-3 align-items-end">
+
+                        <div class="col-md-5">
+                            <label
+                                for="descricao"
+                                class="form-label"
+                            >
+                                Descrição
+                            </label>
+
+                            <input
+                                type="text"
+                                id="descricao"
+                                name="descricao"
+                                class="form-control"
+                                placeholder="Ex: Mercado Livre, Padaria..."
+                                value="{{ mov.descricao if mov else '' }}"
+                                required
+                            >
+                        </div>
+
+                        <div class="col-md-3">
+                            <label
+                                for="valor"
+                                class="form-label"
+                            >
+                                Valor
+                            </label>
+
+                            <div class="input-group">
+                                <span class="input-group-text">R$</span>
+
+                                <input
+                                    type="text"
+                                    id="valor"
+                                    name="valor"
+                                    class="form-control"
+                                    placeholder="0,00"
+                                    value="{{ mov.valor if mov else '' }}"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-check form-switch pb-2">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    id="is_estorno"
+                                    name="is_estorno"
+                                    value="true"
+                                >
+
+                                <label
+                                    class="form-check-label modal-mov-cartao__estorno-label"
+                                    for="is_estorno"
+                                >
+                                    <i class="bi bi-arrow-down-circle"></i>
+                                    Estorno / Crédito
+                                </label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- ==================================================
+                         ALTERAR ESTA E AS PRÓXIMAS
+                    =================================================== -->
+                    <div
+                        id="blocoAlterarProximas"
+                        class="modal-mov-cartao__future-update d-none"
+                    >
+                        <div class="form-check form-switch">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="alterar_proximas"
+                                name="alterar_proximas"
+                                value="true"
+                            >
+
+                            <label
+                                class="form-check-label"
+                                for="alterar_proximas"
+                            >
+                                <i class="bi bi-calendar-range me-1"></i>
+                                Atualizar valor desta e das próximas?
+                            </label>
+
+                            <small class="modal-mov-cartao__help">
+                                Aplica o novo valor para todas as cobranças
+                                futuras que fazem parte deste mesmo item
+                                (Recorrente/Parcelado).
+                            </small>
+
+                        </div>
+                    </div>
+
+                    <!-- ==================================================
+                         PARCELAMENTO
+                    =================================================== -->
+                    <div
+                        id="valorTipoSection"
+                        class="modal-mov-cartao__installments"
+                    >
+                        <div class="row g-3 align-items-center">
+
+                            <div class="col-md-6 d-flex align-items-center">
+
+                                <label class="form-label mb-0 me-3">
+                                    Lançar como:
+                                </label>
+
+                                <div class="form-check form-check-inline mb-0">
+                                    <input
+                                        class="form-check-input"
+                                        type="radio"
+                                        name="tipo_valor"
+                                        id="valor_total"
+                                        value="total"
+                                        {% if not mov or mov.tipo_valor == 'total' %}checked{% endif %}
+                                    >
+
+                                    <label
+                                        class="form-check-label"
+                                        for="valor_total"
+                                    >
+                                        Valor Total
+                                    </label>
+                                </div>
+
+                                <div class="form-check form-check-inline mb-0">
+                                    <input
+                                        class="form-check-input"
+                                        type="radio"
+                                        name="tipo_valor"
+                                        id="valor_parcela"
+                                        value="parcela"
+                                        {% if mov and mov.tipo_valor == 'parcela' %}checked{% endif %}
+                                    >
+
+                                    <label
+                                        class="form-check-label"
+                                        for="valor_parcela"
+                                    >
+                                        Valor da Parcela
+                                    </label>
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-6 d-flex align-items-center">
+
+                                <label
+                                    for="numero_parcelas"
+                                    class="form-label mb-0 me-3 text-nowrap"
+                                >
+                                    Quantidade de Parcelas:
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="numero_parcelas"
+                                    name="numero_parcelas"
+                                    class="form-control"
+                                    min="2"
+                                    placeholder="Ex: 10"
+                                    value="{{ mov.numero_parcelas if mov and mov.numero_parcelas else '' }}"
+                                >
+
+                            </div>
+
+                        </div>
+
+                        <div
+                            id="valorParcelaCalculado"
+                            class="modal-mov-cartao__calculated-installment"
+                        >
+                            <small
+                                class="fw-bold fs-6"
+                                id="textoValorParcela"
+                            ></small>
+                        </div>
+                    </div>
+
+                    <!-- ==================================================
+                         DATA / CARTÃO / CATEGORIA
+                    =================================================== -->
+                    <div class="row g-3 mb-3">
+
+                        <div class="col-md-4">
+                            <label
+                                for="data"
+                                class="form-label"
+                            >
+                                Data da Compra
+                            </label>
+
+                            <input
+                                type="date"
+                                id="data"
+                                name="data"
+                                class="form-control"
+                                value="{{ mov.data_compra.strftime('%Y-%m-%d') if mov else '' }}"
+                                required
+                            >
+                        </div>
+
+                        <div class="col-md-4">
+                            <label
+                                for="meio_pagamento_id"
+                                class="form-label"
+                            >
+                                Cartão de Crédito
+                            </label>
+
+                            <select
+                                id="meio_pagamento_id"
+                                name="meio_pagamento_id"
+                                class="form-select"
+                                required
+                            >
+                                <option
+                                    value=""
+                                    disabled
+                                    selected
+                                >
+                                    Selecione o cartão
+                                </option>
+
+                                {% for mp in meios %}
+                                    <option
+                                        value="{{ mp.id }}"
+                                        {% if mov and mov.meio_pagamento_id == mp.id %}selected{% endif %}
+                                    >
+                                        {{ mp.nome }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label
+                                for="categoria_id"
+                                class="form-label"
+                            >
+                                Categoria
+                            </label>
+
+                            <select
+                                id="categoria_id"
+                                name="categoria_id"
+                                class="form-select"
+                                required
+                            >
+                                <option
+                                    value=""
+                                    disabled
+                                    selected
+                                >
+                                    Selecione a categoria
+                                </option>
+
+                                {% for cat in categorias %}
+                                    <option
+                                        value="{{ cat.id }}"
+                                        {% if mov and mov.categoria_id == cat.id %}selected{% endif %}
+                                    >
+                                        {{ cat.nome }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <!-- ==================================================
+                         FATURA
+                    =================================================== -->
+                    <div class="modal-mov-cartao__invoice">
+
+                        <label
+                            for="fatura_mes_ano"
+                            class="form-label"
+                        >
+                            Lançar na Fatura de:
+                        </label>
+
+                        <select
+                            id="fatura_mes_ano"
+                            name="fatura_mes_ano"
+                            class="form-select"
+                            required
+                        >
+                            <option
+                                value=""
+                                disabled
+                                selected
+                            >
+                                Selecione data e cartão...
+                            </option>
+                        </select>
+
+                    </div>
+
+                    <!-- ==================================================
+                         RECORRÊNCIA
+                    =================================================== -->
+                    <div
+                        class="modal-mov-cartao__recurrence"
+                        id="recorrenteSection"
+                    >
+                        <div>
+
+                            <label
+                                for="replicar"
+                                class="form-label mb-1 d-block"
+                            >
+                                <i class="bi bi-arrow-repeat text-purple me-1"></i>
+                                Conta Recorrente?
+                            </label>
+
+                            <small class="modal-mov-cartao__help">
+                                Ideal para Netflix, Internet, etc.
+                                O sistema criará lançamentos independentes
+                                de 1 parcela nos meses seguintes.
+                            </small>
+
+                        </div>
+
+                        <select
+                            id="replicar"
+                            name="replicar"
+                            class="form-select"
+                        >
+                            <option value="nao">
+                                Não, apenas este mês
+                            </option>
+
+                            <option value="3_meses">
+                                Sim, clonar por +3 meses
+                            </option>
+                        </select>
+
+                    </div>
+
+                </div>
+
+                {% include "components/modal_footer.html" %}
+
+            </form>
+
+        </div>
+    </div>
+</div>

@@ -388,12 +388,15 @@
 
 
                                             <button
+                                                type="button"
                                                 class="btn btn-sm btn-outline-roxo-azulado btn-excluir"
                                                 data-id="{{ m.id }}"
-                                                title="Excluir">
-
+                                                data-descricao="{{ m.descricao }}"
+                                                data-valor="{{ m.valor }}"
+                                                data-data="{{ m.data.strftime('%d/%m/%Y') }}"
+                                                title="Excluir"
+                                            >
                                                 <i class="bi bi-trash3"></i>
-
                                             </button>
 
                                         {% else %}
@@ -578,7 +581,7 @@
                                             method="POST"
                                             action="{{ url_for('transferencias.excluir_transferencia', id=t.id) }}"
                                             class="d-inline"
-                                            onsubmit="return confirm('Excluir esta transferência? O dinheiro será devolvido à conta de origem.');">
+                                            >
 
                                             <input
                                                 type="hidden"
@@ -587,7 +590,7 @@
 
                                             <button
                                                 type="submit"
-                                                class="btn btn-sm btn-outline-roxo-azulado btn-excluir"
+                                                class="btn btn-sm btn-outline-roxo-azulado btn-excluir-transf"
                                                 title="Excluir">
 
                                                 <i class="bi bi-trash3"></i>
@@ -1029,9 +1032,9 @@
 
 
 
-{% include 'mov_contas/form_movimentacao.html' %}
+{% include 'mov_contas/modal_mov_contas.html' %}
 
-{% include 'transferencias/form_transferencias.html' %}
+{% include 'transferencias/modal_transferencias.html' %}
 
 
 

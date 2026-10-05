@@ -167,3 +167,69 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// --- CONFIRMAÇÃO DE EXCLUSÃO DE TRANSFERÊNCIA ---
+document.addEventListener('click', (event) => {
+  const botao = event.target.closest('.btn-excluir-transf');
+
+  if (!botao) return;
+
+  event.preventDefault();
+
+  const form = botao.closest('form');
+
+  if (!form) return;
+
+  const linha = botao.closest('tr');
+
+  const data =
+    linha?.querySelector('td:nth-child(1)')?.textContent.trim() || '';
+
+  const origem =
+    linha?.querySelector('.conta-origem')?.textContent.trim() || '';
+
+  const destino =
+    linha?.querySelector('.conta-destino')?.textContent.trim() || '';
+
+  const valor =
+    linha?.querySelector('.valor-transferencia')?.textContent.trim() || '';
+
+  Swal.fire({
+    title: 'Excluir transferência?',
+    html: `
+      <div class="system-confirmation">
+        <div class="system-confirmation__content">
+          <span class="system-confirmation__label">
+            Você está prestes a excluir esta transferência:
+          </span>
+
+          <strong class="system-confirmation__description">
+            Conta de origem: ${origem}
+          </strong>
+
+          <strong class="system-confirmation__description">
+            Conta de destino: ${destino}
+          </strong>
+
+          <span class="system-confirmation__details">
+            ${data} · ${valor}
+          </span>
+
+          <span class="system-confirmation__warning">
+            O dinheiro será devolvido à conta de origem.
+          </span>
+        </div>
+      </div>
+    `,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#df4a55',
+    cancelButtonColor: '#adb5bd',
+    confirmButtonText: 'Sim, excluir',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.submit();
+    }
+  });
+});

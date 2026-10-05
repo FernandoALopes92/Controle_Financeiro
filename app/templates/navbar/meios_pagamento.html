@@ -1,7 +1,5 @@
 {% extends 'navbar/base.html' %}
-{% block title %}xxx{% endblock %}
-
-
+{% block title %}Cadastro Meios de Pagamento{% endblock %}
 
 {% block page_header %}
   {% set page_eyebrow = 'Organização' %}
@@ -23,15 +21,6 @@
 {% endblock %}
 {% block content %}
 <div class="business-page business-page--payment-methods">
-
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for
-    category, message in messages %} 
-      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    {% endfor %} {% endif %} {% endwith %}
-
     <div class="table-responsive"><table class="table table-hover">
       <thead>
         <tr>
@@ -79,190 +68,146 @@
             </button>
           </td>
         </tr>
-
-        <div
-          class="modal fade"
-          id="editarModal{{ meio.id }}"
-          tabindex="-1"
-          aria-labelledby="editarModalLabel{{ meio.id }}"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog">
-            <form
-              method="POST"
-              enctype="multipart/form-data"
-              action="{{ url_for('meios_pagamento.editar_meio_pagamento', id=meio.id) }}"
-            >
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="editarModalLabel{{ meio.id }}">
-                    Editar Meio de Pagamento
-                  </h5>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Fechar"
-                  ></button>
-                </div>
-                <input type="hidden" name="tipo" value="cartao_credito" />
-                <div class="modal-body">
-                  <div class="mb-3">
-                    <label for="nome" class="form-label">Nome do Cartão</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      name="nome"
-                      value="{{ meio.nome }}"
-                      required
-                    />
-                  </div>
-                  <div class="mb-3">
-                    <label for="fechamento_dia" class="form-label">Fechamento</label>
-                    <input
-                      type="number"
-                      class="form-control"
-                      name="fechamento_dia"
-                      value="{{ meio.fechamento_dia }}"
-                    />
-                  </div>
-                  <div class="mb-3">
-                    <label for="vencimento_dia" class="form-label">Vencimento</label>
-                    <input
-                      type="number"
-                      class="form-control"
-                      name="vencimento_dia"
-                      value="{{ meio.vencimento_dia }}"
-                    />
-                  </div>
-                  <div class="mb-3">
-                    <label for="limite" class="form-label">Limite</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      class="form-control"
-                      name="limite"
-                      value="{{ meio.limite }}"
-                    />
-                  </div>
-                  <div class="mb-3">
-                    <label for="logo" class="form-label">Logo do Cartão</label>
-                    <input
-                      type="file"
-                      class="form-control"
-                      name="logo"
-                      accept="image/*"
-                    />
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="submit" class="btn btn-roxo-azulado">Salvar</button>
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    Cancelar
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        <div
-          class="modal fade"
-          id="excluirModal{{ meio.id }}"
-          tabindex="-1"
-          aria-labelledby="excluirModalLabel{{ meio.id }}"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog">
-            <form
-              method="POST"
-              action="{{ url_for('meios_pagamento.excluir_meio_pagamento', id=meio.id) }}"
-            >
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="excluirModalLabel{{ meio.id }}">
-                    Excluir Meio de Pagamento
-                  </h5>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Fechar"
-                  ></button>
-                </div>
-                <div class="modal-body">
-                  Tem certeza que deseja excluir o Meio de Pagamento
-                  <strong>{{ meio.nome }}</strong>?
-                </div>
-                <div class="modal-footer">
-                  <button type="submit" class="btn btn-danger">Excluir</button>
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    Cancelar
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
+       
         {% endfor %}
       </tbody>
     </table>
-  </div>
+  </div>  
+
+  {% for meio in meios_pagamento %}
+
+      <!-- Modal Editar -->
+      {% set modal_id = 'editarModal' ~ meio.id %}
+      {% set modal_title = 'Editar Meio de Pagamento' %}
+      {% set modal_icon = 'bi-pencil-square' %}
+      {% set modal_submit_text = 'Salvar' %}
+      {% set modal_submit_class = 'btn-roxo-azulado' %}
+
+      <div
+          class="modal fade"
+          id="editarModal{{ meio.id }}"
+          tabindex="-1"
+          aria-labelledby="editarModal{{ meio.id }}Label"
+          aria-hidden="true"
+      >
+          <div class="modal-dialog">
+              <form
+                  method="POST"
+                  enctype="multipart/form-data"
+                  action="{{ url_for('meios_pagamento.editar_meio_pagamento', id=meio.id) }}"
+              >
+                  <input
+                      type="hidden"
+                      name="csrf_token"
+                      value="{{ csrf_token() }}"
+                  />
+
+                  <div class="modal-content">
+                      {% include "components/modal_header.html" %}
+
+                      <input
+                          type="hidden"
+                          name="tipo"
+                          value="cartao_credito"
+                      />
+
+                      <div class="modal-body">
+                          {% include "navbar/modal_meios_pagamento.html" %}
+                      </div>
+
+                      {% include "components/modal_footer.html" %}
+                  </div>
+              </form>
+          </div>
+      </div>
+
+
+      <!-- Modal Excluir -->
+      {% set modal_id = 'excluirModal' ~ meio.id %}
+      {% set modal_title = 'Excluir Meio de Pagamento' %}
+      {% set modal_icon = 'bi-trash3' %}
+      {% set modal_submit_text = 'Excluir' %}
+      {% set modal_submit_class = 'btn-danger' %}
+
+      <div
+          class="modal fade"
+          id="excluirModal{{ meio.id }}"
+          tabindex="-1"
+          aria-labelledby="excluirModal{{ meio.id }}Label"
+          aria-hidden="true"
+      >
+          <div class="modal-dialog">
+              <form
+                  method="POST"
+                  action="{{ url_for('meios_pagamento.excluir_meio_pagamento', id=meio.id) }}"
+              >
+                  <input
+                      type="hidden"
+                      name="csrf_token"
+                      value="{{ csrf_token() }}"
+                  />
+
+                  <div class="modal-content">
+                      {% include "components/modal_header.html" %}
+
+                      <div class="modal-body">
+                          Tem certeza que deseja excluir o meio de pagamento
+                          <strong class="text-danger">{{ meio.nome }}</strong>?
+                      </div>
+
+                      {% include "components/modal_footer.html" %}
+                  </div>
+              </form>
+          </div>
+      </div>
+
+  {% endfor %}
+
+    <!--Modal Novo Meio Pagamento-->
+  {% set modal_id = 'cadastroModal' %}
+  {% set modal_title = 'Cadastrar Meio de Pagamento' %}
+  {% set modal_icon = 'bi-credit-card' %}
+  {% set modal_submit_text = 'Cadastrar' %}
+  {% set modal_submit_class = 'btn-purple' %}
 
   <div
-    class="modal fade"
-    id="cadastroModal"
-    tabindex="-1"
-    aria-labelledby="cadastroModalLabel"
-    aria-hidden="true"
+      class="modal fade"
+      id="cadastroModal"
+      tabindex="-1"
+      aria-labelledby="cadastroModalLabel"
+      aria-hidden="true"
   >
-    <div class="modal-dialog">
-      <form method="POST" enctype="multipart/form-data" action="{{ url_for('meios_pagamento.listar') }}">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="cadastroModalLabel">Cadastrar Meio de Pagamento</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Fechar"
-            ></button>
-          </div>
-          <input type="hidden" name="tipo" value="cartao_credito" />
-          <div class="modal-body">
-            <div class="mb-3">
-              <label for="nome" class="form-label">Nome do Meio de Pagamento</label>
-              <input type="text" class="form-control" id="nome" name="nome" required />
-            </div>
-            <div class="mb-3">
-              <label for="fechamento_dia" class="form-label">Fechamento</label>
-              <input type="number" class="form-control" name="fechamento_dia" />
-            </div>
-            <div class="mb-3">
-              <label for="vencimento_dia" class="form-label">Vencimento</label>
-              <input type="number" class="form-control" name="vencimento_dia" />
-            </div>
-            <div class="mb-3">
-              <label for="limite" class="form-label">Limite</label>
-              <input type="number" step="0.01" class="form-control" name="limite" />
-            </div>
-            <div class="mb-3">
-              <label for="logo" class="form-label">Logo do Cartão</label>
-              <input type="file" class="form-control" name="logo" accept="image/*" />
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-purple">Cadastrar</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-              Cancelar
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
+      <div class="modal-dialog">
+          <form
+              method="POST"
+              enctype="multipart/form-data"
+              action="{{ url_for('meios_pagamento.listar') }}"
+          >
+              <input
+                  type="hidden"
+                  name="csrf_token"
+                  value="{{ csrf_token() }}"
+              />
+
+              <div class="modal-content">
+                  {% include "components/modal_header.html" %}
+
+                  <input
+                      type="hidden"
+                      name="tipo"
+                      value="cartao_credito"
+                  />
+
+                  <div class="modal-body">
+                      {% with meio = none %}
+                          {% include "navbar/modal_meios_pagamento.html" %}
+                      {% endwith %}
+                  </div>
+
+                  {% include "components/modal_footer.html" %}
+              </div>
+          </form>
+      </div>
   </div>
 </div>
 {% endblock %}
