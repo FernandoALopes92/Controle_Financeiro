@@ -1,46 +1,46 @@
 <div
-    class="modal fade"
-    id="modalMovimentacaoConta"
-    tabindex="-1"
-    aria-labelledby="modalMovimentacaoContaLabel"
-    aria-hidden="true"
->
-    <div class="modal-dialog modal-dialog-centered">
+  class="modal fade"
+  id="modalMovimentacaoConta"
+  tabindex="-1"
+  aria-labelledby="modalMovimentacaoContaLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    {% set modal_id = 'modalMovimentacaoConta' %} {% set modal_title = 'Nova Movimentação' %} {% set modal_icon =
+    'bi-journal-plus' %} {% set modal_submit_text = 'Salvar' %} {% set modal_submit_class = 'btn-purple' %}
 
-        {% set modal_id = 'modalMovimentacaoConta' %}
-        {% set modal_title = 'Nova Movimentação' %}
-        {% set modal_icon = 'bi-journal-plus' %}
-        {% set modal_submit_text = 'Salvar' %}
-        {% set modal_submit_class = 'btn-purple' %}
+    <div class="modal-content">
+      <form method="POST" action="{{ url_for('movimentacoes.criar') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
-        <div class="modal-content">
+        {% include "components/modal_header.html" %}
 
-            <form
-                method="POST"
-                action="{{ url_for('movimentacoes.criar') }}"
-            >
-                <input
-                    type="hidden"
-                    name="csrf_token"
-                    value="{{ csrf_token() }}"
-                />
-
-                {% include "components/modal_header.html" %}
-        
         <div class="modal-body">
-          
           <div class="row g-2">
-            
             <div class="col-12 mb-1">
               <div class="btn-group w-100 shadow-sm" role="group" aria-label="Tipo de Movimentação">
-                <input type="radio" class="btn-check" name="tipo_lancamento" id="tipo_despesa" value="despesa" autocomplete="off" checked>
+                <input
+                  type="radio"
+                  class="btn-check"
+                  name="tipo_lancamento"
+                  id="tipo_despesa"
+                  value="despesa"
+                  autocomplete="off"
+                  checked />
                 <label class="btn btn-outline-danger fw-bold py-2" for="tipo_despesa">
-                  <i class="bi bi-arrow-down-circle me-1"></i> Despesa
+                  <i class="bi bi-arrow-down-circle me-1"></i>
+                  Despesa
                 </label>
 
-                <input type="radio" class="btn-check" name="tipo_lancamento" id="tipo_receita" value="receita" autocomplete="off">
+                <input
+                  type="radio"
+                  class="btn-check"
+                  name="tipo_lancamento"
+                  id="tipo_receita"
+                  value="receita"
+                  autocomplete="off" />
                 <label class="btn btn-outline-success fw-bold py-2" for="tipo_receita">
-                  <i class="bi bi-arrow-up-circle me-1"></i> Receita
+                  <i class="bi bi-arrow-up-circle me-1"></i>
+                  Receita
                 </label>
               </div>
             </div>
@@ -52,12 +52,25 @@
 
             <div class="col-md-6">
               <label for="valor" class="form-label text-muted fw-semibold small text-uppercase">Valor (R$)</label>
-              <input type="number" step="0.01" name="valor" id="valor" class="form-control shadow-sm fw-bold" placeholder="0,00" required />
+              <input
+                type="number"
+                step="0.01"
+                name="valor"
+                id="valor"
+                class="form-control shadow-sm fw-bold"
+                placeholder="0,00"
+                required />
             </div>
 
             <div class="col-12">
               <label for="descricao" class="form-label text-muted fw-semibold small text-uppercase">Descrição</label>
-              <input type="text" name="descricao" id="descricao" class="form-control shadow-sm" placeholder="Ex: Conta de Luz, Salário..." required />
+              <input
+                type="text"
+                name="descricao"
+                id="descricao"
+                class="form-control shadow-sm"
+                placeholder="Ex: Conta de Luz, Salário..."
+                required />
             </div>
 
             <div class="col-md-6">
@@ -65,9 +78,7 @@
               <select class="form-select shadow-sm" name="categoria_id" id="categoria_id" required>
                 <option value="" disabled selected>Selecione...</option>
                 {% for categoria in categorias %}
-                  <option value="{{ categoria.id }}" data-tipo="{{ categoria.tipo }}">
-                    {{ categoria.nome }}
-                  </option>
+                <option value="{{ categoria.id }}" data-tipo="{{ categoria.tipo }}">{{ categoria.nome }}</option>
                 {% endfor %}
               </select>
             </div>
@@ -77,13 +88,11 @@
               <select class="form-select shadow-sm" name="conta_id" id="conta_id" required>
                 <option value="" disabled selected>Selecione...</option>
                 {% for conta in contas %}
-                  <option value="{{ conta.id }}" data-saldo="{{ conta.saldo_atual }}">
-                    {{ conta.nome }}
-                  </option>
+                <option value="{{ conta.id }}" data-saldo="{{ conta.saldo_atual }}">{{ conta.nome }}</option>
                 {% endfor %}
               </select>
-              
-              <div id="saldoContaContainer" class="mt-1 text-end" style="display: none;">
+
+              <div id="saldoContaContainer" class="mt-1 text-end" style="display: none">
                 <span id="saldoConta" class="badge bg-secondary fw-medium"></span>
               </div>
             </div>
@@ -91,15 +100,19 @@
             <div class="col-12 mt-1">
               <div class="card border-0 shadow-sm">
                 <div class="card-body p-2 d-flex justify-content-between align-items-center">
-                  <div  class="mb-2">
+                  <div class="mb-2">
                     <label for="status" class="text-muted fw-semibold mb-1 d-block fs-6">
-                       <i class="bi bi-check-circle me-1 text-purple"></i>
+                      <i class="bi bi-check-circle me-1 text-purple"></i>
                       Status da Movimentação
                     </label>
                     <small class="text-muted">Já foi descontado ou recebido no banco?</small>
                   </div>
                   <div class="form-check form-switch fs-4 mb-0">
-                    <select class="form-select form-select-sm shadow-sm fw-medium" name="pago" id="pago" style="width: auto; font-size: 0.95rem;">
+                    <select
+                      class="form-select form-select-sm shadow-sm fw-medium"
+                      name="pago"
+                      id="pago"
+                      style="width: auto; font-size: 0.95rem">
                       <option value="true">Sim, está pago</option>
                       <option value="false">Não, pendente</option>
                     </select>
@@ -109,25 +122,26 @@
             </div>
 
             <div class="col-12 mt-1" id="recorrenteSectionContaAvulsa">
-                <div class="p-2 border rounded bg-white shadow-sm">
-                    <div class="mb-2">
-                        <label for="replicar" id="tituloRecorrente" class="text-muted fw-semibold mb-1 d-block fs-6">
-                            <i class="bi bi-arrow-repeat me-1"></i> Conta Recorrente?
-                        </label>
-                        <small id="textoRecorrente" class="text-muted d-block" style="font-size: 0.85rem; line-height: 1.4;">
-                            Ideal para contas fixas como Internet ou Telefone. O sistema clonará o lançamento para os meses seguintes.
-                        </small>
-                    </div>
-                    <select id="replicar" name="replicar" class="form-select shadow-sm fw-bold text-purple w-100 fs-6 py-2">
-                        <option value="nao">Não, apenas este mês</option>
-                        <option value="3_meses">Sim, clonar por +3 meses</option>
-                    </select>
+              <div class="p-2 border rounded bg-white shadow-sm">
+                <div class="mb-2">
+                  <label for="replicar" id="tituloRecorrente" class="text-muted fw-semibold mb-1 d-block fs-6">
+                    <i class="bi bi-arrow-repeat me-1"></i>
+                    Conta Recorrente?
+                  </label>
+                  <small id="textoRecorrente" class="text-muted d-block" style="font-size: 0.85rem; line-height: 1.4">
+                    Ideal para contas fixas como Internet ou Telefone. O sistema clonará o lançamento para os meses
+                    seguintes.
+                  </small>
                 </div>
+                <select id="replicar" name="replicar" class="form-select shadow-sm fw-bold text-purple w-100 fs-6 py-2">
+                  <option value="nao">Não, apenas este mês</option>
+                  <option value="3_meses">Sim, clonar por +3 meses</option>
+                </select>
+              </div>
             </div>
-
           </div>
         </div>
-        
+
         {% include "components/modal_footer.html" %}
       </form>
     </div>

@@ -1,109 +1,92 @@
 <aside class="app-sidebar">
+  <!-- Logo -->
+  <a href="{{ url_for('main.dashboard') }}" class="sidebar-logo">
+    <i class="bi bi-wallet2"></i>
+  </a>
 
-    <!-- Logo -->
-    <a href="{{ url_for('main.dashboard') }}" class="sidebar-logo">
-        <i class="bi bi-wallet2"></i>
+  <!-- Menu principal -->
+  <nav class="sidebar-nav">
+    <a
+      class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}"
+      href="{{ url_for('main.dashboard') }}"
+      data-title="Dashboard">
+      <i class="bi bi-grid-1x2"></i>
+
+      <span>Dashboard</span>
     </a>
 
-    <!-- Menu principal -->
-    <nav class="sidebar-nav">
+    <a
+      class="nav-link {% if request.endpoint == 'relatorios.relatorios' %}active{% endif %}"
+      href="{{ url_for('relatorios.relatorios') }}"
+      data-title="Relatórios">
+      <i class="bi bi-bar-chart-line"></i>
 
-        <a class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}"
-           href="{{ url_for('main.dashboard') }}"
-           data-title="Dashboard">
+      <span>Relatórios</span>
+    </a>
 
-            <i class="bi bi-grid-1x2"></i>
+    <a
+      class="nav-link {% if request.endpoint == 'movimentacoes.lista' %}active{% endif %}"
+      href="{{ url_for('movimentacoes.lista') }}"
+      data-title="Movimentações">
+      <i class="bi bi-arrow-left-right"></i>
 
-            <span>Dashboard</span>
+      <span>Movimentações</span>
+    </a>
 
-        </a>
+    <a
+      class="nav-link {% if request.endpoint == 'cartao.listar_movimentacoes_cartao' %}active{% endif %}"
+      href="{{ url_for('cartao.listar_movimentacoes_cartao') }}"
+      data-title="Cartões">
+      <i class="bi bi-credit-card"></i>
 
-        <a class="nav-link {% if request.endpoint == 'relatorios.relatorios' %}active{% endif %}"
-           href="{{ url_for('relatorios.relatorios') }}"
-           data-title="Relatórios">
+      <span>Cartões</span>
+    </a>
 
-            <i class="bi bi-bar-chart-line"></i>
+    <hr />
 
-            <span>Relatórios</span>
+    <a
+      class="nav-link {% if request.endpoint == 'contas.listar' %}active{% endif %}"
+      href="{{ url_for('contas.listar') }}"
+      data-title="Contas">
+      <i class="bi bi-bank"></i>
 
-        </a>
+      <span>Contas</span>
+    </a>
 
-        <a class="nav-link {% if request.endpoint == 'movimentacoes.lista' %}active{% endif %}"
-           href="{{ url_for('movimentacoes.lista') }}"
-           data-title="Movimentações">
+    <a
+      class="nav-link {% if request.endpoint == 'meios_pagamento.listar' %}active{% endif %}"
+      href="{{ url_for('meios_pagamento.listar') }}"
+      data-title="Meios de pagamento">
+      <i class="bi-credit-card-fill"></i>
 
-            <i class="bi bi-arrow-left-right"></i>
+      <span>Meios de pagamento</span>
+    </a>
 
-            <span>Movimentações</span>
+    <a
+      class="nav-link {% if request.endpoint == 'categorias.listar' %}active{% endif %}"
+      href="{{ url_for('categorias.listar') }}"
+      data-title="Categorias">
+      <i class="bi bi-tags"></i>
 
-        </a>
+      <span>Categorias</span>
+    </a>
+  </nav>
 
-        <a class="nav-link {% if request.endpoint == 'cartao.listar_movimentacoes_cartao' %}active{% endif %}"
-           href="{{ url_for('cartao.listar_movimentacoes_cartao') }}"
-           data-title="Cartões">
+  <!-- Rodapé -->
+  {% if current_user.is_authenticated %}
+  <div class="sidebar-user">
+    <a href="#" class="nav-link" data-title="{{ current_user.nome }}">
+      <i class="bi bi-person"></i>
+      <span>{{ current_user.nome }}</span>
+    </a>
 
-            <i class="bi bi-credit-card"></i>
+    <hr />
 
-            <span>Cartões</span>
+    <a href="{{ url_for('auth.logout') }}" class="nav-link" data-title="Sair">
+      <i class="bi bi-box-arrow-left"></i>
 
-        </a>
-
-        <hr>
-
-        <a class="nav-link {% if request.endpoint == 'contas.listar' %}active{% endif %}"
-           href="{{ url_for('contas.listar') }}"
-           data-title="Contas">
-
-            <i class="bi bi-bank"></i>
-
-            <span>Contas</span>
-
-        </a>
-
-        <a class="nav-link {% if request.endpoint == 'meios_pagamento.listar' %}active{% endif %}"
-           href="{{ url_for('meios_pagamento.listar') }}"
-           data-title="Meios de pagamento">
-
-            <i class="bi-credit-card-fill"></i>
-
-            <span>Meios de pagamento</span>
-
-        </a>
-
-        <a class="nav-link {% if request.endpoint == 'categorias.listar' %}active{% endif %}"
-           href="{{ url_for('categorias.listar') }}"
-           data-title="Categorias">
-
-            <i class="bi bi-tags"></i>
-
-            <span>Categorias</span>
-
-        </a>
-
-    </nav>
-
-    <!-- Rodapé -->
-    {% if current_user.is_authenticated %}
-    <div class="sidebar-user">
-
-        <a href="#" class="nav-link" data-title="{{ current_user.nome }}">
-            <i class="bi bi-person"></i>
-            <span>{{ current_user.nome }}</span>
-        </a>
-
-        <hr>
-
-        <a href="{{ url_for('auth.logout') }}"
-           class="nav-link"
-           data-title="Sair">
-
-            <i class="bi bi-box-arrow-left"></i>
-
-            <span>Sair</span>
-
-        </a>
-
-    </div>
-    {% endif %}
-
+      <span>Sair</span>
+    </a>
+  </div>
+  {% endif %}
 </aside>

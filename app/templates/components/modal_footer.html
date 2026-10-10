@@ -1,16 +1,9 @@
 <div class="modal-footer">
-    <button
-        type="button"
-        class="btn btn-secondary"
-        data-bs-dismiss="modal"
-    >
-        {{ modal_cancel_text|default('Cancelar') }}
-    </button>
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+    {{ modal_cancel_text|default('Cancelar') }}
+  </button>
 
-    <button
-        type="submit"
-        class="btn {{ modal_submit_class|default('btn-primary') }}"
-    >
-        {{ modal_submit_text|default('Salvar') }}
-    </button>
+  <button type="submit" class="btn {{ modal_submit_class|default('btn-primary') }}">
+    {{ modal_submit_text|default('Salvar') }}
+  </button>
 </div>

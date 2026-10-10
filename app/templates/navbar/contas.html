@@ -1,32 +1,18 @@
-{% extends "navbar/base.html" %}
-
-{% block title %}Cadastro Contas{% endblock %}
-{% block page_styles %}<link rel="stylesheet" href="" />{% endblock %}
-
-
-{% block page_header %}
-  {% set page_eyebrow = 'Organização' %}
-  {% set page_title = 'Minhas contas' %}
-  {% set page_subtitle = 'Gerencie saldos, tipos e disponibilidade das suas contas.' %}
-  {% set page_actions %}
-    <div class="page-header__action">
-      <button
-        class=" btn btn-primary page-header__form-button"
-        data-bs-toggle="modal"
-        data-bs-target="#modalNovaConta"
-      >
-        <i class="bi bi-plus-lg me-1"></i>
-        Nova Conta
-      </button>
-    </div>
-  {% endset %}
-  {% include "components/page_header.html" %}
-{% endblock %}
-{% block content %}
+{% extends "navbar/base.html" %} {% block title %}Cadastro Contas{% endblock %} {% block page_styles %}
+<link rel="stylesheet" href="" />
+{% endblock %} {% block page_header %} {% set page_eyebrow = 'Organização' %} {% set page_title = 'Minhas contas' %} {%
+set page_subtitle = 'Gerencie saldos, tipos e disponibilidade das suas contas.' %} {% set page_actions %}
+<div class="page-header__action">
+  <button class="btn btn-primary page-header__form-button" data-bs-toggle="modal" data-bs-target="#modalNovaConta">
+    <i class="bi bi-plus-lg me-1"></i>
+    Nova Conta
+  </button>
+</div>
+{% endset %} {% include "components/page_header.html" %} {% endblock %} {% block content %}
 <div class="business-page business-page--accounts">
-
-    <!-- Tabela de contas -->
-    <div class="table-responsive"><table class="table table-hover">
+  <!-- Tabela de contas -->
+  <div class="table-responsive">
+    <table class="table table-hover">
       <thead class="">
         <tr>
           <th>Nome</th>
@@ -52,8 +38,7 @@
             <img
               src="{{ url_for('static', filename='logos/contas/' ~ conta.logo) }}"
               alt="{{ conta.nome }} logo"
-              class="logo-img"
-            />
+              class="logo-img" />
             {% else %} - {% endif %}
           </td>
           <td>
@@ -70,8 +55,7 @@
               class="btn btn-sm btn-outline-roxo-azulado btn-editar"
               title="Editar"
               data-bs-toggle="modal"
-              data-bs-target="#modalEditarConta{{ conta.id }}"
-            >
+              data-bs-target="#modalEditarConta{{ conta.id }}">
               <i class="bi bi-pencil-fill"></i>
             </button>
 
@@ -79,71 +63,56 @@
             <button
               class="btn btn-sm btn-outline-roxo-azulado btn-excluir"
               data-bs-toggle="modal"
-              data-bs-target="#modalExcluirConta{{ conta.id }}"
-            >
+              data-bs-target="#modalExcluirConta{{ conta.id }}">
               <i class="bi bi-trash3"></i>
             </button>
           </td>
         </tr>
 
         <!------------------------------------------------------------------------------------------------------------------------->
-        {% set modal_id = 'modalEditarConta' ~ conta.id %}
-        {% set modal_title = 'Editar Conta' %}
-        {% set modal_icon = 'bi-pencil-square' %}
-        {% set modal_submit_text = 'Salvar' %}
-        {% set modal_submit_class = 'btn-roxo-azulado' %}
-        
+        {% set modal_id = 'modalEditarConta' ~ conta.id %} {% set modal_title = 'Editar Conta' %} {% set modal_icon =
+        'bi-pencil-square' %} {% set modal_submit_text = 'Salvar' %} {% set modal_submit_class = 'btn-roxo-azulado' %}
+
         <!-- Modal Editar -->
         <div
           class="modal fade"
           id="modalEditarConta{{ conta.id }}"
           tabindex="-1"
           aria-labelledby="modalEditarConta{{ conta.id }}Label"
-          aria-hidden="true"
-        >
+          aria-hidden="true">
           <div class="modal-dialog">
             <form
               method="POST"
               enctype="multipart/form-data"
-              action="{{ url_for('contas.editar_conta', id=conta.id) }}"
-            >
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+              action="{{ url_for('contas.editar_conta', id=conta.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
               <div class="modal-content">
-                  {% include "components/modal_header.html" %}
-                <div class="modal-body">
-                  {% include "navbar/modal_contas.html" %}
-                </div>
-                  {% include "components/modal_footer.html" %}
+                {% include "components/modal_header.html" %}
+                <div class="modal-body">{% include "navbar/modal_contas.html" %}</div>
+                {% include "components/modal_footer.html" %}
               </div>
             </form>
           </div>
         </div>
 
-
-        {% set modal_id = 'modalExcluirConta' ~ conta.id %}
-        {% set modal_title = 'Confirmar Exclusão' %}
-        {% set modal_icon = 'bi-trash3' %}
-        {% set modal_submit_text = 'Excluir' %}
-        {% set modal_submit_class = 'btn-danger' %}
+        {% set modal_id = 'modalExcluirConta' ~ conta.id %} {% set modal_title = 'Confirmar Exclusão' %} {% set
+        modal_icon = 'bi-trash3' %} {% set modal_submit_text = 'Excluir' %} {% set modal_submit_class = 'btn-danger' %}
         <!-- Modal Excluir -->
         <div
           class="modal fade"
           id="modalExcluirConta{{ conta.id }}"
           tabindex="-1"
           aria-labelledby="modalExcluirConta{{ conta.id }}Label"
-          aria-hidden="true"
-        >
+          aria-hidden="true">
           <div class="modal-dialog">
-            <form
-              method="POST"
-              action="{{ url_for('contas.excluir_conta', id=conta.id) }}"
-            >
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <form method="POST" action="{{ url_for('contas.excluir_conta', id=conta.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
               <div class="modal-content">
                 {% include "components/modal_header.html" %}
                 <div class="modal-body">
                   Tem certeza que deseja excluir a conta
-                  <strong class="text-danger">{{ conta.nome }}</strong>?
+                  <strong class="text-danger">{{ conta.nome }}</strong>
+                  ?
                 </div>
                 {% include "components/modal_footer.html" %}
               </div>
@@ -156,48 +125,24 @@
     </table>
   </div>
 
-
-  {% set modal_id = 'modalNovaConta' %}
-  {% set modal_title = 'Nova Conta' %}
-  {% set modal_icon = 'bi-wallet2' %}
-  {% set modal_submit_text = 'Cadastrar' %}
-  {% set modal_submit_class = 'btn-primary' %}
+  {% set modal_id = 'modalNovaConta' %} {% set modal_title = 'Nova Conta' %} {% set modal_icon = 'bi-wallet2' %} {% set
+  modal_submit_text = 'Cadastrar' %} {% set modal_submit_class = 'btn-primary' %}
 
   <!-- Modal Nova Conta -->
-  <div
-      class="modal fade"
-      id="modalNovaConta"
-      tabindex="-1"
-      aria-labelledby="modalNovaContaLabel"
-      aria-hidden="true"
-  >
-      <div class="modal-dialog">
-          <form
-              method="POST"
-              enctype="multipart/form-data"
-              action="{{ url_for('contas.listar') }}"
-          >
-              <input
-                  type="hidden"
-                  name="csrf_token"
-                  value="{{ csrf_token() }}"
-              />
+  <div class="modal fade" id="modalNovaConta" tabindex="-1" aria-labelledby="modalNovaContaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form method="POST" enctype="multipart/form-data" action="{{ url_for('contas.listar') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
-              <div class="modal-content">
+        <div class="modal-content">
+          {% include "components/modal_header.html" %}
 
-                  {% include "components/modal_header.html" %}
+          <div class="modal-body">{% with conta = none %} {% include "navbar/modal_contas.html" %} {% endwith %}</div>
 
-                  <div class="modal-body">
-                      {% with conta = none %}
-                          {% include "navbar/modal_contas.html" %}
-                      {% endwith %}
-                  </div>
-
-                  {% include "components/modal_footer.html" %}
-
-              </div>
-          </form>
-      </div>
+          {% include "components/modal_footer.html" %}
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 {% endblock %}

@@ -1,23 +1,13 @@
 <div class="modal-header">
-    <div class="modal-header__title">
-        {% if modal_icon %}
-            <span class="modal-header__icon">
-                <i class="bi {{ modal_icon }}"></i>
-            </span>
-        {% endif %}
+  <div class="modal-header__title">
+    {% if modal_icon %}
+    <span class="modal-header__icon">
+      <i class="bi {{ modal_icon }}"></i>
+    </span>
+    {% endif %}
 
-        <h5
-            class="modal-title"
-            id="{{ modal_id }}Label"
-        >
-            {{ modal_title }}
-        </h5>
-    </div>
+    <h5 class="modal-title" id="{{ modal_id }}Label">{{ modal_title }}</h5>
+  </div>
 
-    <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="modal"
-        aria-label="Fechar"
-    ></button>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
 </div>

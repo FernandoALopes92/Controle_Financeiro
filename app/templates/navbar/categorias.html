@@ -1,36 +1,25 @@
-{% extends 'navbar/base.html' %}
-{% block title %}Cadastro Categorias{% endblock %}
-
-{% block page_header %}
-  {% set page_eyebrow = 'Organização' %}
-  {% set page_title = 'Categorias' %}
-  {% set page_subtitle = 'Organize receitas e despesas para acompanhar melhor seus hábitos.' %}
-  {% set page_actions %}
-    <div class="page-header__action">
-      <button
-        class="btn btn-purple px-4"
-        data-bs-toggle="modal"
-        data-bs-target="#adicionarModal"
-      >
-        <i class="bi bi-plus-lg me-1"></i>
-        Nova Categoria
-      </button>
-    </div>
-  {% endset %}
-  {% include "components/page_header.html" %}
-{% endblock %}
-{% block content %}
+{% extends 'navbar/base.html' %} {% block title %}Cadastro Categorias{% endblock %} {% block page_header %} {% set
+page_eyebrow = 'Organização' %} {% set page_title = 'Categorias' %} {% set page_subtitle = 'Organize receitas e despesas
+para acompanhar melhor seus hábitos.' %} {% set page_actions %}
+<div class="page-header__action">
+  <button class="btn btn-purple px-4" data-bs-toggle="modal" data-bs-target="#adicionarModal">
+    <i class="bi bi-plus-lg me-1"></i>
+    Nova Categoria
+  </button>
+</div>
+{% endset %} {% include "components/page_header.html" %} {% endblock %} {% block content %}
 <div class="business-page business-page--categories">
-  <div class="table-responsive"><table class="table table-hover">
-    <thead>
-      <tr>
-        <th class="text-start ps-4">Nome da Categoria</th>
-        <th>Tipo</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for cat in categorias %}
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th class="text-start ps-4">Nome da Categoria</th>
+          <th>Tipo</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cat in categorias %}
         <tr class="table-light">
           <td class="fw-bold text-start ps-4 text-primary">{{ cat.nome }}</td>
           <td class="text-center">
@@ -39,141 +28,131 @@
             </span>
           </td>
           <td class="text-center">
-            <button class="btn btn-sm btn-outline-roxo-azulado btn-editar" title="Editar" data-bs-toggle="modal" data-bs-target="#editarModal{{ cat.id }}"><i class="bi bi-pencil-fill"></i></button>
-            <button class="btn btn-sm btn-outline-roxo-azulado btn-excluir" title="Excluir" data-bs-toggle="modal" data-bs-target="#excluirModal{{ cat.id }}"><i class="bi bi-trash3"></i></button>
+            <button
+              class="btn btn-sm btn-outline-roxo-azulado btn-editar"
+              title="Editar"
+              data-bs-toggle="modal"
+              data-bs-target="#editarModal{{ cat.id }}">
+              <i class="bi bi-pencil-fill"></i>
+            </button>
+            <button
+              class="btn btn-sm btn-outline-roxo-azulado btn-excluir"
+              title="Excluir"
+              data-bs-toggle="modal"
+              data-bs-target="#excluirModal{{ cat.id }}">
+              <i class="bi bi-trash3"></i>
+            </button>
           </td>
         </tr>
 
-        {% for sub in cat.subcategorias %}
-          {% if sub.status %}
-          <tr>
-            <td class="text-start ps-5 text-muted"><i class="bi bi-arrow-return-right me-2"></i>{{ sub.nome }}</td>
-            <td class="text-center">
-              <span class="badge bg-secondary px-3 py-1">
-                {{ sub.tipo | title }}
-              </span>
-            </td>
-            <td class="text-center">
-              <button class="btn btn-sm btn-outline-roxo-azulado btn-editar" title="Editar" data-bs-toggle="modal" data-bs-target="#editarModal{{ sub.id }}"><i class="bi bi-pencil-fill"></i></button>
-              <button class="btn btn-sm btn-outline-roxo-azulado btn-excluir" title="Excluir" data-bs-toggle="modal" data-bs-target="#excluirModal{{ sub.id }}"><i class="bi bi-trash3"></i></button>
-            </td>
-          </tr>
-          {% endif %}
-        {% endfor %}
-      {% endfor %}
-    </tbody>
-  </table></div>
+        {% for sub in cat.subcategorias %} {% if sub.status %}
+        <tr>
+          <td class="text-start ps-5 text-muted">
+            <i class="bi bi-arrow-return-right me-2"></i>
+            {{ sub.nome }}
+          </td>
+          <td class="text-center">
+            <span class="badge bg-secondary px-3 py-1">{{ sub.tipo | title }}</span>
+          </td>
+          <td class="text-center">
+            <button
+              class="btn btn-sm btn-outline-roxo-azulado btn-editar"
+              title="Editar"
+              data-bs-toggle="modal"
+              data-bs-target="#editarModal{{ sub.id }}">
+              <i class="bi bi-pencil-fill"></i>
+            </button>
+            <button
+              class="btn btn-sm btn-outline-roxo-azulado btn-excluir"
+              title="Excluir"
+              data-bs-toggle="modal"
+              data-bs-target="#excluirModal{{ sub.id }}">
+              <i class="bi bi-trash3"></i>
+            </button>
+          </td>
+        </tr>
+        {% endif %} {% endfor %} {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
   {% for categoria in todas_categorias %}
 
-
-    <!-- Modal Editar -->
-  {% set modal_id = 'editarModal' ~ categoria.id %}
-  {% set modal_title = 'Editar Categoria' %}
-  {% set modal_icon = 'bi-tags' %}
-  {% set modal_submit_text = 'Salvar' %}
-  {% set modal_submit_class = 'btn-roxo-azulado' %}
+  <!-- Modal Editar -->
+  {% set modal_id = 'editarModal' ~ categoria.id %} {% set modal_title = 'Editar Categoria' %} {% set modal_icon =
+  'bi-tags' %} {% set modal_submit_text = 'Salvar' %} {% set modal_submit_class = 'btn-roxo-azulado' %}
 
   <div
-      class="modal fade"
-      id="editarModal{{ categoria.id }}"
-      tabindex="-1"
-      aria-labelledby="editarModal{{ categoria.id }}Label"
-      aria-hidden="true"
-  >
-      <div class="modal-dialog">
-          <form
-              method="POST"
-              action="{{ url_for('categorias.editar_categoria', id=categoria.id) }}"
-          >
-              <input
-                  type="hidden"
-                  name="csrf_token"
-                  value="{{ csrf_token() }}"
-              />
+    class="modal fade"
+    id="editarModal{{ categoria.id }}"
+    tabindex="-1"
+    aria-labelledby="editarModal{{ categoria.id }}Label"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <form method="POST" action="{{ url_for('categorias.editar_categoria', id=categoria.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
-              <div class="modal-content">
+        <div class="modal-content">
+          {% include "components/modal_header.html" %}
 
-                  {% include "components/modal_header.html" %}
+          <div class="modal-body p-4">{% include "navbar/modal_categorias.html" %}</div>
 
-                  <div class="modal-body p-4">
-                      {% include "navbar/modal_categorias.html" %}
-                  </div>
-
-                  {% include "components/modal_footer.html" %}
-
-              </div>
-          </form>
-      </div>
+          {% include "components/modal_footer.html" %}
+        </div>
+      </form>
+    </div>
   </div>
 
   <!-- Modal Excluir -->
-  {% set modal_id = 'excluirModal' ~ categoria.id %}
-  {% set modal_title = 'Desativar Categoria' %}
-  {% set modal_icon = 'bi-trash3' %}
-  {% set modal_submit_text = 'Desativar' %}
-  {% set modal_submit_class = 'btn-danger' %}
+  {% set modal_id = 'excluirModal' ~ categoria.id %} {% set modal_title = 'Desativar Categoria' %} {% set modal_icon =
+  'bi-trash3' %} {% set modal_submit_text = 'Desativar' %} {% set modal_submit_class = 'btn-danger' %}
 
   <div
-      class="modal fade"
-      id="excluirModal{{ categoria.id }}"
-      tabindex="-1"
-      aria-labelledby="excluirModal{{ categoria.id }}Label"
-      aria-hidden="true"
-  >
-      <div class="modal-dialog">
-          <form
-              method="POST"
-              action="{{ url_for('categorias.excluir_categoria', id=categoria.id) }}"
-          >
-              <input
-                  type="hidden"
-                  name="csrf_token"
-                  value="{{ csrf_token() }}"
-              />
+    class="modal fade"
+    id="excluirModal{{ categoria.id }}"
+    tabindex="-1"
+    aria-labelledby="excluirModal{{ categoria.id }}Label"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <form method="POST" action="{{ url_for('categorias.excluir_categoria', id=categoria.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
-              <div class="modal-content">
+        <div class="modal-content">
+          {% include "components/modal_header.html" %}
 
-                  {% include "components/modal_header.html" %}
+          <div class="modal-body p-4 text-center">
+            <p class="fs-5 mb-0">
+              Tem certeza que deseja desativar a categoria
+              <br />
+              <strong class="text-danger">{{ categoria.nome }}</strong>
+              ?
+            </p>
 
-                  <div class="modal-body p-4 text-center">
-                      <p class="fs-5 mb-0">
-                          Tem certeza que deseja desativar a categoria
-                          <br>
-                          <strong class="text-danger">{{ categoria.nome }}</strong>?
-                      </p>
+            <p class="text-muted mt-2 small">
+              Ela deixará de aparecer em novos lançamentos, mas seu histórico será mantido.
+            </p>
+          </div>
 
-                      <p class="text-muted mt-2 small">
-                          Ela deixará de aparecer em novos lançamentos, mas seu histórico será mantido.
-                      </p>
-                  </div>
-
-                  {% include "components/modal_footer.html" %}
-
-              </div>
-          </form>
-      </div>
+          {% include "components/modal_footer.html" %}
+        </div>
+      </form>
+    </div>
   </div>
   {% endfor %}
 
   <!-- Modal Nova Categoria -->
-  {% set modal_id = 'adicionarModal' %}
-  {% set modal_title = 'Nova Categoria' %}
-  {% set modal_icon = 'bi-tags-fill' %}
-  {% set modal_submit_text = 'Adicionar' %}
-  {% set modal_submit_class = 'btn-purple' %}
+  {% set modal_id = 'adicionarModal' %} {% set modal_title = 'Nova Categoria' %} {% set modal_icon = 'bi-tags-fill' %}
+  {% set modal_submit_text = 'Adicionar' %} {% set modal_submit_class = 'btn-purple' %}
   <div class="modal fade" id="adicionarModal" tabindex="-1">
     <div class="modal-dialog">
       <form method="POST" action="{{ url_for('categorias.listar') }}">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="modal-content">
           {% include "components/modal_header.html" %}
           <div class="modal-body p-4">
-              {% with categoria = none %}
-                  {% include "navbar/modal_categorias.html" %}
-              {% endwith %}
+            {% with categoria = none %} {% include "navbar/modal_categorias.html" %} {% endwith %}
           </div>
-            {% include "components/modal_footer.html" %}
+          {% include "components/modal_footer.html" %}
         </div>
       </form>
     </div>

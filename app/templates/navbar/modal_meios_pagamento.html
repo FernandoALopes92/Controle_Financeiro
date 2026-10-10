@@ -1,61 +1,24 @@
 <div class="mb-3">
-    <label for="nome" class="form-label">
-        Nome do Cartão
-    </label>
-    <input
-        type="text"
-        class="form-control"
-        name="nome"
-        value="{{ meio.nome if meio else '' }}"
-        required
-    />
+  <label for="nome" class="form-label">Nome do Cartão</label>
+  <input type="text" class="form-control" name="nome" value="{{ meio.nome if meio else '' }}" required />
 </div>
 
 <div class="mb-3">
-    <label for="fechamento_dia" class="form-label">
-        Fechamento
-    </label>
-    <input
-        type="number"
-        class="form-control"
-        name="fechamento_dia"
-        value="{{ meio.fechamento_dia if meio else '' }}"
-    />
+  <label for="fechamento_dia" class="form-label">Fechamento</label>
+  <input type="number" class="form-control" name="fechamento_dia" value="{{ meio.fechamento_dia if meio else '' }}" />
 </div>
 
 <div class="mb-3">
-    <label for="vencimento_dia" class="form-label">
-        Vencimento
-    </label>
-    <input
-        type="number"
-        class="form-control"
-        name="vencimento_dia"
-        value="{{ meio.vencimento_dia if meio else '' }}"
-    />
+  <label for="vencimento_dia" class="form-label">Vencimento</label>
+  <input type="number" class="form-control" name="vencimento_dia" value="{{ meio.vencimento_dia if meio else '' }}" />
 </div>
 
 <div class="mb-3">
-    <label for="limite" class="form-label">
-        Limite
-    </label>
-    <input
-        type="number"
-        step="0.01"
-        class="form-control"
-        name="limite"
-        value="{{ meio.limite if meio else '' }}"
-    />
+  <label for="limite" class="form-label">Limite</label>
+  <input type="number" step="0.01" class="form-control" name="limite" value="{{ meio.limite if meio else '' }}" />
 </div>
 
 <div class="mb-3">
-    <label for="logo" class="form-label">
-        Logo do Cartão
-    </label>
-    <input
-        type="file"
-        class="form-control"
-        name="logo"
-        accept="image/*"
-    />
+  <label for="logo" class="form-label">Logo do Cartão</label>
+  <input type="file" class="form-control" name="logo" accept="image/*" />
 </div>

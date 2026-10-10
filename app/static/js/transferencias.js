@@ -1,5 +1,3 @@
-console.log('O arquivo transferencias.js foi carregado com sucesso!');
-
 document.addEventListener('DOMContentLoaded', () => {
   const modalTransf = document.getElementById('modalTransferencia');
   if (!modalTransf) return;

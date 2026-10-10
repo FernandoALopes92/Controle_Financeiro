@@ -1,185 +1,92 @@
 <div
-    class="modal fade"
-    id="modalTransferencia"
-    tabindex="-1"
-    aria-labelledby="modalTransferenciaLabel"
-    aria-hidden="true"
->
-    <div class="modal-dialog modal-dialog-centered">
-        {% set modal_id = 'modalTransferencia' %}
-        {% set modal_title = 'Nova Transferência' %}
-        {% set modal_icon = 'bi-arrow-left-right' %}
-        {% set modal_submit_text = 'Transferir' %}
-        {% set modal_submit_class = 'btn-purple' %}
+  class="modal fade"
+  id="modalTransferencia"
+  tabindex="-1"
+  aria-labelledby="modalTransferenciaLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    {% set modal_id = 'modalTransferencia' %} {% set modal_title = 'Nova Transferência' %} {% set modal_icon =
+    'bi-arrow-left-right' %} {% set modal_submit_text = 'Transferir' %} {% set modal_submit_class = 'btn-purple' %}
 
-        <div class="modal-content">
-            <form
-                id="formTransferencia"
-                method="POST"
-                action="{{ url_for('transferencias.nova_transferencia') }}"
-            >
-                <input
-                    type="hidden"
-                    name="csrf_token"
-                    value="{{ csrf_token() }}"
-                />
+    <div class="modal-content">
+      <form id="formTransferencia" method="POST" action="{{ url_for('transferencias.nova_transferencia') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
-                {% include "components/modal_header.html" %}
+        {% include "components/modal_header.html" %}
 
-                <div class="modal-body">
-                    <div class="row g-3">
+        <div class="modal-body">
+          <div class="row g-3">
+            <!-- CONTA DE ORIGEM -->
+            <div class="col-md-6">
+              <label for="conta_origem" class="form-label">Conta de Origem</label>
 
-                        <!-- CONTA DE ORIGEM -->
-                        <div class="col-md-6">
-                            <label
-                                for="conta_origem"
-                                class="form-label"
-                            >
-                                Conta de Origem
-                            </label>
+              <select id="conta_origem" class="form-select" name="conta_origem" required>
+                <option value="" disabled selected>Selecione...</option>
 
-                            <select
-                                id="conta_origem"
-                                class="form-select"
-                                name="conta_origem"
-                                required
-                            >
-                                <option
-                                    value=""
-                                    disabled
-                                    selected
-                                >
-                                    Selecione...
-                                </option>
+                {% for conta in contas %}
+                <option value="{{ conta.id }}" data-saldo="{{ conta.saldo_atual }}">{{ conta.nome }}</option>
+                {% endfor %}
+              </select>
 
-                                {% for conta in contas %}
-                                    <option
-                                        value="{{ conta.id }}"
-                                        data-saldo="{{ conta.saldo_atual }}"
-                                    >
-                                        {{ conta.nome }}
-                                    </option>
-                                {% endfor %}
-                            </select>
+              <div id="saldoContaOrigemContainer" class="modal-transferencia__saldo-container">
+                <span id="saldoContaOrigem" class="modal-transferencia__saldo"></span>
+              </div>
+            </div>
 
-                            <div
-                                id="saldoContaOrigemContainer"
-                                class="modal-transferencia__saldo-container"
-                            >
-                                <span
-                                    id="saldoContaOrigem"
-                                    class="modal-transferencia__saldo"
-                                ></span>
-                            </div>
-                        </div>
+            <!-- CONTA DE DESTINO -->
+            <div class="col-md-6">
+              <label for="conta_destino" class="form-label">Conta de Destino</label>
 
-                        <!-- CONTA DE DESTINO -->
-                        <div class="col-md-6">
-                            <label
-                                for="conta_destino"
-                                class="form-label"
-                            >
-                                Conta de Destino
-                            </label>
+              <select id="conta_destino" class="form-select" name="conta_destino" required>
+                <option value="" disabled selected>Selecione...</option>
 
-                            <select
-                                id="conta_destino"
-                                class="form-select"
-                                name="conta_destino"
-                                required
-                            >
-                                <option
-                                    value=""
-                                    disabled
-                                    selected
-                                >
-                                    Selecione...
-                                </option>
+                {% for conta in contas %}
+                <option value="{{ conta.id }}" data-saldo="{{ conta.saldo_atual }}">{{ conta.nome }}</option>
+                {% endfor %}
+              </select>
 
-                                {% for conta in contas %}
-                                    <option
-                                        value="{{ conta.id }}"
-                                        data-saldo="{{ conta.saldo_atual }}"
-                                    >
-                                        {{ conta.nome }}
-                                    </option>
-                                {% endfor %}
-                            </select>
+              <div id="saldoContaDestinoContainer" class="modal-transferencia__saldo-container">
+                <span id="saldoContaDestino" class="modal-transferencia__saldo"></span>
+              </div>
+            </div>
 
-                            <div
-                                id="saldoContaDestinoContainer"
-                                class="modal-transferencia__saldo-container"
-                            >
-                                <span
-                                    id="saldoContaDestino"
-                                    class="modal-transferencia__saldo"
-                                ></span>
-                            </div>
-                        </div>
+            <!-- VALOR -->
+            <div class="col-md-6">
+              <label for="valor" class="form-label">Valor (R$)</label>
 
-                        <!-- VALOR -->
-                        <div class="col-md-6">
-                            <label
-                                for="valor"
-                                class="form-label"
-                            >
-                                Valor (R$)
-                            </label>
+              <input
+                type="number"
+                step="0.01"
+                name="valor"
+                id="valor"
+                class="form-control fw-bold"
+                placeholder="0,00"
+                required />
+            </div>
 
-                            <input
-                                type="number"
-                                step="0.01"
-                                name="valor"
-                                id="valor"
-                                class="form-control fw-bold"
-                                placeholder="0,00"
-                                required
-                            />
-                        </div>
+            <!-- DATA -->
+            <div class="col-md-6">
+              <label for="dataTransferencia" class="form-label">Data</label>
 
-                        <!-- DATA -->
-                        <div class="col-md-6">
-                            <label
-                                for="dataTransferencia"
-                                class="form-label"
-                            >
-                                Data
-                            </label>
+              <input type="date" id="dataTransferencia" name="data" class="form-control" value="{{ data }}" required />
+            </div>
 
-                            <input
-                                type="date"
-                                id="dataTransferencia"
-                                name="data"
-                                class="form-control"
-                                value="{{ data }}"
-                                required
-                            />
-                        </div>
+            <!-- OBSERVAÇÕES -->
+            <div class="col-12">
+              <label for="descricao" class="form-label">Observações</label>
 
-                        <!-- OBSERVAÇÕES -->
-                        <div class="col-12">
-                            <label
-                                for="descricao"
-                                class="form-label"
-                            >
-                                Observações
-                            </label>
-
-                            <input
-                                type="text"
-                                name="descricao"
-                                id="descricao"
-                                class="form-control"
-                                placeholder="Ex: Pagamento de empréstimo, reserva..."
-                            />
-                        </div>
-
-                    </div>
-                </div>
-
-                {% include "components/modal_footer.html" %}
-
-            </form>
+              <input
+                type="text"
+                name="descricao"
+                id="descricao"
+                class="form-control"
+                placeholder="Ex: Pagamento de empréstimo, reserva..." />
+            </div>
+          </div>
         </div>
+
+        {% include "components/modal_footer.html" %}
+      </form>
     </div>
+  </div>
 </div>
