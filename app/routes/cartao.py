@@ -315,6 +315,15 @@ def obter_movimentacao_cartao(id):
     mov = MovimentacaoCartao.query.filter_by(id=id, familia_id=current_user.familia_id).first_or_404()
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        tem_proximas = (
+            bool(mov.compra_grupo_id)
+            and MovimentacaoCartao.query.filter(
+                MovimentacaoCartao.compra_grupo_id == mov.compra_grupo_id,
+                MovimentacaoCartao.familia_id == current_user.familia_id,
+                MovimentacaoCartao.data_compra > mov.data_compra,
+            ).first()
+            is not None
+        )
         return jsonify({
             'id': mov.id,
             'descricao': mov.descricao,
@@ -326,7 +335,8 @@ def obter_movimentacao_cartao(id):
             'parcela_atual': mov.parcela_atual,
             'fatura_id_mes': mov.fatura.mes,
             'fatura_id_ano': mov.fatura.ano,
-            "compra_grupo_id": mov.compra_grupo_id
+            "compra_grupo_id": mov.compra_grupo_id,
+            "tem_proximas": tem_proximas
         })
 
     return redirect(url_for('cartao.listar_movimentacoes_cartao'))

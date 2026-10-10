@@ -244,7 +244,11 @@ def criar_movimentacao(
     valor = dados.valor * Decimal("-1") if dados.is_estorno else dados.valor
     mes_base, ano_base = _parse_mes_ano(dados.fatura_mes_ano)
     cartao = obter_cartao(dados.cartao_id, familia_id)
-    grupo_id = str(uuid.uuid4())
+    
+    # só compras parceladas ou recorrentes precisam de grupo; à vista fica sem
+    precisa_grupo = dados.tipo_pagamento == "parcelado" or dados.replicar == "3_meses"
+    grupo_id = str(uuid.uuid4()) if precisa_grupo else None
+
     faturas_modificadas: Set[int] = set()
     if dados.tipo_pagamento == "parcelado":
         numero_parcelas = dados.numero_parcelas

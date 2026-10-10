@@ -732,7 +732,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const blocoProximas = document.getElementById('blocoAlterarProximas');
 
         if (blocoProximas) {
-          if (data.numero_parcelas > 1 || data.compra_grupo_id) {
+          if (data.tem_proximas) {
             blocoProximas.classList.remove('d-none');
 
             const alterarProximas = document.getElementById('alterar_proximas');
