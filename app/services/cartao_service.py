@@ -1,6 +1,6 @@
 """Regras de negócio de movimentações de cartão e faturas."""
 from __future__ import annotations
-import uuid
+import uuid, re
 from calendar import monthrange
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -37,13 +37,22 @@ class ValorInvalidoError(CartaoServiceError):
 # Utilitários
 # ---------------------------------------------------------------------------
 def converter_valor_para_decimal(valor_str: str) -> Optional[Decimal]:
+    if not valor_str:
+        return None
+    texto = valor_str.replace("R$", "").replace(" ", "").strip()
+    if "," in texto:
+        # a vírgula é o decimal; os pontos são separador de milhar
+        texto = texto.replace(".", "").replace(",", ".")
+    elif re.fullmatch(r"-?\d{1,3}(\.\d{3})+", texto):
+        # só pontos, todos seguidos de 3 dígitos: milhar ("1.234" -> 1234)
+        texto = texto.replace(".", "")
     try:
-        if not valor_str:
-            return None
-        valor_limpo = valor_str.replace(".", "").replace(",", ".").strip()
-        return Decimal(valor_limpo)
+        valor = Decimal(texto)
     except (InvalidOperation, ValueError):
         return None
+    if not valor.is_finite() or valor.as_tuple().exponent < -2:
+        return None 
+    return valor
 def _avancar_mes(mes: int, ano: int, incremento: int = 1) -> tuple[int, int]:
     mes += incremento
     while mes > 12:
@@ -244,7 +253,7 @@ def criar_movimentacao(
     valor = dados.valor * Decimal("-1") if dados.is_estorno else dados.valor
     mes_base, ano_base = _parse_mes_ano(dados.fatura_mes_ano)
     cartao = obter_cartao(dados.cartao_id, familia_id)
-    
+
     # só compras parceladas ou recorrentes precisam de grupo; à vista fica sem
     precisa_grupo = dados.tipo_pagamento == "parcelado" or dados.replicar == "3_meses"
     grupo_id = str(uuid.uuid4()) if precisa_grupo else None

@@ -11,7 +11,7 @@ import pytest
 
 from app.models import Fatura, MovimentacaoCartao
 from app.services import cartao_service
-
+from app.services.cartao_service import converter_valor_para_decimal
 
 def _dados_avista(cartao, categoria, fatura_mes_ano="7-2026", valor="50.00", replicar="nao"):
     return cartao_service.NovaMovimentacaoInput(
@@ -153,3 +153,23 @@ def test_excluir_todas_as_parcelas_do_grupo(db, cartao, categoria_despesa, usuar
     cartao_service.excluir_movimentacao(primeira_parcela, familia_id=familia.id, excluir_todas=True)
 
     assert MovimentacaoCartao.query.count() == 0  # as 3 parcelas somem juntas
+
+# ---------------------------------------------------------------------------
+# Converter valor
+# ---------------------------------------------------------------------------
+@pytest.mark.parametrize(
+    "entrada, esperado",
+    [
+        ("20,01", Decimal("20.01")),
+        ("20.01", Decimal("20.01")),
+        ("1234.50", Decimal("1234.50")),
+        ("1.234,56", Decimal("1234.56")),
+        ("R$ 1.234,56", Decimal("1234.56")),
+        ("-237,57", Decimal("-237.57")),
+        ("", None),
+        ("abc", None),
+        ("10,555", None),
+    ],
+)
+def test_converter_valor_para_decimal(entrada, esperado):
+    assert converter_valor_para_decimal(entrada) == esperado

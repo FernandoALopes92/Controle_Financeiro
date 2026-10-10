@@ -699,25 +699,14 @@ document.addEventListener('DOMContentLoaded', function () {
         // ==================================================
 
         const valorNumerico = parseFloat(data.valor);
-
         const isEstorno = document.getElementById('is_estorno');
 
-        if (valorNumerico < 0) {
-          if (isEstorno) {
-            isEstorno.checked = true;
-          }
+        if (isEstorno) {
+          isEstorno.checked = valorNumerico < 0;
+        }
 
-          if (form.valor) {
-            form.valor.value = Math.abs(valorNumerico).toFixed(2).replace('.', ',');
-          }
-        } else {
-          if (isEstorno) {
-            isEstorno.checked = false;
-          }
-
-          if (form.valor) {
-            form.valor.value = data.valor;
-          }
+        if (form.valor) {
+          form.valor.value = Math.abs(valorNumerico).toFixed(2).replace('.', ',');
         }
 
         // Data
