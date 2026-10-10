@@ -15,44 +15,7 @@ transferencias_bp = Blueprint("transferencias", __name__, url_prefix="/transfere
 @transferencias_bp.route('/')
 @login_required
 def listar_transferencias():
-    hoje = date.today()
-    ano_atual = hoje.year
-    mes_atual = hoje.month
-
-    # CORREÇÃO: filtrar por familia_id para não listar contas de outras famílias no filtro
-    contas = Conta.query.filter_by(status=True, familia_id=current_user.familia_id).all()
-
-    ano = request.args.get('ano', type=int) or ano_atual
-    mes = request.args.get('mes', type=int) or mes_atual
-
-    transferencias = Transferencia.query \
-        .filter_by(familia_id=current_user.familia_id)
-    transferencias = filtrar_por_mes_ano(transferencias, Transferencia.data_transferencia, mes, ano)
-    transferencias = transferencias.order_by(Transferencia.data_transferencia.desc()).all()
-
-    anos_distintos = db.session.query(extract('year', Transferencia.data_transferencia)) \
-        .filter_by(familia_id=current_user.familia_id) \
-        .distinct() \
-        .order_by(extract('year', Transferencia.data_transferencia).desc()) \
-        .all()
-    anos = [a[0] for a in anos_distintos]
-
-    meses = [
-        ("Janeiro", 1), ("Fevereiro", 2), ("Março", 3), ("Abril", 4),
-        ("Maio", 5), ("Junho", 6), ("Julho", 7), ("Agosto", 8),
-        ("Setembro", 9), ("Outubro", 10), ("Novembro", 11), ("Dezembro", 12)
-    ]
-
-    return render_template(
-        'transferencias/lista_transferencias.html',
-        transferencias=transferencias,
-        anos=anos,
-        ano_filtro=ano,
-        meses=meses,
-        mes_filtro=mes,
-        contas=contas
-    )
-
+    return redirect(url_for("movimentacoes.lista", aba="transferencias"))
 
 @transferencias_bp.route("/nova", methods=["GET", "POST"])
 @login_required
@@ -91,11 +54,8 @@ def nova_transferencia():
             flash(str(e), "danger")
         except Exception:
             flash("Erro ao realizar transferência.", "danger")
-
-        return redirect(request.referrer)
-
-    return render_template("form_transferencia.html", contas=contas)
-
+    
+    return redirect(url_for("movimentacoes.lista", aba="transferencias"))
 
 @transferencias_bp.route('/transferencias/excluir/<int:id>', methods=['POST'])
 @login_required

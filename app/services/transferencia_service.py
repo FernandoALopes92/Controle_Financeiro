@@ -32,6 +32,8 @@ class ContasIguaisError(TransferenciaServiceError):
 class ContaInativaError(TransferenciaServiceError):
     pass
 
+class ValorTransferenciaInvalidoError(TransferenciaServiceError):
+    pass
 
 class SaldoInsuficienteError(TransferenciaServiceError):
     def __init__(self, mensagem: str, saldo_disponivel: Decimal):
@@ -42,25 +44,31 @@ class SaldoInsuficienteError(TransferenciaServiceError):
 # ---------------------------------------------------------------------------
 # Utilitários internos
 # ---------------------------------------------------------------------------
-def _apagar_movimentacoes_da_transferencia(transferencia: Transferencia) -> None:
-    """Remove as duas movimentações-espelho (saída/entrada) geradas por uma transferência."""
-    movimentacoes = Movimentacao.query.filter(
-        Movimentacao.descricao.ilike("%Transferência%"),
-        Movimentacao.data == transferencia.data_transferencia,
-        Movimentacao.valor == transferencia.valor,
-        (
-            (Movimentacao.conta_id == transferencia.conta_origem_id)
-            | (Movimentacao.conta_id == transferencia.conta_destino_id)
-        ),
+def _validar_valor_transferencia(valor: Decimal) -> None:
+    if not isinstance(valor, Decimal) or not valor.is_finite() or valor <= Decimal("0"):
+        raise ValorTransferenciaInvalidoError(
+            "O valor da transferência deve ser maior que zero."
+        )
+    
+
+def _apagar_movimentacoes_da_transferencia(
+    transferencia: Transferencia,
+) -> None:
+    """Remove somente as movimentações vinculadas à transferência."""
+    movimentacoes = Movimentacao.query.filter_by(
+        transferencia_id=transferencia.id
     ).all()
+
     for mov in movimentacoes:
         db.session.delete(mov)
 
 
+
 def _criar_movimentacoes_espelho(
-    *, conta_origem: Conta, conta_destino: Conta, valor: Decimal, data, usuario_id: int, familia_id: int
+    *, transferencia_id: int, conta_origem: Conta, conta_destino: Conta, valor: Decimal, data, usuario_id: int, familia_id: int
 ) -> None:
     db.session.add(Movimentacao(
+        transferencia_id=transferencia_id,
         usuario_id=usuario_id,
         familia_id=familia_id,
         conta_id=conta_origem.id,
@@ -72,6 +80,7 @@ def _criar_movimentacoes_espelho(
         pago=None,
     ))
     db.session.add(Movimentacao(
+        transferencia_id=transferencia_id,
         usuario_id=usuario_id,
         familia_id=familia_id,
         conta_id=conta_destino.id,
@@ -97,6 +106,8 @@ class NovaTransferenciaInput:
 
 
 def criar_transferencia(dados: NovaTransferenciaInput, *, usuario_id: int, familia_id: int) -> str:
+    _validar_valor_transferencia(dados.valor)
+
     if dados.origem_id == dados.destino_id:
         raise ContasIguaisError("A conta de origem e destino devem ser diferentes.")
 
@@ -116,7 +127,7 @@ def criar_transferencia(dados: NovaTransferenciaInput, *, usuario_id: int, famil
     conta_origem.saldo_atual -= dados.valor
     conta_destino.saldo_atual += dados.valor
 
-    db.session.add(Transferencia(
+    transferencia = Transferencia(
         usuario_id=usuario_id,
         familia_id=familia_id,
         conta_origem_id=conta_origem.id,
@@ -124,11 +135,14 @@ def criar_transferencia(dados: NovaTransferenciaInput, *, usuario_id: int, famil
         valor=dados.valor,
         data_transferencia=dados.data,
         observacoes=dados.descricao,
-    ))
+    )
+
+    db.session.add(transferencia)
+    db.session.flush()
 
     _criar_movimentacoes_espelho(
-        conta_origem=conta_origem, conta_destino=conta_destino, valor=dados.valor,
-        data=dados.data, usuario_id=usuario_id, familia_id=familia_id,
+        transferencia_id=transferencia.id, conta_origem=conta_origem, conta_destino=conta_destino, 
+        valor=dados.valor, data=dados.data, usuario_id=usuario_id, familia_id=familia_id,
     )
 
     db.session.commit()
@@ -174,6 +188,8 @@ def atualizar_transferencia(
             "Erro: Esta transação envolve uma conta inativa. Reative a conta primeiro para fazer alterações."
         )
 
+    _validar_valor_transferencia(dados.valor)
+    
     if dados.origem_id == dados.destino_id:
         raise ContasIguaisError("A conta de origem e destino devem ser diferentes.")
 
@@ -210,8 +226,8 @@ def atualizar_transferencia(
     transferencia.observacoes = dados.descricao
 
     _criar_movimentacoes_espelho(
-        conta_origem=conta_origem, conta_destino=conta_destino, valor=dados.valor,
-        data=dados.data, usuario_id=usuario_id, familia_id=familia_id,
+        transferencia_id=transferencia.id, conta_origem=conta_origem, conta_destino=conta_destino, 
+        valor=dados.valor, data=dados.data, usuario_id=usuario_id, familia_id=familia_id,
     )
 
     db.session.commit()

@@ -100,10 +100,17 @@ class Movimentacao(db.Model):
     familia_id = db.Column(db.Integer, db.ForeignKey('familias.id'), nullable=False, index=True)  # CORREÇÃO: índice, toda consulta do sistema filtra por família
 
 
-
     pagamento_fatura_id = db.Column(
         db.Integer, db.ForeignKey('pagamentos_fatura.id'), nullable=True
     )
+    
+    transferencia_id = db.Column(
+        db.Integer,
+        db.ForeignKey("transferencias.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+
 
     @property
     def cor_valor(self):
