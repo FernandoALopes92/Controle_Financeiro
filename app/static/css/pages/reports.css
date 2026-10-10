@@ -272,10 +272,7 @@
   font-weight: 700;
 }
 
-.report-section--danger
-  tbody
-  tr:not(.report-expenses-table__total-row)
-  > td:last-child {
+.report-section--danger tbody tr:not(.report-expenses-table__total-row) > td:last-child {
   color: var(--color-danger);
   font-weight: 700;
 }

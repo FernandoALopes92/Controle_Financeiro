@@ -21,12 +21,9 @@ function irParaEtapa(idEtapaAlvo) {
     elementoAlvo.classList.remove('d-none');
 
     // Disparadores automáticos de filtro de categoria por etapa
-    if (idEtapaAlvo === 'form-receita')
-      filtrarCategoriasModal('categoria_id_receita', 'receita');
-    if (idEtapaAlvo === 'form-despesa-conta')
-      filtrarCategoriasModal('categoria_id_despesa', 'despesa');
-    if (idEtapaAlvo === 'form-despesa-cartao')
-      filtrarCategoriasModal('categoria_id_cartao', 'despesa');
+    if (idEtapaAlvo === 'form-receita') filtrarCategoriasModal('categoria_id_receita', 'receita');
+    if (idEtapaAlvo === 'form-despesa-conta') filtrarCategoriasModal('categoria_id_despesa', 'despesa');
+    if (idEtapaAlvo === 'form-despesa-cartao') filtrarCategoriasModal('categoria_id_cartao', 'despesa');
 
     if (idEtapaAlvo === 'form-despesa-cartao') {
       if (typeof aplicarMascaraValor === 'function') {
@@ -88,9 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let valor = parseFloat(valorRaw) || 0;
     let parcelas = parseInt(inputParcelas.value) || 0;
 
-    let tipoSelecionado = document.querySelector(
-      'input[name="tipo_valor"]:checked',
-    );
+    let tipoSelecionado = document.querySelector('input[name="tipo_valor"]:checked');
     let tipo = tipoSelecionado ? tipoSelecionado.value : 'total';
 
     if (valor > 0 && parcelas > 1) {
@@ -112,9 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (inputValor && inputParcelas) {
     inputValor.addEventListener('input', atualizarCalculo);
     inputParcelas.addEventListener('input', atualizarCalculo);
-    radiosTipo.forEach((radio) =>
-      radio.addEventListener('change', atualizarCalculo),
-    );
+    radiosTipo.forEach((radio) => radio.addEventListener('change', atualizarCalculo));
   }
 
   // Ativa a regra de Esconder a Recorrência se for Parcelado
@@ -132,9 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
         secaoRecorrenteCard.style.display = 'none'; // Esconde para evitar conflito
 
         // Volta o select de recorrência para "Não"
-        let selectRecorrente = secaoRecorrenteCard.querySelector(
-          'select[name="replicar"]',
-        );
+        let selectRecorrente = secaoRecorrenteCard.querySelector('select[name="replicar"]');
         if (selectRecorrente) selectRecorrente.value = 'nao';
       }
     });
@@ -234,21 +225,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  escutarSaldoElemento(
-    'conta_id_despesa',
-    'saldoContaDespesaContainer',
-    'saldoContaDespesa',
-  );
-  escutarSaldoElemento(
-    'conta_origem_transf',
-    'saldoContaOrigemTransfContainer',
-    'saldoContaOrigemTransf',
-  );
-  escutarSaldoElemento(
-    'conta_destino_transf',
-    'saldoContaDestinoTransfContainer',
-    'saldoContaDestinoTransf',
-  );
+  escutarSaldoElemento('conta_id_despesa', 'saldoContaDespesaContainer', 'saldoContaDespesa');
+  escutarSaldoElemento('conta_origem_transf', 'saldoContaOrigemTransfContainer', 'saldoContaOrigemTransf');
+  escutarSaldoElemento('conta_destino_transf', 'saldoContaDestinoTransfContainer', 'saldoContaDestinoTransf');
 
   // --- PREVISÃO DE FATURA ---
   const dataCartao = document.getElementById('data_cartao');
@@ -257,8 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function preverFaturaSuperModal() {
     if (!dataCartao.value || !cartaoSelect.value) return;
-    selectFatura.innerHTML =
-      '<option value="" disabled selected>Calculando...</option>';
+    selectFatura.innerHTML = '<option value="" disabled selected>Calculando...</option>';
 
     fetch('/faturas/prever_fatura', {
       method: 'POST',
@@ -292,7 +270,6 @@ document.addEventListener('DOMContentLoaded', function () {
     dataCartao.addEventListener('change', preverFaturaSuperModal);
     cartaoSelect.addEventListener('change', preverFaturaSuperModal);
   }
-
 });
 
 // ==========================================
@@ -325,8 +302,7 @@ if (formTransf) {
     }
 
     const optSelecionada = selectOrigem.options[selectOrigem.selectedIndex];
-    const saldoDisponivel =
-      parseFloat(optSelecionada.getAttribute('data-saldo')) || 0;
+    const saldoDisponivel = parseFloat(optSelecionada.getAttribute('data-saldo')) || 0;
 
     if (valor > saldoDisponivel) {
       alert('⚠️ Saldo insuficiente na conta de origem.');

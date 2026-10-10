@@ -39,11 +39,7 @@
   color: var(--color-white);
 
   background:
-    radial-gradient(
-      circle at 85% 12%,
-      rgba(139, 92, 246, 0.35),
-      transparent 32%
-    ),
+    radial-gradient(circle at 85% 12%, rgba(139, 92, 246, 0.35), transparent 32%),
     linear-gradient(155deg, var(--color-primary-700), var(--color-primary-900));
 }
 
@@ -184,13 +180,7 @@
   min-width: 0;
   min-height: 100vh;
   padding: var(--space-8);
-  background:
-    radial-gradient(
-      circle at 100% 0%,
-      rgba(108, 76, 241, 0.025),
-      transparent 28%
-    ),
-    var(--color-surface);
+  background: radial-gradient(circle at 100% 0%, rgba(108, 76, 241, 0.025), transparent 28%), var(--color-surface);
 }
 
 .login-panel::after {

@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
   // 1. INICIALIZAÇÃO DOS TOOLTIPS
-  var tooltipTriggerList = [].slice.call(
-    document.querySelectorAll('[data-bs-toggle="tooltip"]'),
-  );
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
   var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl);
   });
@@ -11,13 +9,11 @@ document.addEventListener('DOMContentLoaded', function () {
   if (window.dadosRelatorio) {
     const dados = window.dadosRelatorio;
 
-    document
-      .querySelectorAll('.stats-card__sparkline')
-      .forEach(function (canvas) {
-        const tipo = canvas.dataset.chartType;
+    document.querySelectorAll('.stats-card__sparkline').forEach(function (canvas) {
+      const tipo = canvas.dataset.chartType;
 
-        criarMiniGrafico(canvas, dados, tipo);
-      });
+      criarMiniGrafico(canvas, dados, tipo);
+    });
 
     const totalReceitas = dados.totalReceitasAno;
     const totalDespesas = dados.totalDespesasAno;
@@ -33,8 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let elEficiencia = document.getElementById('cardEficiencia');
     if (elEficiencia) {
       elEficiencia.innerText = eficiencia.toFixed(1) + '%';
-      if (eficiencia < 0)
-        elEficiencia.classList.replace('text-dark', 'text-danger');
+      if (eficiencia < 0) elEficiencia.classList.replace('text-dark', 'text-danger');
     }
 
     // Card 2: Projeção de Fechamento Anual (Baseado na média mensal de sobra)
@@ -44,10 +39,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let projecao = mediaSobra * 12;
     let elProjecao = document.getElementById('cardProjecao');
     if (elProjecao) {
-      elProjecao.innerText =
-        'R$ ' + projecao.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-      if (projecao < 0)
-        elProjecao.classList.replace('text-dark', 'text-danger');
+      elProjecao.innerText = 'R$ ' + projecao.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+      if (projecao < 0) elProjecao.classList.replace('text-dark', 'text-danger');
     }
 
     // Card 3: O Grande Vilão
@@ -59,8 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
         vilaoNome = dados.categoriasNomes[index];
       }
     });
-    if (document.getElementById('cardVilao'))
-      document.getElementById('cardVilao').innerText = vilaoNome;
+    if (document.getElementById('cardVilao')) document.getElementById('cardVilao').innerText = vilaoNome;
 
     // Card 4: Termômetro de Consumo
     let taxaConsumo = 0;
@@ -70,8 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let barraConsumo = document.getElementById('barraConsumo');
     if (barraConsumo) {
       barraConsumo.style.width = Math.min(taxaConsumo, 100) + '%';
-      document.getElementById('textoConsumo').innerText =
-        taxaConsumo.toFixed(1) + '% consumido';
+      document.getElementById('textoConsumo').innerText = taxaConsumo.toFixed(1) + '% consumido';
 
       // Fica vermelho se consumiu mais de 80% do que ganhou
       if (taxaConsumo > 80) {
@@ -80,8 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // --- PLOTAGEM DOS GRÁFICOS ---
-    const formataReal = (valor) =>
-      'R$ ' + valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+    const formataReal = (valor) => 'R$ ' + valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 
     // Gráfico 1: Linha (Evolução da Sobra)
     const canvasLine = document.getElementById('lineChart');
@@ -200,8 +190,7 @@ document.addEventListener('DOMContentLoaded', function () {
             legend: { display: false },
             tooltip: {
               callbacks: {
-                label: (ctx) =>
-                  ' ' + ctx.label + ': ' + formataReal(ctx.raw || 0),
+                label: (ctx) => ' ' + ctx.label + ': ' + formataReal(ctx.raw || 0),
               },
             },
           },
@@ -268,9 +257,7 @@ function criarMiniGrafico(canvas, dados, tipo) {
 
     const mesAtual = dados.mesAtual || 12;
 
-    const realizado = dados.sobras
-      .slice(0, mesAtual)
-      .reduce((total, valor) => total + Number(valor || 0), 0);
+    const realizado = dados.sobras.slice(0, mesAtual).reduce((total, valor) => total + Number(valor || 0), 0);
 
     if (metaTotal <= 0) {
       return;
@@ -280,8 +267,7 @@ function criarMiniGrafico(canvas, dados, tipo) {
 
     const restante = Math.max(0, metaTotal - realizadoLimitado);
 
-    const percentual =
-      metaTotal > 0 ? (realizadoLimitado / metaTotal) * 100 : 0;
+    const percentual = metaTotal > 0 ? (realizadoLimitado / metaTotal) * 100 : 0;
 
     const ctx = canvas.getContext('2d');
 
@@ -299,9 +285,7 @@ function criarMiniGrafico(canvas, dados, tipo) {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
-        ctx.fillStyle = getComputedStyle(document.documentElement)
-          .getPropertyValue('--color-warning')
-          .trim();
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-warning').trim();
 
         ctx.font = '800 1.1rem sans-serif';
 
@@ -496,14 +480,12 @@ function toggleSecaoRelatorio(button) {
   const isHidden = tableWrapper.classList.toggle('d-none');
 
   if (isHidden) {
-    label.innerHTML =
-      '<i class="bi bi-layout-text-window-reverse"></i> Ver detalhes';
+    label.innerHTML = '<i class="bi bi-layout-text-window-reverse"></i> Ver detalhes';
 
     chevron.classList.remove('bi-chevron-up');
     chevron.classList.add('bi-chevron-down');
   } else {
-    label.innerHTML =
-      '<i class="bi bi-layout-text-window-reverse"></i> Ocultar detalhes';
+    label.innerHTML = '<i class="bi bi-layout-text-window-reverse"></i> Ocultar detalhes';
 
     chevron.classList.remove('bi-chevron-down');
     chevron.classList.add('bi-chevron-up');

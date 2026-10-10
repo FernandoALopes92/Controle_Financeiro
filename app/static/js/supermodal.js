@@ -12,9 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     transferencia: document.getElementById('supermodal-form-transferencia'),
   };
 
-  const botaoSalvar = modal.querySelector(
-    '.modal-footer button[type="submit"]',
-  );
+  const botaoSalvar = modal.querySelector('.modal-footer button[type="submit"]');
 
   const footer = modal.querySelector('.modal-footer');
 
@@ -47,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let etapaAtual = 'tipo';
 
-    const formIds = {
+  const formIds = {
     receita: 'supermodal-receita-form',
     despesaConta: 'supermodal-despesa-conta-form',
     despesaCartao: 'supermodal-despesa-cartao-form',
@@ -150,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!elemento) return;
 
     const acao = elemento.dataset.supermodalAction;
-    
+
     if (acao === 'voltar' || acao === 'voltar-tipo') {
       const formId = formIds[etapaAtual];
       if (formId) limparFormulario(document.getElementById(formId));
@@ -226,40 +224,24 @@ function inicializarExibicaoSaldoConta(idSelect, idContainer, idLabel) {
 }
 function configurarSupermodalCartao() {
   const valorInput = document.getElementById('supermodal_cartao_valor');
-  const numeroParcelasInput = document.getElementById(
-    'supermodal_cartao_numero_parcelas',
-  );
+  const numeroParcelasInput = document.getElementById('supermodal_cartao_numero_parcelas');
 
-  const valorTotalRadio = document.getElementById(
-    'supermodal_cartao_valor_total',
-  );
+  const valorTotalRadio = document.getElementById('supermodal_cartao_valor_total');
 
-  const valorParcelaRadio = document.getElementById(
-    'supermodal_cartao_valor_parcela',
-  );
+  const valorParcelaRadio = document.getElementById('supermodal_cartao_valor_parcela');
 
-  const parcelamento = document.getElementById(
-    'supermodal_cartao_parcelamento',
-  );
+  const parcelamento = document.getElementById('supermodal_cartao_parcelamento');
 
-  const valorParcelaCalculado = document.getElementById(
-    'supermodal_cartao_valor_parcela_calculado',
-  );
+  const valorParcelaCalculado = document.getElementById('supermodal_cartao_valor_parcela_calculado');
 
-  const textoValorParcela = document.getElementById(
-    'supermodal_cartao_texto_valor_parcela',
-  );
+  const textoValorParcela = document.getElementById('supermodal_cartao_texto_valor_parcela');
 
   const avista = document.getElementById('supermodal_cartao_avista');
   const parcelado = document.getElementById('supermodal_cartao_parcelado');
 
-  const recorrencia = document
-    .getElementById('supermodal_cartao_replicar')
-    .closest('.mb-2');
+  const recorrencia = document.getElementById('supermodal_cartao_replicar').closest('.mb-2');
 
-  const cartaoSelect = document.getElementById(
-    'supermodal_cartao_meio_pagamento',
-  );
+  const cartaoSelect = document.getElementById('supermodal_cartao_meio_pagamento');
 
   const dataInput = document.getElementById('supermodal_cartao_data');
 
@@ -295,7 +277,7 @@ function configurarSupermodalCartao() {
     }
   }
 
-    const formCartao = document.getElementById('supermodal-despesa-cartao-form');
+  const formCartao = document.getElementById('supermodal-despesa-cartao-form');
 
   if (formCartao) {
     formCartao.addEventListener('reset', () => {
@@ -307,8 +289,7 @@ function configurarSupermodalCartao() {
 
         const selectFatura = document.getElementById('supermodal_cartao_fatura');
         if (selectFatura) {
-          selectFatura.innerHTML =
-            '<option value="" disabled selected>Selecione data e cartão...</option>';
+          selectFatura.innerHTML = '<option value="" disabled selected>Selecione data e cartão...</option>';
         }
       }, 0);
     });
@@ -345,16 +326,12 @@ function configurarSupermodalCartao() {
     if (!selectFatura) return;
 
     if (!dataCompra || !cartaoId) {
-      selectFatura.innerHTML =
-        '<option value="" disabled selected>' +
-        'Selecione data e cartão...' +
-        '</option>';
+      selectFatura.innerHTML = '<option value="" disabled selected>' + 'Selecione data e cartão...' + '</option>';
 
       return;
     }
 
-    selectFatura.innerHTML =
-      '<option value="" disabled selected>' + 'Calculando...' + '</option>';
+    selectFatura.innerHTML = '<option value="" disabled selected>' + 'Calculando...' + '</option>';
 
     try {
       const response = await fetch('/faturas/prever_fatura', {
@@ -380,10 +357,7 @@ function configurarSupermodalCartao() {
       }
 
       if (!Array.isArray(data.opcoes) || !data.opcoes.length) {
-        selectFatura.innerHTML =
-          '<option value="" disabled selected>' +
-          'Nenhuma fatura disponível' +
-          '</option>';
+        selectFatura.innerHTML = '<option value="" disabled selected>' + 'Nenhuma fatura disponível' + '</option>';
 
         return;
       }
@@ -403,10 +377,7 @@ function configurarSupermodalCartao() {
     } catch (erro) {
       console.error('Erro ao prever fatura:', erro);
 
-      selectFatura.innerHTML =
-        '<option value="" disabled selected>' +
-        'Erro ao calcular faturas' +
-        '</option>';
+      selectFatura.innerHTML = '<option value="" disabled selected>' + 'Erro ao calcular faturas' + '</option>';
     }
   }
 
@@ -452,8 +423,7 @@ function configurarSupermodalTransferencia() {
 
     const opcaoOrigem = origem.options[origem.selectedIndex];
 
-    const saldoDisponivel =
-      parseFloat(opcaoOrigem.getAttribute('data-saldo')) || 0;
+    const saldoDisponivel = parseFloat(opcaoOrigem.getAttribute('data-saldo')) || 0;
 
     if (valorTransferencia > saldoDisponivel) {
       event.preventDefault();

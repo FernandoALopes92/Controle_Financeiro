@@ -6,391 +6,390 @@
    responsividade.
 ========================================================== */
 
-
 /* ==========================================================
    ESTRUTURA GERAL
 ========================================================== */
 #modalSuperMov .modal-dialog {
-    max-width: 1140px;
+  max-width: 1140px;
 }
 #modalSuperMov .supermodal {
-    overflow: hidden;
-    border: 0;
-    border-radius: var(--radius-xl);
-    background: var(--color-surface);
-    box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
 }
 #modalSuperMov .modal-header {
-    border: 0;
-    background: linear-gradient(120deg, var(--color-primary-600), var(--color-primary-500));
-    color: var(--color-white);
+  border: 0;
+  background: linear-gradient(120deg, var(--color-primary-600), var(--color-primary-500));
+  color: var(--color-white);
 }
 #modalSuperMov .modal-header .btn-close {
-    filter: brightness(0) invert(1);
-    opacity: 0.9;
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
 }
 #modalSuperMov .modal-header .btn-close:hover {
-    opacity: 1;
+  opacity: 1;
 }
 #modalSuperMov .supermodal__body {
-    padding: var(--space-6);
-    background: var(--color-surface);
+  padding: var(--space-6);
+  background: var(--color-surface);
 }
 #modalSuperMov .supermodal__step {
-    width: 100%;
+  width: 100%;
 }
-
 
 /* ==========================================================
    CABEÇALHO DAS ETAPAS (título com ícone ACIMA, centralizado)
 ========================================================== */
 #modalSuperMov .supermodal__intro {
-    position: relative;
-    margin-bottom: var(--space-5);
-    text-align: center;
+  position: relative;
+  margin-bottom: var(--space-5);
+  text-align: center;
 }
 #modalSuperMov .supermodal__step-title {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.45rem;
-    margin: 0 0 var(--space-1);
-    color: var(--color-text);
-    font-size: var(--font-size-xl);
-    font-weight: 700;
-    letter-spacing: -0.025em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  margin: 0 0 var(--space-1);
+  color: var(--color-text);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  letter-spacing: -0.025em;
 }
 #modalSuperMov .supermodal__step-description {
-    margin: 0;
-    color: var(--color-text-muted);
-    font-size: var(--font-size-sm);
-    line-height: 1.5;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
 }
 
 /* Ícone do título: mesmo tamanho para todos os tipos */
 #modalSuperMov .supermodal__step-title .supermodal-title-icon {
-    display: inline-flex;
-    flex: 0 0 56px;
-    align-items: center;
-    justify-content: center;
-    width: 56px;
-    height: 56px;
-    min-width: 56px;
-    min-height: 56px;
-    margin: 0 0 0.1rem;
-    border-radius: 50%;
-    font-size: 1.9rem;
-    line-height: 1;
+  display: inline-flex;
+  flex: 0 0 56px;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  min-height: 56px;
+  margin: 0 0 0.1rem;
+  border-radius: 50%;
+  font-size: 1.9rem;
+  line-height: 1;
 }
 #modalSuperMov .supermodal-title-icon--receita {
-    color: var(--color-success);
-    background: var(--color-success-subtle);
+  color: var(--color-success);
+  background: var(--color-success-subtle);
 }
 #modalSuperMov .supermodal-title-icon--despesa {
-    color: var(--color-danger);
-    background: var(--color-danger-subtle);
+  color: var(--color-danger);
+  background: var(--color-danger-subtle);
 }
 #modalSuperMov .supermodal-title-icon--cartao {
-    color: var(--color-primary-600);
-    background: var(--color-primary-100);
+  color: var(--color-primary-600);
+  background: var(--color-primary-100);
 }
 #modalSuperMov .supermodal-title-icon--transferencia {
-    color: var(--color-info);
-    background: var(--color-info-subtle);
+  color: var(--color-info);
+  background: var(--color-info-subtle);
 }
-
 
 /* ==========================================================
    BOTÃO VOLTAR (canto superior esquerdo, roxo, negrito)
 ========================================================== */
 #modalSuperMov .supermodal-back {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: 0.45rem 0.7rem;
-    border: 0;
-    border-radius: var(--radius-sm);
-    background: transparent;
-    color: var(--color-primary-700);
-    font-size: var(--font-size-base);
-    font-weight: 700;
-    cursor: pointer;
-    transition: color var(--transition-fast), background-color var(--transition-fast);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.45rem 0.7rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-primary-700);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast);
 }
 #modalSuperMov .supermodal-back i {
-    color: var(--color-primary-600);
-    font-size: 1.1rem;
+  color: var(--color-primary-600);
+  font-size: 1.1rem;
 }
 #modalSuperMov .supermodal-back:hover {
-    background: var(--color-primary-50);
-    color: var(--color-primary-900);
+  background: var(--color-primary-50);
+  color: var(--color-primary-900);
 }
-
 
 /* ==========================================================
    TELA INICIAL — OPÇÕES (Receita / Despesa / Transferência)
 ========================================================== */
 #modalSuperMov .supermodal-choice-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-4);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
 }
 #modalSuperMov .supermodal-choice-grid--two {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    max-width: 820px;
-    margin: 0 auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 820px;
+  margin: 0 auto;
 }
 #modalSuperMov .supermodal-choice {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    width: 100%;
-    min-width: 0;
-    min-height: 150px;
-    padding: var(--space-5);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    background: var(--color-primary-subtle);
-    color: var(--color-text);
-    text-align: left;
-    cursor: pointer;
-    transition:
-        transform var(--transition-fast),
-        border-color var(--transition-fast),
-        box-shadow var(--transition-fast),
-        background-color var(--transition-fast);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  min-width: 0;
+  min-height: 150px;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-subtle);
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
 }
 #modalSuperMov .supermodal-choice:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 #modalSuperMov .supermodal-choice:focus-visible {
-    outline: 3px solid var(--color-primary-300);
-    outline-offset: 3px;
+  outline: 3px solid var(--color-primary-300);
+  outline-offset: 3px;
 }
 #modalSuperMov .supermodal-choice__icon {
-    flex: 0 0 52px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    font-size: 1.4rem;
+  flex: 0 0 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  font-size: 1.4rem;
 }
 #modalSuperMov .supermodal-choice__content {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    gap: var(--space-1);
-    min-width: 0;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
 }
 #modalSuperMov .supermodal-choice__title {
-    font-size: var(--font-size-lg);
-    font-weight: 700;
-    line-height: 1.3;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  line-height: 1.3;
 }
 #modalSuperMov .supermodal-choice__description {
-    font-size: var(--font-size-base);
-    line-height: 1.5;
-    color: var(--color-text);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  color: var(--color-text);
 }
 #modalSuperMov .supermodal-choice__arrow {
-    flex-shrink: 0;
-    margin-left: auto;
-    font-size: 1.1rem;
-    transition: transform var(--transition-fast), color var(--transition-fast);
+  flex-shrink: 0;
+  margin-left: auto;
+  font-size: 1.1rem;
+  transition:
+    transform var(--transition-fast),
+    color var(--transition-fast);
 }
 #modalSuperMov .supermodal-choice:hover .supermodal-choice__arrow {
-    transform: translateX(3px);
+  transform: translateX(3px);
 }
 
 /* Receita — verde */
 #modalSuperMov .supermodal-choice--receita {
-    border-color: #c7ead7;
-    background: linear-gradient(135deg, #f1fbf5, #ffffff);
+  border-color: #c7ead7;
+  background: linear-gradient(135deg, #f1fbf5, #ffffff);
 }
 #modalSuperMov .supermodal-choice--receita:hover {
-    border-color: var(--color-success);
-    box-shadow: 0 10px 28px rgba(21, 155, 103, 0.12);
+  border-color: var(--color-success);
+  box-shadow: 0 10px 28px rgba(21, 155, 103, 0.12);
 }
 #modalSuperMov .supermodal-choice--receita .supermodal-choice__icon {
-    color: var(--color-success);
-    background: #c9f0d8;
+  color: var(--color-success);
+  background: #c9f0d8;
 }
 #modalSuperMov .supermodal-choice--receita .supermodal-choice__title,
 #modalSuperMov .supermodal-choice--receita .supermodal-choice__arrow {
-    color: #078344;
+  color: #078344;
 }
 
 /* Despesa — vermelho */
 #modalSuperMov .supermodal-choice--despesa {
-    border-color: #ffd1d5;
-    background: linear-gradient(135deg, #fff4f5, #ffffff);
+  border-color: #ffd1d5;
+  background: linear-gradient(135deg, #fff4f5, #ffffff);
 }
 #modalSuperMov .supermodal-choice--despesa:hover {
-    border-color: var(--color-danger);
-    box-shadow: 0 10px 28px rgba(223, 74, 85, 0.12);
+  border-color: var(--color-danger);
+  box-shadow: 0 10px 28px rgba(223, 74, 85, 0.12);
 }
 #modalSuperMov .supermodal-choice--despesa .supermodal-choice__icon {
-    color: #c92e3b;
-    background: #ffdadd;
+  color: #c92e3b;
+  background: #ffdadd;
 }
 #modalSuperMov .supermodal-choice--despesa .supermodal-choice__title,
 #modalSuperMov .supermodal-choice--despesa .supermodal-choice__arrow {
-    color: #c32735;
+  color: #c32735;
 }
 
 /* Transferência — azul */
 #modalSuperMov .supermodal-choice--transferencia {
-    border-color: #c9e1ff;
-    background: linear-gradient(135deg, #f0f7ff, #ffffff);
+  border-color: #c9e1ff;
+  background: linear-gradient(135deg, #f0f7ff, #ffffff);
 }
 #modalSuperMov .supermodal-choice--transferencia:hover {
-    border-color: var(--color-info);
-    box-shadow: 0 10px 28px rgba(49, 120, 212, 0.12);
+  border-color: var(--color-info);
+  box-shadow: 0 10px 28px rgba(49, 120, 212, 0.12);
 }
 #modalSuperMov .supermodal-choice--transferencia .supermodal-choice__icon {
-    color: var(--color-info);
-    background: #d0e7ff;
+  color: var(--color-info);
+  background: #d0e7ff;
 }
 #modalSuperMov .supermodal-choice--transferencia .supermodal-choice__title,
 #modalSuperMov .supermodal-choice--transferencia .supermodal-choice__arrow {
-    color: #0865cc;
+  color: #0865cc;
 }
 
 /* Conta / PIX — laranja do tema */
 #modalSuperMov .supermodal-choice--conta {
-    border-color: #ffd6b0;
-    background: linear-gradient(135deg, #fff6ed, #ffffff);
+  border-color: #ffd6b0;
+  background: linear-gradient(135deg, #fff6ed, #ffffff);
 }
 #modalSuperMov .supermodal-choice--conta:hover {
-    border-color: var(--color-warning);
-    box-shadow: 0 10px 28px rgba(253, 126, 20, 0.14);
+  border-color: var(--color-warning);
+  box-shadow: 0 10px 28px rgba(253, 126, 20, 0.14);
 }
 #modalSuperMov .supermodal-choice--conta .supermodal-choice__icon {
-    color: var(--color-warning);
-    background: #ffead8;
+  color: var(--color-warning);
+  background: #ffead8;
 }
 #modalSuperMov .supermodal-choice--conta .supermodal-choice__title,
 #modalSuperMov .supermodal-choice--conta .supermodal-choice__arrow {
-    color: #c65a00;
+  color: #c65a00;
 }
 
 /* Cartão — roxo */
 #modalSuperMov .supermodal-choice--cartao .supermodal-choice__icon {
-    color: var(--color-primary-600);
-    background: var(--color-primary-100);
+  color: var(--color-primary-600);
+  background: var(--color-primary-100);
 }
 #modalSuperMov .supermodal-choice--cartao .supermodal-choice__title {
-    color: var(--color-primary-700);
+  color: var(--color-primary-700);
 }
 #modalSuperMov .supermodal-choice--cartao:hover {
-    border-color: var(--color-primary-300);
+  border-color: var(--color-primary-300);
 }
-
 
 /* ==========================================================
    FORMULÁRIOS — CAMPOS
 ========================================================== */
 #modalSuperMov form .form-label {
-    display: block;
-    margin-bottom: 0.35rem;
-    color: var(--color-text);
-    font-size: var(--font-size-sm);
-    font-weight: 600;
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
 }
 #modalSuperMov form .form-control,
 #modalSuperMov form .form-select {
-    min-height: 40px;
-    border-color: var(--color-control-border);
-    border-radius: var(--radius-sm);
-    background-color: var(--color-surface);
-    color: var(--color-text);
-    font-size: var(--font-size-sm);
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  min-height: 40px;
+  border-color: var(--color-control-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 #modalSuperMov form .form-control::placeholder {
-    color: #9ca3af;
+  color: #9ca3af;
 }
 #modalSuperMov form .form-control:focus,
 #modalSuperMov form .form-select:focus {
-    border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px var(--color-primary-100);
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
 }
 #modalSuperMov form .input-group-text {
-    border-color: var(--color-control-border);
-    background: var(--color-bg2);
-    color: var(--color-text-muted);
-    font-size: var(--font-size-sm);
+  border-color: var(--color-control-border);
+  background: var(--color-bg2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
 }
 #modalSuperMov form .form-check-input:checked {
-    border-color: var(--color-primary-600);
-    background-color: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+  background-color: var(--color-primary-600);
 }
 
 /* Selects com ícone (input-group) */
 #modalSuperMov .supermodal-select-group {
-    flex-wrap: nowrap;
+  flex-wrap: nowrap;
 }
 #modalSuperMov .supermodal-select-group .input-group-text {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 42px;
-    padding-inline: 0.75rem;
-    border-color: var(--color-control-border);
-    border-right: 0;
-    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
-    background: var(--color-bg2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  padding-inline: 0.75rem;
+  border-color: var(--color-control-border);
+  border-right: 0;
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  background: var(--color-bg2);
 }
 #modalSuperMov .supermodal-select-group .form-select {
-    min-width: 0;
-    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  min-width: 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 #modalSuperMov .supermodal-select-group--categoria .input-group-text {
-    color: var(--color-primary-600);
+  color: var(--color-primary-600);
 }
 #modalSuperMov .supermodal-select-group--conta .input-group-text {
-    color: var(--color-info);
+  color: var(--color-info);
 }
 #modalSuperMov .supermodal-select-group--cartao .input-group-text {
-    color: var(--color-primary-700);
+  color: var(--color-primary-700);
 }
-
 
 /* ==========================================================
    RECEITA
 ========================================================== */
 #modalSuperMov #supermodal-form-receita .supermodal__step-description {
-    color: var(--color-success);
+  color: var(--color-success);
 }
 #modalSuperMov #supermodal_receita_saldo_container {
-    margin-top: var(--space-1) !important;
+  margin-top: var(--space-1) !important;
 }
 #modalSuperMov #supermodal_receita_saldo {
-    display: inline-block;
-    padding: 0.25rem 0.55rem;
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-xs);
+  display: inline-block;
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
 }
 
 /* ==========================================================
    DESPESA EM CONTA / PIX
 ========================================================== */
 #modalSuperMov #supermodal-form-despesa-conta .supermodal__step-description {
-    color: var(--color-warning);
+  color: var(--color-warning);
 }
 #modalSuperMov #supermodal-form-despesa-conta .supermodal-title-icon--despesa {
-    color: var(--color-warning);
-    background: #fff0e2;
+  color: var(--color-warning);
+  background: #fff0e2;
 }
-
 
 /* ==========================================================
    CARD DE STATUS — RECEITA E DESPESA EM CONTA
@@ -401,52 +400,51 @@
 ========================================================== */
 #modalSuperMov #supermodal-form-receita .card,
 #modalSuperMov #supermodal-form-despesa-conta .card {
-    --card-color: var(--color-success);
-    --card-bg: var(--color-success-subtle);
-    --card-border: #b8e3cc;
+  --card-color: var(--color-success);
+  --card-bg: var(--color-success-subtle);
+  --card-border: #b8e3cc;
 
-    border: 1px solid var(--card-border) !important;
-    border-left: 4px solid var(--card-color) !important;
-    border-radius: var(--radius-md);
-    background: var(--card-bg) !important;
-    box-shadow: none !important;
+  border: 1px solid var(--card-border) !important;
+  border-left: 4px solid var(--card-color) !important;
+  border-radius: var(--radius-md);
+  background: var(--card-bg) !important;
+  box-shadow: none !important;
 }
 #modalSuperMov #supermodal-form-receita .card:has(#supermodal_receita_pendente:checked),
 #modalSuperMov #supermodal-form-despesa-conta .card:has(#supermodal_despesa_conta_pendente:checked) {
-    --card-color: var(--color-warning);
-    --card-bg: #fff8f1;
-    --card-border: #ffc18a;
+  --card-color: var(--color-warning);
+  --card-bg: #fff8f1;
+  --card-border: #ffc18a;
 }
 #modalSuperMov #supermodal-form-receita .card-body,
 #modalSuperMov #supermodal-form-despesa-conta .card-body {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-4);
-    min-height: 64px;
-    padding: 0.65rem 0.85rem !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 64px;
+  padding: 0.65rem 0.85rem !important;
 }
 #modalSuperMov #supermodal-form-receita .card-body > div:first-child,
 #modalSuperMov #supermodal-form-despesa-conta .card-body > div:first-child {
-    min-width: 0;
+  min-width: 0;
 }
 #modalSuperMov #supermodal-form-receita .card-body > div:first-child label,
 #modalSuperMov #supermodal-form-despesa-conta .card-body > div:first-child label {
-    margin-bottom: 0.1rem !important;
-    color: var(--card-color) !important;
-    font-size: var(--font-size-sm);
-    font-weight: 700;
+  margin-bottom: 0.1rem !important;
+  color: var(--card-color) !important;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
 }
 #modalSuperMov #supermodal-form-receita .card-body > div:first-child label i,
 #modalSuperMov #supermodal-form-despesa-conta .card-body > div:first-child label i {
-    color: var(--card-color) !important;
+  color: var(--card-color) !important;
 }
 #modalSuperMov #supermodal-form-receita .card-body > div:first-child small,
 #modalSuperMov #supermodal-form-despesa-conta .card-body > div:first-child small {
-    color: var(--color-text-muted);
-    font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
 }
-
 
 /* ==========================================================
    BOTÕES DE STATUS — REGRA ÚNICA
@@ -458,284 +456,282 @@
 ========================================================== */
 #modalSuperMov .supermodal-status-toggle,
 #modalSuperMov .supermodal-payment-toggle {
-    display: inline-flex;
-    align-items: stretch;
-    flex: 0 0 auto;
-    gap: 0.25rem;
-    padding: 0.25rem;
-    border: 1px solid var(--color-border);
-    border-radius: 0.85rem;
-    background: rgba(255, 255, 255, 0.82);
+  display: inline-flex;
+  align-items: stretch;
+  flex: 0 0 auto;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.82);
 }
 
 /* Radios reais escondidos (acessíveis por teclado) */
 #modalSuperMov .supermodal-status-toggle .btn-check,
 #modalSuperMov .supermodal-payment-toggle .btn-check {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* Base comum dos botões */
 #modalSuperMov .supermodal-status-option,
 #modalSuperMov .supermodal-payment-option {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    min-height: 2.55rem;
-    margin: 0;
-    padding: 0.55rem 0.9rem;
-    border: 1px solid transparent;
-    border-radius: var(--radius-sm);
-    background: transparent;
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    line-height: 1.2;
-    white-space: nowrap;
-    cursor: pointer;
-    user-select: none;
-    transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.55rem;
+  margin: 0;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    color 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
 }
 #modalSuperMov .supermodal-status-toggle .btn-check:focus-visible + .supermodal-status-option,
 #modalSuperMov .supermodal-payment-toggle .btn-check:focus-visible + .supermodal-payment-option {
-    outline: 3px solid var(--color-primary-300);
-    outline-offset: 2px;
+  outline: 3px solid var(--color-primary-300);
+  outline-offset: 2px;
 }
 
 /* Variáveis de cor de cada botão */
 #modalSuperMov .supermodal-status-option--paid {
-    --st-color: var(--color-success);
-    --st-bg: var(--color-success-subtle);
+  --st-color: var(--color-success);
+  --st-bg: var(--color-success-subtle);
 }
 #modalSuperMov .supermodal-status-option--pending {
-    --st-color: var(--color-warning);
-    --st-bg: #fff0e2;
+  --st-color: var(--color-warning);
+  --st-bg: #fff0e2;
 }
 
 /* INATIVO: fundo branco, borda/ícone/texto na cor do botão */
 #modalSuperMov .supermodal-status-toggle .supermodal-status-option {
-    border-color: var(--st-color);
-    background: #fff;
-    color: var(--st-color);
+  border-color: var(--st-color);
+  background: #fff;
+  color: var(--st-color);
 }
 #modalSuperMov .supermodal-status-toggle .supermodal-status-option i {
-    color: var(--st-color);
+  color: var(--st-color);
 }
 
 /* ATIVO: mesmo contorno, fundo claro */
 #modalSuperMov .supermodal-status-toggle .btn-check:checked + .supermodal-status-option {
-    background: var(--st-bg);
+  background: var(--st-bg);
 }
 
 /* Largura única compartilhada: grupo de botões e select de recorrência */
 #modalSuperMov {
-    --supermodal-control-w: 260px;
+  --supermodal-control-w: 260px;
 }
 #modalSuperMov .supermodal-status-toggle {
-    width: var(--supermodal-control-w);
+  width: var(--supermodal-control-w);
 }
 #modalSuperMov .supermodal-status-toggle .supermodal-status-option {
-    flex: 1 1 0;   /* os dois botões dividem o espaço igualmente */
+  flex: 1 1 0; /* os dois botões dividem o espaço igualmente */
 }
 
 /* Hover discreto no inativo */
 #modalSuperMov .supermodal-status-toggle .btn-check:not(:checked) + .supermodal-status-option:hover {
-    background: var(--st-bg);
+  background: var(--st-bg);
 }
-
 
 /* ==========================================================
    FORMA DE PAGAMENTO DO CARTÃO (À vista / Parcelado)
 ========================================================== */
 #modalSuperMov .supermodal-payment-toggle {
-    border-color: var(--color-primary-100);
-    background: var(--color-primary-50);
+  border-color: var(--color-primary-100);
+  background: var(--color-primary-50);
 }
 #modalSuperMov .supermodal-payment-toggle .supermodal-payment-option {
-    color: var(--color-text-muted);
+  color: var(--color-text-muted);
 }
 #modalSuperMov .supermodal-payment-toggle .btn-check:not(:checked) + .supermodal-payment-option:hover {
-    background: var(--color-bg2);
-    color: var(--color-text);
+  background: var(--color-bg2);
+  color: var(--color-text);
 }
 #modalSuperMov .supermodal-payment-toggle .btn-check:checked + .supermodal-payment-option {
-    border-color: var(--color-primary-600);
-    background: var(--color-primary-600);
-    color: var(--color-white);
-    box-shadow: 0 2px 5px rgba(108, 76, 241, 0.18);
+  border-color: var(--color-primary-600);
+  background: var(--color-primary-600);
+  color: var(--color-white);
+  box-shadow: 0 2px 5px rgba(108, 76, 241, 0.18);
 }
-
 
 /* ==========================================================
    RECORRÊNCIA — CARD ROXO (receita, despesa em conta e cartão)
    Usa a classe .supermodal-recurrence-card nas três telas.
 ========================================================== */
 #modalSuperMov .supermodal-recurrence-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-4);
-    min-height: 64px;
-    padding: 0.65rem 0.85rem !important;
-    border: 1px solid #e2dcff !important;
-    border-left: 4px solid var(--color-primary-500) !important;
-    border-radius: var(--radius-md) !important;
-    background: var(--color-primary-50) !important;
-    box-shadow: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 64px;
+  padding: 0.65rem 0.85rem !important;
+  border: 1px solid #e2dcff !important;
+  border-left: 4px solid var(--color-primary-500) !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--color-primary-50) !important;
+  box-shadow: none !important;
 }
 #modalSuperMov .supermodal-recurrence-card > div {
-    min-width: 0;
-    margin: 0 !important;
+  min-width: 0;
+  margin: 0 !important;
 }
 #modalSuperMov .supermodal-recurrence-card label {
-    display: block;
-    margin: 0 0 0.1rem !important;
-    color: var(--color-primary-700) !important;
-    font-size: var(--font-size-sm);
-    font-weight: 700;
+  display: block;
+  margin: 0 0 0.1rem !important;
+  color: var(--color-primary-700) !important;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
 }
 #modalSuperMov .supermodal-recurrence-card label i {
-    color: var(--color-primary-600) !important;
+  color: var(--color-primary-600) !important;
 }
 #modalSuperMov .supermodal-recurrence-card small {
-    display: block;
-    margin: 0 !important;
-    color: var(--color-text-muted);
-    font-size: var(--font-size-xs) !important;
-    line-height: 1.4 !important;
+  display: block;
+  margin: 0 !important;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs) !important;
+  line-height: 1.4 !important;
 }
 #modalSuperMov .supermodal-recurrence-card .form-select {
-    flex: 0 0 var(--supermodal-control-w);
-    width: var(--supermodal-control-w);
-    max-width: 100%;
-    min-height: 38px;
-    border-color: #d8d0ff;
-    background-color: var(--color-white);
-    color: var(--color-primary-700) !important;
-    font-weight: 600;
-    text-align: center;
-    text-align-last: center;
+  flex: 0 0 var(--supermodal-control-w);
+  width: var(--supermodal-control-w);
+  max-width: 100%;
+  min-height: 38px;
+  border-color: #d8d0ff;
+  background-color: var(--color-white);
+  color: var(--color-primary-700) !important;
+  font-weight: 600;
+  text-align: center;
+  text-align-last: center;
 }
-
 
 /* ==========================================================
    DESPESA NO CARTÃO
 ========================================================== */
 #modalSuperMov #supermodal-form-despesa-cartao .supermodal__step-description {
-    color: var(--color-primary-700);
+  color: var(--color-primary-700);
 }
 #modalSuperMov #supermodal_cartao_parcelamento {
-    padding: var(--space-3);
-    border: 1px solid var(--color-primary-100);
-    border-radius: var(--radius-md);
-    background: var(--color-primary-50);
+  padding: var(--space-3);
+  border: 1px solid var(--color-primary-100);
+  border-radius: var(--radius-md);
+  background: var(--color-primary-50);
 }
 #modalSuperMov #supermodal_cartao_valor_parcela_calculado {
-    padding: 0;
-    border: 0;
-    color: var(--color-primary-700);
-    font-size: var(--font-size-sm);
+  padding: 0;
+  border: 0;
+  color: var(--color-primary-700);
+  font-size: var(--font-size-sm);
 }
 #modalSuperMov #supermodal_cartao_fatura {
-    border-color: #d8d0ff;
-    background-color: var(--color-primary-50);
+  border-color: #d8d0ff;
+  background-color: var(--color-primary-50);
 }
 
 /* Estorno / Crédito ao lado do valor */
 #modalSuperMov .supermodal-estorno-col {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-width: 0;
 }
 #modalSuperMov .supermodal-estorno-control {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    height: 40px;
-    min-height: 40px;
-    padding: 0.45rem 0.7rem;
-    border: 1px solid var(--color-primary-100);
-    border-radius: var(--radius-sm);
-    background: var(--color-primary-50);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  height: 40px;
+  min-height: 40px;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--color-primary-100);
+  border-radius: var(--radius-sm);
+  background: var(--color-primary-50);
 }
 #modalSuperMov .supermodal-estorno-control .form-check-input {
-    flex: 0 0 auto;
-    margin: 0;
-    cursor: pointer;
+  flex: 0 0 auto;
+  margin: 0;
+  cursor: pointer;
 }
 #modalSuperMov .supermodal-estorno-control .form-check-label {
-    margin: 0;
-    color: var(--color-primary-700);
-    font-size: var(--font-size-sm);
-    font-weight: 700;
-    line-height: 1.25;
-    cursor: pointer;
+  margin: 0;
+  color: var(--color-primary-700);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  line-height: 1.25;
+  cursor: pointer;
 }
 #modalSuperMov .supermodal-estorno-control .form-check-label i {
-    color: var(--color-primary-600);
+  color: var(--color-primary-600);
 }
-
 
 /* ==========================================================
    TRANSFERÊNCIA
 ========================================================== */
 #modalSuperMov #supermodal-form-transferencia .supermodal__step-description {
-    color: var(--color-info);
+  color: var(--color-info);
 }
 #modalSuperMov #supermodal-form-transferencia .form-control:focus,
 #modalSuperMov #supermodal-form-transferencia .form-select:focus {
-    border-color: var(--color-info);
-    box-shadow: 0 0 0 3px var(--color-info-subtle);
+  border-color: var(--color-info);
+  box-shadow: 0 0 0 3px var(--color-info-subtle);
 }
 #modalSuperMov #supermodal-form-transferencia #supermodal_transferencia_valor {
-    font-weight: 700;
+  font-weight: 700;
 }
-
 
 /* ==========================================================
    RODAPÉ E BOTÕES
 ========================================================== */
 #modalSuperMov .modal-footer {
-    gap: var(--space-2);
-    padding: var(--space-4) var(--space-6);
-    border-top: 1px solid var(--color-border);
-    background: var(--color-white);
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-white);
 }
 #modalSuperMov .modal-footer .btn {
-    min-height: 42px;
-    padding: 0.6rem 1.25rem;
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-sm);
-    font-weight: 600;
+  min-height: 42px;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
 }
 #modalSuperMov .modal-footer .btn-primary {
-    border-color: var(--color-primary-600);
-    background: var(--color-primary-600);
-    color: var(--color-white);
-    box-shadow: 0 4px 10px rgba(108, 76, 241, 0.16);
+  border-color: var(--color-primary-600);
+  background: var(--color-primary-600);
+  color: var(--color-white);
+  box-shadow: 0 4px 10px rgba(108, 76, 241, 0.16);
 }
 #modalSuperMov .modal-footer .btn-primary:hover {
-    border-color: var(--color-primary-700);
-    background: var(--color-primary-700);
+  border-color: var(--color-primary-700);
+  background: var(--color-primary-700);
 }
 #modalSuperMov .modal-footer .btn-secondary {
-    border-color: var(--color-border);
-    background: var(--color-white);
-    color: var(--color-text);
-    box-shadow: var(--shadow-sm);
+  border-color: var(--color-border);
+  background: var(--color-white);
+  color: var(--color-text);
+  box-shadow: var(--shadow-sm);
 }
 #modalSuperMov .modal-footer .btn-secondary:hover {
-    background: var(--color-bg2);
+  background: var(--color-bg2);
 }
-
 
 /* ==========================================================
    COMPACTAÇÃO — menos altura nos formulários
@@ -743,175 +739,174 @@
 ========================================================== */
 /* Corpo: padding menor e rolagem interna se ainda passar da tela */
 #modalSuperMov .supermodal__body {
-    padding: var(--space-4) var(--space-5);
-    max-height: calc(100vh - 12rem);
-    max-height: calc(100dvh - 12rem);
-    overflow-y: auto;
+  padding: var(--space-4) var(--space-5);
+  max-height: calc(100vh - 12rem);
+  max-height: calc(100dvh - 12rem);
+  overflow-y: auto;
 }
 #modalSuperMov .supermodal__intro {
-    margin-bottom: var(--space-3);
+  margin-bottom: var(--space-3);
 }
 
 /* Ícone do título menor (mesmo tamanho em todos os tipos) */
 #modalSuperMov .supermodal__step-title {
-    gap: 0.3rem;
+  gap: 0.3rem;
 }
 #modalSuperMov .supermodal__step-title .supermodal-title-icon {
-    flex-basis: 40px;
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    min-height: 40px;
-    margin: 0;
-    font-size: 1.4rem;
+  flex-basis: 40px;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  margin: 0;
+  font-size: 1.4rem;
 }
 
 /* Campos e espaçamentos */
 #modalSuperMov form .form-label {
-    margin-bottom: 0.25rem;
+  margin-bottom: 0.25rem;
 }
 #modalSuperMov form .form-control,
 #modalSuperMov form .form-select {
-    min-height: 36px;
-    padding-block: 0.3rem;
+  min-height: 36px;
+  padding-block: 0.3rem;
 }
 #modalSuperMov form .row.g-3 {
-    --bs-gutter-y: 0.7rem;
+  --bs-gutter-y: 0.7rem;
 }
 #modalSuperMov #supermodal-form-despesa-cartao .mb-3 {
-    margin-bottom: 0.7rem !important;
+  margin-bottom: 0.7rem !important;
 }
 #modalSuperMov #supermodal_cartao_parcelamento {
-    padding: var(--space-2) var(--space-3);
+  padding: var(--space-2) var(--space-3);
 }
 #modalSuperMov .supermodal-estorno-control {
-    height: 36px;
-    min-height: 36px;
+  height: 36px;
+  min-height: 36px;
 }
 
 /* Cards de status e recorrência mais baixos */
 #modalSuperMov #supermodal-form-receita .card-body,
 #modalSuperMov #supermodal-form-despesa-conta .card-body,
 #modalSuperMov .supermodal-recurrence-card {
-    min-height: 52px;
-    padding: 0.45rem 0.75rem !important;
+  min-height: 52px;
+  padding: 0.45rem 0.75rem !important;
 }
 #modalSuperMov .supermodal-recurrence-card .form-select {
-    min-height: 36px;
+  min-height: 36px;
 }
 #modalSuperMov .supermodal-status-option,
 #modalSuperMov .supermodal-payment-option {
-    min-height: 2.2rem;
-    padding: 0.35rem 0.8rem;
+  min-height: 2.2rem;
+  padding: 0.35rem 0.8rem;
 }
 
 /* Rodapé mais baixo */
 #modalSuperMov .modal-footer {
-    padding: var(--space-3) var(--space-5);
+  padding: var(--space-3) var(--space-5);
 }
 #modalSuperMov .modal-footer .btn {
-    min-height: 38px;
-    padding: 0.45rem 1.1rem;
+  min-height: 38px;
+  padding: 0.45rem 1.1rem;
 }
-
 
 /* ==========================================================
    RESPONSIVIDADE
 ========================================================== */
 @media (max-width: 991.98px) {
-    #modalSuperMov .modal-dialog {
-        max-width: calc(100% - 2rem);
-    }
-    #modalSuperMov .supermodal__body {
-        padding: var(--space-5);
-    }
-    #modalSuperMov .supermodal-choice-grid {
-        grid-template-columns: 1fr;
-    }
-    #modalSuperMov .supermodal-choice-grid--two {
-        grid-template-columns: 1fr;
-        max-width: none;
-    }
-    #modalSuperMov .supermodal-choice {
-        min-height: 110px;
-    }
+  #modalSuperMov .modal-dialog {
+    max-width: calc(100% - 2rem);
+  }
+  #modalSuperMov .supermodal__body {
+    padding: var(--space-5);
+  }
+  #modalSuperMov .supermodal-choice-grid {
+    grid-template-columns: 1fr;
+  }
+  #modalSuperMov .supermodal-choice-grid--two {
+    grid-template-columns: 1fr;
+    max-width: none;
+  }
+  #modalSuperMov .supermodal-choice {
+    min-height: 110px;
+  }
 }
 
 @media (max-width: 767.98px) {
-    #modalSuperMov .supermodal__step-title {
-        gap: 0.45rem;
-    }
-    #modalSuperMov .supermodal-estorno-col {
-        justify-content: flex-start;
-    }
+  #modalSuperMov .supermodal__step-title {
+    gap: 0.45rem;
+  }
+  #modalSuperMov .supermodal-estorno-col {
+    justify-content: flex-start;
+  }
 }
 
 @media (max-width: 575.98px) {
-    #modalSuperMov .modal-dialog {
-        max-width: calc(100% - 1rem);
-        margin: 0.5rem auto;
-    }
-    #modalSuperMov .supermodal {
-        border-radius: var(--radius-lg);
-    }
-    #modalSuperMov .supermodal__body {
-        padding: var(--space-4);
-    }
-    #modalSuperMov .supermodal__intro {
-        margin-bottom: var(--space-4);
-        padding-top: 2.25rem;
-        text-align: left;
-    }
-    #modalSuperMov .supermodal__step-title {
-        font-size: var(--font-size-lg);
-        text-align: center;
-    }
-    #modalSuperMov .supermodal-choice {
-        min-height: 100px;
-        padding: var(--space-4);
-    }
-    #modalSuperMov .supermodal-choice__icon {
-        flex-basis: 44px;
-        width: 44px;
-        height: 44px;
-        font-size: 1.2rem;
-    }
-    #modalSuperMov .supermodal-choice__title {
-        font-size: var(--font-size-base);
-    }
-    #modalSuperMov .supermodal-choice__description {
-        font-size: var(--font-size-sm);
-    }
+  #modalSuperMov .modal-dialog {
+    max-width: calc(100% - 1rem);
+    margin: 0.5rem auto;
+  }
+  #modalSuperMov .supermodal {
+    border-radius: var(--radius-lg);
+  }
+  #modalSuperMov .supermodal__body {
+    padding: var(--space-4);
+  }
+  #modalSuperMov .supermodal__intro {
+    margin-bottom: var(--space-4);
+    padding-top: 2.25rem;
+    text-align: left;
+  }
+  #modalSuperMov .supermodal__step-title {
+    font-size: var(--font-size-lg);
+    text-align: center;
+  }
+  #modalSuperMov .supermodal-choice {
+    min-height: 100px;
+    padding: var(--space-4);
+  }
+  #modalSuperMov .supermodal-choice__icon {
+    flex-basis: 44px;
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+  }
+  #modalSuperMov .supermodal-choice__title {
+    font-size: var(--font-size-base);
+  }
+  #modalSuperMov .supermodal-choice__description {
+    font-size: var(--font-size-sm);
+  }
 
-    /* Card de status e recorrência empilhados */
-    #modalSuperMov #supermodal-form-receita .card-body,
-    #modalSuperMov #supermodal-form-despesa-conta .card-body,
-    #modalSuperMov .supermodal-recurrence-card {
-        align-items: stretch;
-        flex-direction: column;
-    }
-    #modalSuperMov .supermodal-recurrence-card .form-select {
-        flex: 0 0 auto;
-        width: 100%;
-    }
+  /* Card de status e recorrência empilhados */
+  #modalSuperMov #supermodal-form-receita .card-body,
+  #modalSuperMov #supermodal-form-despesa-conta .card-body,
+  #modalSuperMov .supermodal-recurrence-card {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  #modalSuperMov .supermodal-recurrence-card .form-select {
+    flex: 0 0 auto;
+    width: 100%;
+  }
 
-    /* Botões de status ocupam a largura toda */
-    #modalSuperMov .supermodal-status-toggle,
-    #modalSuperMov .supermodal-payment-toggle {
-        width: 100%;
-    }
-    #modalSuperMov .supermodal-status-option,
-    #modalSuperMov .supermodal-payment-option {
-        flex: 1 1 0;
-        padding-inline: 0.5rem;
-        white-space: normal;
-    }
+  /* Botões de status ocupam a largura toda */
+  #modalSuperMov .supermodal-status-toggle,
+  #modalSuperMov .supermodal-payment-toggle {
+    width: 100%;
+  }
+  #modalSuperMov .supermodal-status-option,
+  #modalSuperMov .supermodal-payment-option {
+    flex: 1 1 0;
+    padding-inline: 0.5rem;
+    white-space: normal;
+  }
 
-    #modalSuperMov .modal-footer {
-        padding: var(--space-3) var(--space-4);
-    }
-    #modalSuperMov .modal-footer .btn {
-        flex: 1;
-        padding: 0.55rem 0.75rem;
-    }
+  #modalSuperMov .modal-footer {
+    padding: var(--space-3) var(--space-4);
+  }
+  #modalSuperMov .modal-footer .btn {
+    flex: 1;
+    padding: 0.55rem 0.75rem;
+  }
 }

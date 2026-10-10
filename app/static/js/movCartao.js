@@ -48,13 +48,7 @@ function calcularValorParcela(
   textoValorParcela,
   valorParcelaCalculado,
 ) {
-  if (
-    !valorInput ||
-    !numeroParcelasInput ||
-    !valorTotalRadio ||
-    !textoValorParcela ||
-    !valorParcelaCalculado
-  ) {
+  if (!valorInput || !numeroParcelasInput || !valorTotalRadio || !textoValorParcela || !valorParcelaCalculado) {
     return;
   }
 
@@ -89,17 +83,13 @@ function preverFatura() {
 
   // Se o usuário ainda não preencheu os dois campos
   if (!dataCompra || !cartaoId) {
-    selectFatura.innerHTML =
-      '<option value="" disabled selected>' +
-      'Selecione data e cartão...' +
-      '</option>';
+    selectFatura.innerHTML = '<option value="" disabled selected>' + 'Selecione data e cartão...' + '</option>';
 
     return;
   }
 
   // Mostra que está carregando
-  selectFatura.innerHTML =
-    '<option value="" disabled selected>' + 'Calculando...' + '</option>';
+  selectFatura.innerHTML = '<option value="" disabled selected>' + 'Calculando...' + '</option>';
 
   fetch('/faturas/prever_fatura', {
     method: 'POST',
@@ -122,10 +112,7 @@ function preverFatura() {
       }
 
       if (!data.opcoes || !Array.isArray(data.opcoes)) {
-        selectFatura.innerHTML =
-          '<option value="" disabled selected>' +
-          'Nenhuma fatura disponível' +
-          '</option>';
+        selectFatura.innerHTML = '<option value="" disabled selected>' + 'Nenhuma fatura disponível' + '</option>';
 
         return;
       }
@@ -146,10 +133,7 @@ function preverFatura() {
     .catch((erro) => {
       console.error('Erro ao prever fatura:', erro);
 
-      selectFatura.innerHTML =
-        '<option value="" disabled selected>' +
-        'Erro ao calcular faturas' +
-        '</option>';
+      selectFatura.innerHTML = '<option value="" disabled selected>' + 'Erro ao calcular faturas' + '</option>';
     });
 }
 
@@ -194,17 +178,9 @@ function configurarTabelaCartao() {
 
     const pesquisa = (campoPesquisa?.value || '').trim().toLowerCase();
 
-    const filtroCategoria =
-      document
-        .querySelector('#menuFiltroCategoria select')
-        ?.value?.trim()
-        .toLowerCase() || '';
+    const filtroCategoria = document.querySelector('#menuFiltroCategoria select')?.value?.trim().toLowerCase() || '';
 
-    const filtroCartao =
-      document
-        .querySelector('#menuFiltroCartao select')
-        ?.value?.trim()
-        .toLowerCase() || '';
+    const filtroCartao = document.querySelector('#menuFiltroCartao select')?.value?.trim().toLowerCase() || '';
 
     return linhas.filter((linha) => {
       const celulas = linha.querySelectorAll('td');
@@ -217,12 +193,10 @@ function configurarTabelaCartao() {
       const textoLinha = linha.textContent.trim().toLowerCase();
 
       // Categoria
-      const categoria =
-        celulas[3]?.getAttribute('data-categoria')?.trim().toLowerCase() || '';
+      const categoria = celulas[3]?.getAttribute('data-categoria')?.trim().toLowerCase() || '';
 
       // Cartão
-      const cartao =
-        celulas[4]?.getAttribute('data-cartao')?.trim().toLowerCase() || '';
+      const cartao = celulas[4]?.getAttribute('data-cartao')?.trim().toLowerCase() || '';
 
       // Pesquisa geral
       const passaPesquisa = !pesquisa || textoLinha.includes(pesquisa);
@@ -247,10 +221,7 @@ function configurarTabelaCartao() {
     const total = linhasFiltradas.length;
 
     // Quantidade de páginas
-    const totalPaginas =
-      tamanhoPaginaCartao >= 999999
-        ? 1
-        : Math.max(1, Math.ceil(total / tamanhoPaginaCartao));
+    const totalPaginas = tamanhoPaginaCartao >= 999999 ? 1 : Math.max(1, Math.ceil(total / tamanhoPaginaCartao));
 
     // Garante que a página atual continue válida
     if (paginaCartaoAtual > totalPaginas) {
@@ -324,11 +295,7 @@ function configurarTabelaCartao() {
 
     // Página anterior
     if (totalPaginas > 1 && paginaCartaoAtual > 1) {
-      adicionarBotaoPaginaCartao(
-        paginaCartaoAtual - 1,
-        '<i class="bi bi-chevron-left"></i>',
-        'Página anterior',
-      );
+      adicionarBotaoPaginaCartao(paginaCartaoAtual - 1, '<i class="bi bi-chevron-left"></i>', 'Página anterior');
     }
 
     // Números das páginas
@@ -338,11 +305,7 @@ function configurarTabelaCartao() {
 
     // Próxima página
     if (totalPaginas > 1 && paginaCartaoAtual < totalPaginas) {
-      adicionarBotaoPaginaCartao(
-        paginaCartaoAtual + 1,
-        '<i class="bi bi-chevron-right"></i>',
-        'Próxima página',
-      );
+      adicionarBotaoPaginaCartao(paginaCartaoAtual + 1, '<i class="bi bi-chevron-right"></i>', 'Próxima página');
     }
   }
 
@@ -436,9 +399,7 @@ function configurarEventosComuns() {
 
   const valorTipoSection = document.getElementById('valorTipoSection');
 
-  const valorParcelaCalculado = document.getElementById(
-    'valorParcelaCalculado',
-  );
+  const valorParcelaCalculado = document.getElementById('valorParcelaCalculado');
 
   const textoValorParcela = document.getElementById('textoValorParcela');
 
@@ -472,21 +433,11 @@ function configurarEventosComuns() {
   }
 
   const calcular = () =>
-    calcularValorParcela(
-      valorInput,
-      numeroParcelasInput,
-      valorTotalRadio,
-      textoValorParcela,
-      valorParcelaCalculado,
-    );
+    calcularValorParcela(valorInput, numeroParcelasInput, valorTotalRadio, textoValorParcela, valorParcelaCalculado);
 
-  avista.addEventListener('change', () =>
-    toggleParceladoFields(parcelado, valorTipoSection, calcular),
-  );
+  avista.addEventListener('change', () => toggleParceladoFields(parcelado, valorTipoSection, calcular));
 
-  parcelado.addEventListener('change', () =>
-    toggleParceladoFields(parcelado, valorTipoSection, calcular),
-  );
+  parcelado.addEventListener('change', () => toggleParceladoFields(parcelado, valorTipoSection, calcular));
 
   valorInput.addEventListener('input', calcular);
 
@@ -558,9 +509,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (!form) return;
 
-      const modalTitulo = document.getElementById(
-        'modalMovimentacaoCartaoLabel',
-      );
+      const modalTitulo = document.getElementById('modalMovimentacaoCartaoLabel');
 
       if (modalTitulo) {
         modalTitulo.textContent = 'Nova Compra no Cartão';
@@ -660,9 +609,7 @@ document.addEventListener('DOMContentLoaded', function () {
       // Limpa radios do tipo de valor
       // ====================================================
 
-      const tipoValorRadios = document.querySelectorAll(
-        "input[name='tipo_valor']",
-      );
+      const tipoValorRadios = document.querySelectorAll("input[name='tipo_valor']");
 
       tipoValorRadios.forEach((radio) => {
         radio.checked = false;
@@ -736,9 +683,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         form.removeAttribute('action');
 
-        const modalTitulo = document.getElementById(
-          'modalMovimentacaoCartaoLabel',
-        );
+        const modalTitulo = document.getElementById('modalMovimentacaoCartaoLabel');
 
         if (modalTitulo) {
           modalTitulo.textContent = 'Editar Compra no Cartão';
@@ -763,9 +708,7 @@ document.addEventListener('DOMContentLoaded', function () {
           }
 
           if (form.valor) {
-            form.valor.value = Math.abs(valorNumerico)
-              .toFixed(2)
-              .replace('.', ',');
+            form.valor.value = Math.abs(valorNumerico).toFixed(2).replace('.', ',');
           }
         } else {
           if (isEstorno) {
@@ -817,9 +760,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const catSelect = document.getElementById('categoria_id');
 
         if (catSelect) {
-          const opcaoCategoria = catSelect.querySelector(
-            `option[value="${data.categoria_id}"]`,
-          );
+          const opcaoCategoria = catSelect.querySelector(`option[value="${data.categoria_id}"]`);
 
           if (opcaoCategoria) {
             opcaoCategoria.style.display = '';
@@ -845,9 +786,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
           radio.disabled = false;
 
-          const label = document.getElementById(
-            'lbl' + tipo.charAt(0).toUpperCase() + tipo.slice(1),
-          );
+          const label = document.getElementById('lbl' + tipo.charAt(0).toUpperCase() + tipo.slice(1));
 
           label?.classList.remove('opacity-25');
         });
@@ -928,9 +867,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const selectFatura = document.getElementById('fatura_mes_ano');
 
         if (selectFatura) {
-          fetch(
-            `/faturas/fatura_nome/${data.fatura_id_mes}/${data.fatura_id_ano}`,
-          )
+          fetch(`/faturas/fatura_nome/${data.fatura_id_mes}/${data.fatura_id_ano}`)
             .then((res) => res.json())
             .then((info) => {
               selectFatura.innerHTML = `<option value="${data.fatura_id_mes}-${data.fatura_id_ano}" selected>${info.texto}</option>`;
@@ -977,10 +914,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       const id = form.getAttribute('data-id');
 
-      const url =
-        modo === 'edit'
-          ? `/cartao/mov_cartao/${id}/edit`
-          : '/cartao/mov_cartao/nova';
+      const url = modo === 'edit' ? `/cartao/mov_cartao/${id}/edit` : '/cartao/mov_cartao/nova';
 
       try {
         const res = await fetch(url, {
@@ -999,15 +933,10 @@ document.addEventListener('DOMContentLoaded', function () {
           const resposta = await res.json();
 
           if (res.ok && resposta.sucesso) {
-            exibirToast(
-              resposta.mensagem || 'Movimentação salva com sucesso',
-              'success',
-            );
+            exibirToast(resposta.mensagem || 'Movimentação salva com sucesso', 'success');
 
             // Fecha modal
-            const modalElement = document.getElementById(
-              'modalMovimentacaoCartao',
-            );
+            const modalElement = document.getElementById('modalMovimentacaoCartao');
 
             if (modalElement) {
               const modal = bootstrap.Modal.getInstance(modalElement);
@@ -1019,10 +948,7 @@ document.addEventListener('DOMContentLoaded', function () {
               location.reload();
             }, 1500);
           } else {
-            exibirToast(
-              resposta.erro || 'Erro ao salvar movimentação.',
-              'danger',
-            );
+            exibirToast(resposta.erro || 'Erro ao salvar movimentação.', 'danger');
           }
         } else {
           const html = await res.text();
@@ -1050,8 +976,7 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', function (event) {
       event.preventDefault();
 
-      const numeroParcelas =
-        parseInt(this.getAttribute('data-parcelas'), 10) || 1;
+      const numeroParcelas = parseInt(this.getAttribute('data-parcelas'), 10) || 1;
 
       const descricao = this.getAttribute('data-descricao') || 'Movimentação';
       const valor = this.getAttribute('data-valor') || '0';
@@ -1182,9 +1107,7 @@ function atualizarSaldoConta(faturaId) {
 
   const campoSaldo = document.getElementById('saldoConta_' + faturaId);
 
-  const botaoConfirmar = document.getElementById(
-    'btnConfirmarPagamento_' + faturaId,
-  );
+  const botaoConfirmar = document.getElementById('btnConfirmarPagamento_' + faturaId);
 
   if (!selectElement || !valorInput) {
     return;
@@ -1192,8 +1115,7 @@ function atualizarSaldoConta(faturaId) {
 
   const selectedOption = selectElement.options[selectElement.selectedIndex];
 
-  const saldoConta =
-    parseFloat(selectedOption?.getAttribute('data-saldo')) || 0;
+  const saldoConta = parseFloat(selectedOption?.getAttribute('data-saldo')) || 0;
 
   const valorPagamento = parseFloat(valorInput.value) || 0;
 
@@ -1286,10 +1208,7 @@ document.addEventListener('click', function (e) {
   // Se o clique não foi dentro do menu
   // e não foi no ícone do filtro,
   // fecha os menus.
-  if (
-    !e.target.closest('.filtro-dropdown') &&
-    !e.target.closest('.filtro-icon')
-  ) {
+  if (!e.target.closest('.filtro-dropdown') && !e.target.closest('.filtro-icon')) {
     if (menuCat) {
       menuCat.classList.add('d-none');
     }

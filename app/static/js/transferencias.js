@@ -4,15 +4,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 1. Lógica para mostrar o Saldo da Conta Dinamicamente
   const contaOrigem = modalTransf.querySelector('#conta_origem');
-  const saldoOrigemContainer = modalTransf.querySelector(
-    '#saldoContaOrigemContainer',
-  );
+  const saldoOrigemContainer = modalTransf.querySelector('#saldoContaOrigemContainer');
   const saldoOrigem = modalTransf.querySelector('#saldoContaOrigem');
 
   const contaDestino = modalTransf.querySelector('#conta_destino');
-  const saldoDestinoContainer = modalTransf.querySelector(
-    '#saldoContaDestinoContainer',
-  );
+  const saldoDestinoContainer = modalTransf.querySelector('#saldoContaDestinoContainer');
   const saldoDestino = modalTransf.querySelector('#saldoContaDestino');
 
   function atualizarSaldo(selectElem, containerElem, labelElem) {
@@ -21,9 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (selectedOption && selectElem.value !== '') {
       const saldo = selectedOption.getAttribute('data-saldo');
-      labelElem.innerHTML =
-        'Saldo: R$ ' +
-        parseFloat(saldo).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+      labelElem.innerHTML = 'Saldo: R$ ' + parseFloat(saldo).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
       containerElem.style.display = 'block';
     } else {
       containerElem.style.display = 'none';
@@ -31,14 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (contaOrigem) {
-    contaOrigem.addEventListener('change', () =>
-      atualizarSaldo(contaOrigem, saldoOrigemContainer, saldoOrigem),
-    );
+    contaOrigem.addEventListener('change', () => atualizarSaldo(contaOrigem, saldoOrigemContainer, saldoOrigem));
   }
   if (contaDestino) {
-    contaDestino.addEventListener('change', () =>
-      atualizarSaldo(contaDestino, saldoDestinoContainer, saldoDestino),
-    );
+    contaDestino.addEventListener('change', () => atualizarSaldo(contaDestino, saldoDestinoContainer, saldoDestino));
   }
 
   // ==========================================
@@ -62,12 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
         modalTransf.querySelector('#dataTransferencia').value = data;
         modalTransf.querySelector('#descricao').value = observacoes || '';
 
-        modalTransf
-          .querySelector('#conta_origem')
-          .dispatchEvent(new Event('change'));
-        modalTransf
-          .querySelector('#conta_destino')
-          .dispatchEvent(new Event('change'));
+        modalTransf.querySelector('#conta_origem').dispatchEvent(new Event('change'));
+        modalTransf.querySelector('#conta_destino').dispatchEvent(new Event('change'));
 
         const form = modalTransf.querySelector('form');
         form.action = `/transferencias/editar/${id}`;
@@ -134,16 +120,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Prepara o saldo base lendo o HTML
       const optSelecionada = selectOrigem.options[selectOrigem.selectedIndex];
-      let saldoDisponivel =
-        parseFloat(optSelecionada.getAttribute('data-saldo')) || 0;
+      let saldoDisponivel = parseFloat(optSelecionada.getAttribute('data-saldo')) || 0;
 
       const modoEdicao = formTransfAntigo.action.includes('editar');
 
       // A MÁGICA DO SALDO VIRTUAL ACONTECE AQUI
       if (modoEdicao) {
         const origemOriginal = formTransfAntigo.dataset.origemOriginal;
-        const valorOriginal =
-          parseFloat(formTransfAntigo.dataset.valorOriginal) || 0;
+        const valorOriginal = parseFloat(formTransfAntigo.dataset.valorOriginal) || 0;
 
         // Se a conta de origem continuar a mesma, nós projetamos o estorno do valor antigo
         if (origemId === origemOriginal) {
@@ -180,17 +164,13 @@ document.addEventListener('click', (event) => {
 
   const linha = botao.closest('tr');
 
-  const data =
-    linha?.querySelector('td:nth-child(1)')?.textContent.trim() || '';
+  const data = linha?.querySelector('td:nth-child(1)')?.textContent.trim() || '';
 
-  const origem =
-    linha?.querySelector('.conta-origem')?.textContent.trim() || '';
+  const origem = linha?.querySelector('.conta-origem')?.textContent.trim() || '';
 
-  const destino =
-    linha?.querySelector('.conta-destino')?.textContent.trim() || '';
+  const destino = linha?.querySelector('.conta-destino')?.textContent.trim() || '';
 
-  const valor =
-    linha?.querySelector('.valor-transferencia')?.textContent.trim() || '';
+  const valor = linha?.querySelector('.valor-transferencia')?.textContent.trim() || '';
 
   Swal.fire({
     title: 'Excluir transferência?',

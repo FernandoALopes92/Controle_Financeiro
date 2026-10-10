@@ -149,11 +149,7 @@
 
 .modal-pagar-fatura__summary--highlight {
   border-color: var(--color-primary-100);
-  background: linear-gradient(
-    180deg,
-    var(--color-primary-50),
-    var(--color-white)
-  );
+  background: linear-gradient(180deg, var(--color-primary-50), var(--color-white));
 }
 
 .modal-pagar-fatura__card-name {

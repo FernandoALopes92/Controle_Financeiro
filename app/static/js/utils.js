@@ -147,11 +147,7 @@ function formatarMoeda(valor) {
   }).format(Number(valor));
 }
 
-function aplicarConfirmacaoExclusao(
-  selector,
-  urlBuilder,
-  onSuccess = () => location.reload(),
-) {
+function aplicarConfirmacaoExclusao(selector, urlBuilder, onSuccess = () => location.reload()) {
   document.querySelectorAll(selector).forEach((botao) => {
     botao.addEventListener('click', () => {
       const id = botao.dataset.id;
@@ -159,8 +155,7 @@ function aplicarConfirmacaoExclusao(
       const valor = botao.dataset.valor;
       const data = botao.dataset.data;
 
-      const url =
-        typeof urlBuilder === 'function' ? urlBuilder(id) : urlBuilder;
+      const url = typeof urlBuilder === 'function' ? urlBuilder(id) : urlBuilder;
 
       Swal.fire({
         title: 'Excluir movimentação?',
