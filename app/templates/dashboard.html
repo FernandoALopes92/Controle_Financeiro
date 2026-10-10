@@ -1,7 +1,9 @@
 {% extends "navbar/base.html" %}
 {% block title %}Painel de Controle{% endblock %}
-{% block page_styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/dashboard.css') }}" />{% endblock %}
-
+{% block page_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/dashboard.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/supermodal.css') }}"/>
+{% endblock %}
 {% block page_header %}
   {% set page_eyebrow = 'Visão geral' %}
   {% set page_title = saudacao ~ ', ' ~ current_user.nome ~ '!' %}
@@ -114,10 +116,11 @@
 
 <section class="card mb-4" aria-labelledby="movimentacoes-destaque-title"><div class="card-header"><h2 class="dashboard-section-title" id="movimentacoes-destaque-title"><i class="bi bi-receipt" aria-hidden="true"></i>Movimentações em destaque</h2><p class="u-text-muted small mb-0 mt-1">Despesas de maior impacto no período selecionado.</p></div><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Descrição</th><th>Origem</th><th>Data</th><th class="text-end">Valor</th></tr></thead><tbody>{% if top_5_despesas %}{% for item in top_5_despesas %}<tr><td><span class="dashboard-list__identity"><span class="dashboard-list__icon"><i class="bi {{ item.icone }}" aria-hidden="true"></i></span><strong>{{ item.descricao }}</strong></span></td><td>{{ item.origem }}</td><td>{{ item.data.strftime('%d/%m/%Y') }}</td><td class="text-end text-danger fw-bold">− R$ {{ item.valor | brl }}</td></tr>{% endfor %}{% else %}<tr><td colspan="4" class="dashboard-empty">Nenhuma despesa para exibir neste período.</td></tr>{% endif %}</tbody></table></div></section>
 
-<button class="btn-fab" data-bs-toggle="modal" data-bs-target="#modalNovaMov" title="Novo lançamento" aria-label="Novo lançamento"><i class="bi bi-plus-lg" aria-hidden="true"></i></button>
+<button class="btn-fab" data-bs-toggle="modal" data-bs-target="#modalSuperMov" title="Novo lançamento" aria-label="Novo lançamento"><i class="bi bi-plus-lg" aria-hidden="true"></i></button>
 
-{% include 'modalNovaMov.html' %}
+{% include 'supermodal.html' %}
 
+<script src="{{ url_for('static', filename='js/supermodal.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   window.dadosDashboard = {

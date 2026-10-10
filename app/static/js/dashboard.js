@@ -293,25 +293,6 @@ document.addEventListener('DOMContentLoaded', function () {
     cartaoSelect.addEventListener('change', preverFaturaSuperModal);
   }
 
-  // RESET DO MODAL
-  const modalElemento = document.getElementById('modalNovaMov');
-  if (modalElemento) {
-    modalElemento.addEventListener('hidden.bs.modal', function () {
-      irParaEtapa('etapa-tipo-transacao');
-      document.getElementById('saldoContaDespesaContainer').style.display =
-        'none';
-      document.getElementById('saldoContaOrigemTransfContainer').style.display =
-        'none';
-      document.getElementById(
-        'saldoContaDestinoTransfContainer',
-      ).style.display = 'none';
-
-      // Limpa os dados preenchidos para não aparecerem na próxima vez
-      document
-        .querySelectorAll('#modalNovaMov form')
-        .forEach((form) => form.reset());
-    });
-  }
 });
 
 // ==========================================

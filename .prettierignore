@@ -1,0 +1,9 @@
+app/templates/cartao/modal_mov_cartao.html
+app/templates/cartao/mov_cartao.html
+app/templates/components/mobile_navigation.html
+app/templates/dashboard.html
+app/templates/mov_contas/mov_contas.html
+app/templates/navbar/modal_categorias.html
+app/templates/navbar/modal_contas.html
+app/templates/navbar/relatorios.html
+migrations/

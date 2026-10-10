@@ -1,5 +1,8 @@
 {
-  "singleQuote": true,
+  "singleQuote": true, "endOfLine": "lf",
+  "printWidth": 120,
+  "htmlWhitespaceSensitivity": "ignore",
+  "bracketSameLine": true,
   "overrides": [
     {
       "files": "*.html",
