@@ -1,10 +1,11 @@
 # importar_excel.py
 import re
+import uuid
 from datetime import date
 from decimal import Decimal
 from app import create_app
 from app.models import db, MovimentacaoCartao, Categoria, MeioPagamento, Usuario
-from app.services.cartao_service import calcular_fatura_para_compra
+from app.services.cartao_service import calcular_fatura_para_compra, obter_grupo_da_parcela_anterior
 from dateutil.relativedelta import relativedelta
 
 app = create_app()
@@ -15,31 +16,38 @@ meses_map = {
     'jul': 7, 'ago': 8, 'set': 9, 'out': 10, 'nov': 11, 'dez': 12
 }
 
-# Colei os seus dados exatamente como você mandou
+# Cole abaixo as linhas copiadas da planilha (separadas por TAB):
+#   data <TAB> descrição <TAB> categoria <TAB> cartão <TAB> valor
+# ATENÇÃO: depois de importar, APAGUE as linhas daqui. Se rodar de novo com as
+# mesmas linhas, tudo é importado em duplicidade.
 dados_brutos = """
-27/set	Frutas/legumes	Feira	Nubank Feh	 R$ 10,00 
-27/set	Frutas/legumes	Feira	Nubank Feh	 R$ 10,00 
-27/set	Padaria	Padaria	Nubank Feh	 R$ 4,60 
 """
 
 # Defina o ano em que essas compras aconteceram
 ANO_COMPRA = 2026
 
+if not dados_brutos.strip():
+    print("⚠️ Nada para importar: cole as linhas da planilha em dados_brutos e rode de novo.")
+    raise SystemExit(0)
+
 with app.app_context():
     # Pega o primeiro usuário do banco (você)
     usuario = Usuario.query.first()
-    
+
     # Busca a categoria padrão caso a linha não tenha categoria definida
     cat_outros = Categoria.query.filter_by(nome="Outros", familia_id=usuario.familia_id).first()
-    
+
     ultima_data = None
-    
+
+    # Compras parceladas deste lote: (descrição sem o 01/02, nº de parcelas) -> grupo
+    grupos_do_lote = {}
+
     linhas = dados_brutos.strip().split('\n')
     print(f"🚀 Iniciando importação de {len(linhas)} registros...")
 
     for linha in linhas:
         partes = linha.split('\t')
-        
+
         # Tratamento para quando a data está vazia (ex: Claro, Dentista)
         data_str = partes[0].strip()
         if data_str:
@@ -78,6 +86,22 @@ with app.app_context():
             parcela_atual = 1
             numero_parcelas = 1
 
+        # Grupo da compra: só as parceladas têm grupo (à vista fica sem).
+        # Todas as parcelas da mesma compra compartilham o mesmo grupo; se a parcela
+        # anterior já está no banco, reaproveita o grupo dela.
+        compra_grupo_id = None
+        if numero_parcelas > 1:
+            base_descricao = re.sub(r'\s*\d{2}/\d{2}$', '', descricao).strip()
+            chave = (base_descricao.lower(), numero_parcelas)
+            if chave not in grupos_do_lote:
+                grupos_do_lote[chave] = (
+                    obter_grupo_da_parcela_anterior(
+                        usuario.familia_id, base_descricao, numero_parcelas, parcela_atual
+                    )
+                    or str(uuid.uuid4())
+                )
+            compra_grupo_id = grupos_do_lote[chave]
+
         # A MAGIA AQUI: Calcula a data em que esta parcela específica vai cair
         data_parcela = data_compra + relativedelta(months=(parcela_atual - 1))
 
@@ -94,10 +118,11 @@ with app.app_context():
             familia_id=usuario.familia_id,
             numero_parcelas=numero_parcelas,
             parcela_atual=parcela_atual,
+            compra_grupo_id=compra_grupo_id,
             fatura_id=fatura.id
         )
         db.session.add(nova_mov)
-        
+
         # Atualiza o saldo da fatura
         fatura.saldo += valor
         print(f"✅ Lançado: {descricao} | Compra: {data_compra.strftime('%d/%m')} | Parcela em: {data_parcela.strftime('%d/%m')} | Fat: {fatura.mes}/{fatura.ano}")

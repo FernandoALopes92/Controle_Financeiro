@@ -406,6 +406,8 @@ def excluir_movimentacao(
             ).all()
     else:
         vizinhos = [mov]
+    if mov not in vizinhos:
+        vizinhos.append(mov)
     for m in vizinhos:
         if m.fatura_id:
             faturas_afetadas.add(m.fatura_id)
@@ -413,3 +415,40 @@ def excluir_movimentacao(
     db.session.commit()
     recalcular_saldos_faturas(faturas_afetadas)
     return faturas_afetadas
+
+
+# ---------------------------------------------------------------------------
+# Grupos (séries de lançamentos: parcelados e recorrentes)
+# ---------------------------------------------------------------------------
+def obter_grupo_da_parcela_anterior(
+    familia_id: int,
+    base_descricao: str,
+    numero_parcelas: int,
+    parcela_atual: int,
+) -> Optional[str]:
+    """
+    Procura o compra_grupo_id da parcela anterior de uma compra parcelada.
+
+    Serve para a importação do Excel: a parcela 03/10 deve entrar no mesmo grupo
+    da 02/10 que já está no banco. Não filtra por cartão, porque uma série pode
+    trocar de cartão no meio. Ignora grupos que já têm esta parcela, para não
+    misturar duas compras com o mesmo nome. Devolve None se não encontrar.
+    """
+    candidatas = (
+        MovimentacaoCartao.query.filter(
+            MovimentacaoCartao.familia_id == familia_id,
+            MovimentacaoCartao.numero_parcelas == numero_parcelas,
+            MovimentacaoCartao.parcela_atual == parcela_atual - 1,
+            MovimentacaoCartao.compra_grupo_id.isnot(None),
+            func.lower(MovimentacaoCartao.descricao).like(f"{base_descricao.lower()}%"),
+        )
+        .order_by(MovimentacaoCartao.id.desc())
+        .all()
+    )
+    for anterior in candidatas:
+        ja_tem_esta_parcela = MovimentacaoCartao.query.filter_by(
+            compra_grupo_id=anterior.compra_grupo_id, parcela_atual=parcela_atual
+        ).first()
+        if not ja_tem_esta_parcela:
+            return anterior.compra_grupo_id
+    return None
