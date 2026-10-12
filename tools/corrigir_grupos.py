@@ -20,6 +20,9 @@ Uso (na raiz do projeto, com o .venv ativo):
 --anexar coloca lançamentos SEM grupo no grupo que o lançamento de referência já tem.
 
 No PowerShell, deixe os ids entre aspas (a vírgula tem outro significado lá).
+O script mostra no começo em qual banco está conectado: confira antes de usar --aplicar.
+No banco oficial, defina a conexão só nesta sessão do PowerShell (ela vale mais que o .env):
+    $env:DATABASE_URL = "postgresql://usuario:senha@host:5432/banco"
 O banco é PostgreSQL: faça um backup (pg_dump ou o backup do seu provedor)
 ANTES de usar --aplicar. A gravação é uma única transação: ou grava tudo, ou nada.
 """
@@ -127,6 +130,11 @@ def main():
 
     app = create_app()
     with app.app_context():
+        from sqlalchemy.engine import make_url
+
+        url = make_url(app.config["SQLALCHEMY_DATABASE_URI"])
+        print(f"🗄️  Banco: {url.host or 'local'} / {url.database}\n")
+
         if args.listar:
             com_grupo = MovimentacaoCartao.query.filter(MovimentacaoCartao.compra_grupo_id.isnot(None)).all()
             por_grupo = defaultdict(list)
