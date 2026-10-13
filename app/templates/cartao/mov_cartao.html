@@ -7,6 +7,7 @@
     href="{{ url_for('static', filename='css/pages/mov_cartao.css') }}"
 />
 
+
 {% endblock %}
 
 {% block title %}Movimentações do Cartão{% endblock %}
@@ -411,6 +412,11 @@
 
                             <td>
 
+                                {% if mov.id in ajustes_rotativo_ids %}
+                                    <span class="mov-lock" title="Lançamento automático do sistema; edição e exclusão bloqueadas" aria-label="Lançamento automático bloqueado">
+                                        <i class="bi bi-lock-fill" aria-hidden="true"></i>
+                                    </span>
+                                {% else %}
                                 <button
                                     type="button"
                                     class="btn btn-sm btn-outline-roxo-azulado btn-editar"
@@ -459,6 +465,7 @@
                                     </button>
 
                                 </form>
+                                {% endif %}
 
                             </td>
 
@@ -633,6 +640,11 @@
 
                     <div class="d-flex justify-content-end gap-2">
 
+                        {% if mov.id in ajustes_rotativo_ids %}
+                            <span class="mov-cartao-lock align-self-center" title="Lançamento automático do sistema; edição e exclusão bloqueadas" aria-label="Lançamento automático bloqueado">
+                                <i class="bi bi-lock-fill" aria-hidden="true"></i>
+                            </span>
+                        {% else %}
                         <button
                             type="button"
                             class="btn btn-sm btn-roxo-azulado btn-editar d-flex align-items-center gap-1"
@@ -682,6 +694,7 @@
                             </button>
 
                         </form>
+                        {% endif %}
 
                     </div>
 

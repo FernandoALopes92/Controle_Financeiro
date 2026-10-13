@@ -48,6 +48,31 @@ def _obter_meta_percentual(familia_id: int, mes_filtro: int, ano_filtro: int) ->
     return float(orcamento.meta_poupanca_percentual) if orcamento else 50.00
 
 
+def _eh_ajuste_rotativo_cartao(movimentacao: MovimentacaoCartao) -> bool:
+    """Identifica lançamentos técnicos usados apenas para transportar saldo entre faturas.
+
+    Esses registros continuam no banco e no cálculo do saldo da fatura, mas não
+    representam compras e não devem alterar despesas, categorias ou rankings.
+    """
+    descricao = (movimentacao.descricao or "").strip().casefold()
+    return (
+        descricao == "rotativo transferido p/ próxima fatura".casefold()
+        or descricao.startswith("saldo pendente fatura ")
+    )
+
+
+def _filtro_compras_reais_cartao():
+    """Filtro SQL que exclui lançamentos técnicos de transporte do rotativo."""
+    return (
+        not_(
+            MovimentacaoCartao.descricao.ilike("Rotativo transferido p/ próxima fatura")
+        )
+        & not_(
+            MovimentacaoCartao.descricao.ilike("Saldo pendente fatura %")
+        )
+    )
+
+
 def _calcular_totais_do_mes(familia_id: int, mes_filtro: int, ano_filtro: int, filtro_fantasma):
     """Monta os 4 cards principais: saldo total, receitas, despesas e balanço do mês."""
     saldo_total = db.session.query(func.sum(Conta.saldo_atual)).filter_by(familia_id=familia_id).scalar() or 0
@@ -84,7 +109,12 @@ def _calcular_totais_do_mes(familia_id: int, mes_filtro: int, ano_filtro: int, f
         Fatura.ano == ano_filtro
     ).options(joinedload(Fatura.movimentacoes)).all()
 
-    despesas_cartao_mes = sum(sum(m.valor for m in f.movimentacoes) or 0 for f in faturas_mes)
+    # Para o dashboard, somamos compras reais. Os lançamentos de transporte
+    # continuam compondo o saldo da fatura, mas não são despesas novas.
+    despesas_cartao_mes = sum(
+        sum(m.valor for m in f.movimentacoes if not _eh_ajuste_rotativo_cartao(m)) or 0
+        for f in faturas_mes
+    )
     despesas_totais = float(despesas_conta_mes) + float(despesas_cartao_mes)
     balanco_mes = receitas_mes - despesas_totais
 
@@ -149,7 +179,8 @@ def _top_5_categorias(familia_id: int, mes_filtro: int, ano_filtro: int, filtro_
     ).filter(
         Fatura.familia_id == familia_id,
         Fatura.mes == mes_filtro,
-        Fatura.ano == ano_filtro
+        Fatura.ano == ano_filtro,
+        _filtro_compras_reais_cartao()
     )
     cat_cartao = cat_cartao_query.group_by(Categoria.nome).all()
 
@@ -183,7 +214,8 @@ def _top_5_despesas(familia_id: int, mes_filtro: int, ano_filtro: int, filtro_fa
     movs_cartao = MovimentacaoCartao.query.join(Fatura).filter(
         Fatura.familia_id == familia_id,
         Fatura.mes == mes_filtro,
-        Fatura.ano == ano_filtro
+        Fatura.ano == ano_filtro,
+        _filtro_compras_reais_cartao()
     ).all()
 
     lista_despesas = []

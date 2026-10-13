@@ -20,6 +20,25 @@ from app.models import (
 # ---------------------------------------------------------------------------
 class CartaoServiceError(Exception):
     """Erro genérico de regra de negócio."""
+
+class MovimentacaoAutomaticaProtegidaError(CartaoServiceError):
+    """Lançamentos técnicos de rotativo não podem ser alterados individualmente."""
+
+
+def eh_ajuste_rotativo(mov: MovimentacaoCartao) -> bool:
+    """Identifica lançamentos técnicos criados ao transportar saldo entre faturas."""
+    descricao = (mov.descricao or "").strip().casefold()
+    return (
+        descricao == "rotativo transferido p/ próxima fatura".casefold()
+        or descricao.startswith("saldo pendente fatura ")
+    )
+
+
+def _validar_movimentacao_editavel(mov: MovimentacaoCartao) -> None:
+    if eh_ajuste_rotativo(mov):
+        raise MovimentacaoAutomaticaProtegidaError(
+            "Este lançamento é automático e não pode ser editado ou excluído individualmente."
+        )
 class FaturaFechadaError(CartaoServiceError):
     def __init__(self, mes: int, ano: int):
         self.mes = mes
@@ -344,6 +363,7 @@ def atualizar_movimentacao(
     *,
     familia_id: int,
 ) -> str:
+    _validar_movimentacao_editavel(mov)
     faturas_modificadas: Set[int] = set()
     fatura_antiga_id = mov.fatura_id
     # 1. Descrição e categoria (grupo ou individual)
@@ -388,6 +408,7 @@ def excluir_movimentacao(
     familia_id: int,
     excluir_todas: bool,
 ) -> Set[int]:
+    _validar_movimentacao_editavel(mov)
     faturas_afetadas: Set[int] = set()
     if excluir_todas:
         if mov.compra_grupo_id:

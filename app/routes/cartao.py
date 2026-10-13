@@ -13,6 +13,7 @@ from app.services.cartao_service import (
     NovaMovimentacaoInput,
     EditarMovimentacaoInput,
     converter_valor_para_decimal,
+    eh_ajuste_rotativo,
 )
 
 def _resposta_cartao(is_ajax, *, sucesso, msg, tipo="info", status=200):
@@ -93,8 +94,7 @@ def listar_movimentacoes_cartao():
         query_mov = query_mov.filter(MovimentacaoCartao.categoria_id == categoria_filtro)
 
     mov_cartao = query_mov.order_by(MovimentacaoCartao.data_compra.desc()).all()
-
-    mov_cartao = query_mov.order_by(MovimentacaoCartao.data_compra.desc()).all()
+    ajustes_rotativo_ids = {mov.id for mov in mov_cartao if eh_ajuste_rotativo(mov)}
 
     # CAPTURA APENAS O QUE FOI USADO NA TABELA ATUAL ---
     cartoes_usados = sorted(list({mov.cartao.nome for mov in mov_cartao if mov.cartao}))
@@ -130,10 +130,11 @@ def listar_movimentacoes_cartao():
 
     # Agrupar valores por categoria BASEADO NOS FILTROS ATIVOS para os gráficos
     valores_por_categoria = {}
-    total_filtrado = sum(mov.valor for mov in mov_cartao)
-    
-    for mov in mov_cartao:
-        cat = mov.categoria.nome if mov.categoria else "Rotativo / Ajuste"
+    compras_para_grafico = [mov for mov in mov_cartao if not eh_ajuste_rotativo(mov)]
+    total_filtrado = sum(mov.valor for mov in compras_para_grafico)
+
+    for mov in compras_para_grafico:
+        cat = mov.categoria.nome if mov.categoria else "Sem categoria"
         valores_por_categoria.setdefault(cat, 0)
         valores_por_categoria[cat] += mov.valor
 
@@ -159,6 +160,7 @@ def listar_movimentacoes_cartao():
         anos=anos,
         meses=meses,
         mov_cartao=mov_cartao,
+        ajustes_rotativo_ids=ajustes_rotativo_ids,
         meios=meios,
         categorias=categorias,
         contas=contas,
@@ -224,6 +226,12 @@ def nova_movimentacao_cartao():
 def editar_movimentacao_cartao(id):
     # BLINDADO PARA IDOR: Filtra sempre pela família do usuário logado
     mov_cartao = MovimentacaoCartao.query.filter_by(id=id, familia_id=current_user.familia_id).first_or_404()
+    if eh_ajuste_rotativo(mov_cartao):
+        msg = "Este lançamento é automático e não pode ser editado ou excluído individualmente."
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({"sucesso": False, "erro": msg}), 400
+        flash(msg, "warning")
+        return redirect(url_for("cartao.listar_movimentacoes_cartao"))
     meios = get_meios_pagamento()
     categorias = Categoria.query.filter(Categoria.categoria_pai_id.isnot(None), Categoria.tipo == 'despesa', Categoria.familia_id == current_user.familia_id).order_by(Categoria.nome.asc()).all()
 
@@ -277,7 +285,13 @@ def editar_movimentacao_cartao(id):
 def deletar_movimentacao_cartao(id):
     # BLINDADO PARA IDOR
     mov_cartao = MovimentacaoCartao.query.filter_by(id=id, familia_id=current_user.familia_id).first_or_404()
-    
+    if eh_ajuste_rotativo(mov_cartao):
+        msg = "Este lançamento é automático e não pode ser editado ou excluído individualmente."
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({"sucesso": False, "erro": msg}), 400
+        flash(msg, "warning")
+        return redirect(url_for("cartao.listar_movimentacoes_cartao", ano=request.args.get("ano"), mes=request.args.get("mes")))
+
     excluir_todas = request.form.get("excluir_todas") == "true"
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     ano_filtro = request.args.get('ano')
@@ -313,6 +327,8 @@ def deletar_movimentacao_cartao(id):
 def obter_movimentacao_cartao(id):
     # BLINDADO PARA IDOR
     mov = MovimentacaoCartao.query.filter_by(id=id, familia_id=current_user.familia_id).first_or_404()
+    if eh_ajuste_rotativo(mov):
+        return jsonify({"sucesso": False, "erro": "Este lançamento é automático e não pode ser editado ou excluído individualmente."}), 400
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         tem_proximas = (
