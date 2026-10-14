@@ -802,6 +802,7 @@
                         <!-- STATUS / AÇÕES -->
 
                         <div class="invoice-item__actions">
+                            <div class="invoice-item__status-group">
 
                             {% if fatura.status == 'aberta' %}
 
@@ -954,25 +955,44 @@
                                 </span>
 
 
-                                {% include 'cartao/modal_pagar_fatura.html' %}
+                            {% include 'cartao/modal_pagar_fatura.html' %}
+                            {% endif %}
+
+                            {% set saldo_anterior = saldo_anterior_por_fatura.get(fatura.id, 0) %}
 
 
+                                </div>
+                        </div>
+
+                        <!-- VALOR E SALDO ANTERIOR -->
+                        <div class="invoice-item__amounts">
+                            <div class="invoice-item__value">
+                                R$ {{ fatura.saldo | brl }}
+                            </div>
+
+                            {% if saldo_anterior > 0 %}
+                                <div
+                                    class="invoice-item__previous-balance-value"
+                                    title="Saldo transferido da fatura anterior; já incluído no saldo atual">
+
+                                    <i class="bi bi-arrow-return-right" aria-hidden="true"></i>
+                                    R$ {{ saldo_anterior | brl }}
+
+                                </div>
+                            {% endif %}
+
+                            {% if saldo_anterior > 0 %}
+                                <span
+                                    class="invoice-item__previous-label"
+                                    title="Saldo transferido da fatura anterior">
+                                    Saldo anterior
+                                </span>
                             {% endif %}
 
                         </div>
 
-                                                <!-- VALOR -->
-
-                        <div class="invoice-item__value">
-
-                            R$ {{ fatura.saldo | brl }}
-
-                        </div>
                     </div>
-
                     {% endfor %}
-
-
                 </div>
 
 
