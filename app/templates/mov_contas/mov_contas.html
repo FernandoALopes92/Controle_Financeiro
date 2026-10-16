@@ -366,46 +366,48 @@
 
                                     </td>
 
-
                                     <td>
-
-                                        {% if
-                                            not m.pagamento_fatura_id
-                                            and not m.descricao.startswith('Entrada - Transferência')
-                                            and not m.descricao.startswith('Saída - Transferência')
-                                            and not m.descricao.startswith('Fatura ')
-                                        %}
-
-                                            <button
-                                                type="button"
-                                                class="btn btn-sm btn-outline-roxo-azulado btn-editar"
-                                                data-id="{{ m.id }}"
-                                                title="Editar">
-
-                                                <i class="bi bi-pencil-fill"></i>
-
-                                            </button>
-
-
-                                            <button
-                                                type="button"
-                                                class="btn btn-sm btn-outline-roxo-azulado btn-excluir"
-                                                data-id="{{ m.id }}"
-                                                data-descricao="{{ m.descricao }}"
-                                                data-valor="{{ m.valor }}"
-                                                data-data="{{ m.data.strftime('%d/%m/%Y') }}"
-                                                title="Excluir"
-                                            >
-                                                <i class="bi bi-trash3"></i>
-                                            </button>
-
-                                        {% else %}
-                                        <span class="mov-lock" title="Lançamento automático do sistema; edição e exclusão bloqueadas" aria-label="Lançamento automático bloqueado">
+                                    {% if m.pago is true %}
+                                        <span
+                                            class="mov-lock"
+                                            title="Movimentação paga; edição e exclusão bloqueadas"
+                                            aria-label="Movimentação paga; edição e exclusão bloqueadas">
                                             <i class="bi bi-lock-fill" aria-hidden="true"></i>
                                         </span>
 
-                                        {% endif %}
+                                    {% elif
+                                        not m.pagamento_fatura_id
+                                        and not m.descricao.startswith('Entrada - Transferência')
+                                        and not m.descricao.startswith('Saída - Transferência')
+                                        and not m.descricao.startswith('Fatura ')
+                                    %}
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-roxo-azulado btn-editar"
+                                            data-id="{{ m.id }}"
+                                            title="Editar">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </button>
 
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-roxo-azulado btn-excluir"
+                                            data-id="{{ m.id }}"
+                                            data-descricao="{{ m.descricao }}"
+                                            data-valor="{{ m.valor }}"
+                                            data-data="{{ m.data.strftime('%d/%m/%Y') }}"
+                                            title="Excluir">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+
+                                    {% else %}
+                                        <span
+                                            class="mov-lock"
+                                            title="Lançamento automático do sistema; edição e exclusão bloqueadas"
+                                            aria-label="Lançamento automático bloqueado">
+                                            <i class="bi bi-lock-fill" aria-hidden="true"></i>
+                                        </span>
+                                    {% endif %}
                                     </td>
 
                                 </tr>

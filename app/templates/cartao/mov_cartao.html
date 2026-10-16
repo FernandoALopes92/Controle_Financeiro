@@ -412,21 +412,31 @@
 
                             <td>
 
-                                {% if mov.id in ajustes_rotativo_ids %}
-                                    <span class="mov-lock" title="Lançamento automático do sistema; edição e exclusão bloqueadas" aria-label="Lançamento automático bloqueado">
-                                        <i class="bi bi-lock-fill" aria-hidden="true"></i>
-                                    </span>
-                                {% else %}
+
+                            {% if mov.id in ajustes_rotativo_ids %}
+                                <span
+                                    class="mov-lock"
+                                    title="Lançamento automático do sistema; edição e exclusão bloqueadas"
+                                    aria-label="Lançamento automático bloqueado">
+                                    <i class="bi bi-lock-fill" aria-hidden="true"></i>
+                                </span>
+
+                            {% elif mov.fatura and mov.fatura.status != 'aberta' %}
+                                <span
+                                    class="mov-lock"
+                                    title="{% if mov.fatura.status == 'pago' %}Edição e exclusão indisponíveis: fatura paga{% elif mov.fatura.status == 'pago_parcial' %}Edição e exclusão indisponíveis: fatura paga parcialmente{% else %}Edição e exclusão indisponíveis: fatura fechada{% endif %}"
+                                    aria-label="Edição e exclusão bloqueadas pela situação da fatura">
+                                    <i class="bi bi-lock-fill" aria-hidden="true"></i>
+                                </span>
+
+                            {% else %}
                                 <button
                                     type="button"
                                     class="btn btn-sm btn-outline-roxo-azulado btn-editar"
                                     data-id="{{ mov.id }}"
                                     title="Editar">
-
                                     <i class="bi bi-pencil-fill"></i>
-
                                 </button>
-
 
                                 <form
                                     method="POST"
@@ -442,30 +452,18 @@
                                     data-valor="{{ mov.valor }}"
                                     data-data="{{ mov.data_compra.strftime('%d/%m/%Y') }}">
 
-                                    <input
-                                        type="hidden"
-                                        name="csrf_token"
-                                        value="{{ csrf_token() }}"
-                                    />
-
-                                    <input
-                                        type="hidden"
-                                        name="excluir_todas"
-                                        value="false"
-                                        class="input-excluir-todas"
-                                    >
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                    <input type="hidden" name="excluir_todas" value="false" class="input-excluir-todas">
 
                                     <button
                                         type="submit"
                                         class="btn btn-sm btn-outline-roxo-azulado btn-excluir"
                                         title="Excluir">
-
                                         <i class="bi bi-trash3"></i>
-
                                     </button>
-
                                 </form>
-                                {% endif %}
+                            {% endif %}
+
 
                             </td>
 
@@ -640,21 +638,31 @@
 
                     <div class="d-flex justify-content-end gap-2">
 
-                        {% if mov.id in ajustes_rotativo_ids %}
-                            <span class="mov-cartao-lock align-self-center" title="Lançamento automático do sistema; edição e exclusão bloqueadas" aria-label="Lançamento automático bloqueado">
-                                <i class="bi bi-lock-fill" aria-hidden="true"></i>
-                            </span>
-                        {% else %}
+
+                    {% if mov.id in ajustes_rotativo_ids %}
+                        <span
+                            class="mov-cartao-lock align-self-center"
+                            title="Lançamento automático do sistema; edição e exclusão bloqueadas"
+                            aria-label="Lançamento automático bloqueado">
+                            <i class="bi bi-lock-fill" aria-hidden="true"></i>
+                        </span>
+
+                    {% elif mov.fatura and mov.fatura.status != 'aberta' %}
+                        <span
+                            class="mov-cartao-lock align-self-center"
+                            title="{% if mov.fatura.status == 'pago' %}Edição e exclusão indisponíveis: fatura paga{% elif mov.fatura.status == 'pago_parcial' %}Edição e exclusão indisponíveis: fatura paga parcialmente{% else %}Edição e exclusão indisponíveis: fatura fechada{% endif %}"
+                            aria-label="Edição e exclusão bloqueadas pela situação da fatura">
+                            <i class="bi bi-lock-fill" aria-hidden="true"></i>
+                        </span>
+
+                    {% else %}
                         <button
                             type="button"
                             class="btn btn-sm btn-roxo-azulado btn-editar d-flex align-items-center gap-1"
                             data-id="{{ mov.id }}">
-
                             <i class="bi bi-pencil-fill"></i>
                             Editar
-
                         </button>
-
 
                         <form
                             method="POST"
@@ -670,31 +678,19 @@
                             data-valor="{{ mov.valor }}"
                             data-data="{{ mov.data_compra.strftime('%d/%m/%Y') }}">
 
-                            <input
-                                type="hidden"
-                                name="csrf_token"
-                                value="{{ csrf_token() }}"
-                            />
-
-                            <input
-                                type="hidden"
-                                name="excluir_todas"
-                                value="false"
-                                class="input-excluir-todas"
-                            >
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <input type="hidden" name="excluir_todas" value="false" class="input-excluir-todas">
 
                             <button
                                 type="submit"
                                 class="btn btn-sm btn-purple d-flex align-items-center gap-1"
                                 title="Excluir">
-
                                 <i class="bi bi-trash3"></i>
                                 Excluir
-
                             </button>
-
                         </form>
-                        {% endif %}
+                    {% endif %}
+
 
                     </div>
 

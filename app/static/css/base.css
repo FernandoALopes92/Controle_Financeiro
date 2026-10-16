@@ -397,7 +397,7 @@ table.dataTable thead th {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-primary-700);
+  color: var(--color-primary-500);
   font-size: 1rem;
   line-height: 1;
   min-width: 1.5rem;
