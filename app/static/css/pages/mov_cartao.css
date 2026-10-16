@@ -586,6 +586,31 @@
   white-space: nowrap;
 }
 
+/* Status parcial: badge e botão de estorno alinhados */
+.invoice-item__partial-group {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+  transform: translateX(0.4rem);
+}
+
+.invoice-item__partial-form {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+/* Ajuste horizontal exclusivo da fatura parcialmente paga */
+.invoice-item__status-group:has(.invoice-item__partial-group) {
+  justify-content: flex-start;
+  padding-left: 0.85rem;
+}
+
 .invoice-summary-card__total {
   display: flex;
   align-items: center;
