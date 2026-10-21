@@ -408,7 +408,12 @@ function configurarSupermodalTransferencia() {
     if (origemId === destinoId) {
       event.preventDefault();
 
-      alert('A conta de origem e destino devem ser diferentes.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Contas inválidas',
+        text: 'A conta de origem e a conta de destino devem ser diferentes.',
+        confirmButtonText: 'Entendi',
+      });
 
       return;
     }
@@ -416,7 +421,12 @@ function configurarSupermodalTransferencia() {
     if (valorTransferencia <= 0) {
       event.preventDefault();
 
-      alert('O valor da transferência deve ser maior que zero.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Valor inválido',
+        text: 'O valor da transferência deve ser maior que zero.',
+        confirmButtonText: 'Entendi',
+      });
 
       return;
     }
@@ -428,14 +438,17 @@ function configurarSupermodalTransferencia() {
     if (valorTransferencia > saldoDisponivel) {
       event.preventDefault();
 
-      alert(
-        'Saldo insuficiente na conta de origem. ' +
+      Swal.fire({
+        icon: 'warning',
+        title: 'Saldo insuficiente',
+        text:
           'Saldo disponível: R$ ' +
           saldoDisponivel.toLocaleString('pt-BR', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           }),
-      );
+        confirmButtonText: 'Entendi',
+      });
     }
   });
 }

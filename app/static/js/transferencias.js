@@ -1,35 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const modalTransf = document.getElementById('modalTransferencia');
-  if (!modalTransf) return;
 
-  // 1. Lógica para mostrar o Saldo da Conta Dinamicamente
-  const contaOrigem = modalTransf.querySelector('#conta_origem');
-  const saldoOrigemContainer = modalTransf.querySelector('#saldoContaOrigemContainer');
-  const saldoOrigem = modalTransf.querySelector('#saldoContaOrigem');
-
-  const contaDestino = modalTransf.querySelector('#conta_destino');
-  const saldoDestinoContainer = modalTransf.querySelector('#saldoContaDestinoContainer');
-  const saldoDestino = modalTransf.querySelector('#saldoContaDestino');
-
-  function atualizarSaldo(selectElem, containerElem, labelElem) {
-    if (!selectElem) return;
-    const selectedOption = selectElem.options[selectElem.selectedIndex];
-
-    if (selectedOption && selectElem.value !== '') {
-      const saldo = selectedOption.getAttribute('data-saldo');
-      labelElem.innerHTML = 'Saldo: R$ ' + parseFloat(saldo).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-      containerElem.style.display = 'block';
-    } else {
-      containerElem.style.display = 'none';
-    }
-  }
-
-  if (contaOrigem) {
-    contaOrigem.addEventListener('change', () => atualizarSaldo(contaOrigem, saldoOrigemContainer, saldoOrigem));
-  }
-  if (contaDestino) {
-    contaDestino.addEventListener('change', () => atualizarSaldo(contaDestino, saldoDestinoContainer, saldoDestino));
-  }
 
   // ==========================================
   // 2. Lógica de Edição (Agora armazena os dados originais)
@@ -66,7 +35,14 @@ document.addEventListener('DOMContentLoaded', () => {
           '<i class="bi bi-pencil-square me-2"></i>Editar Transferência';
         form.querySelector('button[type="submit"]').innerText = 'Atualizar';
       } catch (erro) {
-        alert('Erro interno ao preencher o modal de edição: ' + erro.message);
+        console.error('Erro ao preencher o modal de edição:', erro);
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro ao abrir transferência',
+          text: 'Não foi possível preencher os dados da transferência. Tente novamente.',
+          confirmButtonText: 'Entendi',
+        });
       }
     }
   });
@@ -107,14 +83,28 @@ document.addEventListener('DOMContentLoaded', () => {
       const valor = parseFloat(inputValor.value) || 0;
 
       if (origemId === destinoId) {
-        alert('⚠️ A conta de origem e destino devem ser diferentes.');
         e.preventDefault();
+
+        Swal.fire({
+          icon: 'warning',
+          title: 'Contas inválidas',
+          text: 'A conta de origem e a conta de destino devem ser diferentes.',
+          confirmButtonText: 'Entendi',
+        });
+
         return;
       }
 
       if (valor <= 0) {
-        alert('⚠️ O valor da transferência deve ser maior que zero.');
         e.preventDefault();
+
+        Swal.fire({
+          icon: 'warning',
+          title: 'Valor inválido',
+          text: 'O valor da transferência deve ser maior que zero.',
+          confirmButtonText: 'Entendi',
+        });
+
         return;
       }
 
@@ -137,13 +127,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Validação final bloqueando a tela se faltar dinheiro
       if (valor > saldoDisponivel) {
-        alert(
-          '⚠️ Saldo insuficiente na conta de origem. O limite disponível (com o estorno) é R$ ' +
+        e.preventDefault();
+
+        Swal.fire({
+          icon: 'warning',
+          title: 'Saldo insuficiente',
+          text:
+            'O saldo disponível na conta de origem é R$ ' +
             saldoDisponivel.toLocaleString('pt-BR', {
               minimumFractionDigits: 2,
-            }),
-        );
-        e.preventDefault(); // Impede o envio e mantém o modal aberto!
+              maximumFractionDigits: 2,
+            }) +
+            '.',
+          confirmButtonText: 'Entendi',
+        });
+
         return;
       }
     });

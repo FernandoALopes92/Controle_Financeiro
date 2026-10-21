@@ -303,7 +303,12 @@
         const response = await fetch(`/movimentacoes/${id}/json`);
 
         if (!response.ok) {
-          alert('Erro ao carregar movimentação');
+          Swal.fire({
+            icon: 'error',
+            title: 'Erro ao carregar movimentação',
+            text: 'Não foi possível carregar os dados desta movimentação. Tente novamente.',
+            confirmButtonText: 'Entendi',
+          });
 
           return;
         }
