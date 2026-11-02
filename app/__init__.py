@@ -50,7 +50,7 @@ def create_app(config_overrides=None):
     # Registra a função que carrega o usuário logado
     @login_manager.user_loader
     def load_user(user_id):
-        return Usuario.query.get(int(user_id))
+        return db.session.get(Usuario, int(user_id))
 
     # Registra blueprints
     from app.routes.auth import auth
