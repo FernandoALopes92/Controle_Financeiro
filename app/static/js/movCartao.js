@@ -69,6 +69,9 @@ function calcularValorParcela(
 
 // === Previsão de Fatura ===
 
+// 1 ao cadastrar; N ao editar a parcela N (a previsão da fatura soma N-1 meses)
+let parcelaAtualEdicao = 1;
+
 function preverFatura() {
   const dataInput = document.getElementById('data');
   const cartaoSelect = document.getElementById('meio_pagamento_id');
@@ -100,6 +103,7 @@ function preverFatura() {
     body: JSON.stringify({
       data_compra: dataCompra,
       meio_pagamento_id: cartaoId,
+      parcela_atual: parcelaAtualEdicao,
     }),
   })
     .then((res) => res.json())
@@ -633,7 +637,16 @@ document.addEventListener('DOMContentLoaded', function () {
         setHoje(document.getElementById('data'));
       }
 
+      // A data volta a ser editável no cadastro
+      const campoData = document.getElementById('data');
+
+      if (campoData) {
+        campoData.readOnly = false;
+        campoData.title = '';
+      }
+
       // Atualiza fatura prevista
+      parcelaAtualEdicao = 1;
       preverFatura();
 
       // ====================================================
@@ -712,6 +725,11 @@ document.addEventListener('DOMContentLoaded', function () {
         // Data
         if (form.data) {
           form.data.value = data.data_compra;
+
+          // A data da compra só muda na 1ª parcela (as demais guardam a mesma data)
+          const dataTravada = (data.numero_parcelas || 1) > 1 && (data.parcela_atual || 1) > 1;
+          form.data.readOnly = dataTravada;
+          form.data.title = dataTravada ? 'A data da compra só pode ser alterada na 1ª parcela.' : '';
         }
 
         // ==================================================
@@ -849,6 +867,8 @@ document.addEventListener('DOMContentLoaded', function () {
           btnSalvar.innerText = 'Atualizar';
         }
 
+        parcelaAtualEdicao = data.parcela_atual || 1;
+
         // ==================================================
         // Fatura original
         // ==================================================
@@ -966,6 +986,7 @@ document.addEventListener('DOMContentLoaded', () => {
       event.preventDefault();
 
       const numeroParcelas = parseInt(this.getAttribute('data-parcelas'), 10) || 1;
+      const temProximas = this.getAttribute('data-tem-proximas') === '1';
 
       const descricao = this.getAttribute('data-descricao') || 'Movimentação';
       const valor = this.getAttribute('data-valor') || '0';
@@ -977,9 +998,14 @@ document.addEventListener('DOMContentLoaded', () => {
       // MOVIMENTAÇÃO PARCELADA
       // ======================================================
 
-      if (numeroParcelas > 1) {
+      if (temProximas) {
+        const detalheSerie =
+          numeroParcelas > 1
+            ? `Esta compra possui <strong class="system-confirmation__highlight">${numeroParcelas} parcelas.</strong>`
+            : 'Este lançamento se repete nos meses seguintes.';
+
         Swal.fire({
-          title: 'Excluir compra parcelada?',
+          title: numeroParcelas > 1 ? 'Excluir compra parcelada?' : 'Excluir lançamento recorrente?',
           html: `
             <div class="system-confirmation">
               <div class="system-confirmation__content">
@@ -993,10 +1019,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <span class="system-confirmation__details">
                   ${data} · ${formatarMoeda(valor)}<br>
-                  Esta compra possui
-                  <strong class="system-confirmation__highlight">
-                    ${numeroParcelas} parcelas.
-                  </strong>                  
+                  ${detalheSerie}<br>
+                  As parcelas anteriores não serão afetadas.
                 </span>
 
               <span class="system-confirmation__warning">
@@ -1008,7 +1032,7 @@ document.addEventListener('DOMContentLoaded', () => {
           icon: 'warning',
           showCancelButton: true,
           showDenyButton: true,
-          confirmButtonText: 'Todas as parcelas',
+          confirmButtonText: 'Esta e as próximas',
           denyButtonText: 'Apenas esta',
           cancelButtonText: 'Cancelar',
           confirmButtonColor: '#df4a55',

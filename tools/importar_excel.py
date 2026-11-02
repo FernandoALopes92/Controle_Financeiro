@@ -5,8 +5,7 @@ from datetime import date
 from decimal import Decimal
 from app import create_app
 from app.models import db, MovimentacaoCartao, Categoria, MeioPagamento, Usuario
-from app.services.cartao_service import calcular_fatura_para_compra, obter_grupo_da_parcela_anterior
-from dateutil.relativedelta import relativedelta
+from app.services.cartao_service import calcular_fatura_da_parcela, obter_grupo_da_parcela_anterior
 
 app = create_app()
 
@@ -31,6 +30,11 @@ if not dados_brutos.strip():
     raise SystemExit(0)
 
 with app.app_context():
+    # Mostra em qual banco o script está conectado (o .env decide qual é)
+    from sqlalchemy.engine import make_url
+    _url = make_url(app.config["SQLALCHEMY_DATABASE_URI"])
+    print(f"🗄️  Banco: {_url.host or 'local'} / {_url.database}")
+
     # Pega o primeiro usuário do banco (você)
     usuario = Usuario.query.first()
 
@@ -102,11 +106,10 @@ with app.app_context():
                 )
             compra_grupo_id = grupos_do_lote[chave]
 
-        # A MAGIA AQUI: Calcula a data em que esta parcela específica vai cair
-        data_parcela = data_compra + relativedelta(months=(parcela_atual - 1))
-
-        # Calcula a fatura correta baseada na DATA DA PARCELA (e não na compra original)
-        fatura = calcular_fatura_para_compra(cartao.id, data_parcela, usuario.familia_id)
+        # Fatura da parcela: a da 1ª parcela (pela data da compra) mais N-1 meses.
+        # Não se calcula pela data de cada parcela, para não repetir nem pular fatura
+        # quando a compra foi feita perto do fechamento (dias 29 a 31).
+        fatura = calcular_fatura_da_parcela(cartao.id, data_compra, parcela_atual, usuario.familia_id)
         # Cria a movimentação
         nova_mov = MovimentacaoCartao(
             descricao=descricao,
@@ -125,7 +128,7 @@ with app.app_context():
 
         # Atualiza o saldo da fatura
         fatura.saldo += valor
-        print(f"✅ Lançado: {descricao} | Compra: {data_compra.strftime('%d/%m')} | Parcela em: {data_parcela.strftime('%d/%m')} | Fat: {fatura.mes}/{fatura.ano}")
+        print(f"✅ Lançado: {descricao} | Compra: {data_compra.strftime('%d/%m')} | Parcela {parcela_atual}/{numero_parcelas} | Fat: {fatura.mes}/{fatura.ano}")
 
     db.session.commit()
     print("\n🎉 Importação concluída com sucesso!")

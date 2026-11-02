@@ -44,6 +44,19 @@ class FaturaFechadaError(CartaoServiceError):
         self.mes = mes
         self.ano = ano
         super().__init__(f"A fatura {mes}/{ano} já está fechada.")
+class FaturaBloqueadaError(FaturaFechadaError):
+    """Operação recusada porque envolve um lançamento em fatura fechada ou paga."""
+
+    def __init__(self, mensagem: str, mes: int = 0, ano: int = 0):
+        CartaoServiceError.__init__(self, mensagem)
+        self.mes = mes
+        self.ano = ano
+
+
+class DataCompraBloqueadaError(CartaoServiceError):
+    """A data da compra de um parcelado só pode ser alterada na 1ª parcela."""
+
+
 class CartaoNaoEncontradoError(CartaoServiceError):
     pass
 class FaturaNaoSelecionadaError(CartaoServiceError):
@@ -160,45 +173,76 @@ def obter_valores_por_categoria(fatura_id: int):
         for r in resultados
     ]
     return categorias, total_geral
+def mes_ano_da_fatura(cartao: MeioPagamento, data_compra: date) -> tuple[int, int]:
+    """
+    (mês, ano) da fatura em que uma compra feita em data_compra deve cair,
+    segundo os dias de fechamento e de vencimento do cartão.
+    """
+    if data_compra.day <= cartao.fechamento_dia:
+        mes_fechamento, ano_fechamento = data_compra.month, data_compra.year
+    else:
+        mes_fechamento, ano_fechamento = _avancar_mes(data_compra.month, data_compra.year)
+    if cartao.vencimento_dia < cartao.fechamento_dia:
+        return _avancar_mes(mes_fechamento, ano_fechamento)
+    return mes_fechamento, ano_fechamento
+
+
+def faturas_das_parcelas(
+    cartao: MeioPagamento, data_compra: date, numero_parcelas: int
+) -> list[tuple[int, int]]:
+    """
+    Fatura de cada parcela: a da 1ª vem da data da compra e as demais caem nos
+    meses seguidos. Nunca se calcula pela data de cada parcela, para não repetir
+    nem pular fatura quando o dia da compra está perto do fechamento (29 a 31).
+    """
+    mes, ano = mes_ano_da_fatura(cartao, data_compra)
+    return [_avancar_mes(mes, ano, i) for i in range(numero_parcelas)]
+
+
 def calcular_fatura_para_compra(
     cartao_id: int,
     data_compra: date,
     familia_id: int,
 ) -> Fatura:
     """
-    Calcula mês/ano da fatura com base na data da compra e dias de fechamento/vencimento.
+    Fatura da compra (ou da 1ª parcela) pela data da compra.
     Usado por scripts (importar_excel, gerar_parcelas_futuras).
     """
     cartao = obter_cartao(cartao_id, familia_id)
-    if data_compra.day <= cartao.fechamento_dia:
-        mes_fechamento, ano_fechamento = data_compra.month, data_compra.year
-    elif data_compra.month == 12:
-        mes_fechamento, ano_fechamento = 1, data_compra.year + 1
-    else:
-        mes_fechamento, ano_fechamento = data_compra.month + 1, data_compra.year
-    if cartao.vencimento_dia < cartao.fechamento_dia:
-        mes_fatura, ano_fatura = _avancar_mes(mes_fechamento, ano_fechamento)
-    else:
-        mes_fatura, ano_fatura = mes_fechamento, ano_fechamento
-    return obter_ou_criar_fatura_aberta(cartao, mes_fatura, ano_fatura, familia_id)
+    mes, ano = mes_ano_da_fatura(cartao, data_compra)
+    return obter_ou_criar_fatura_aberta(cartao, mes, ano, familia_id)
+
+
+def calcular_fatura_da_parcela(
+    cartao_id: int,
+    data_compra: date,
+    parcela_atual: int,
+    familia_id: int,
+) -> Fatura:
+    """
+    Fatura da parcela N de uma compra: a da 1ª parcela mais N-1 meses.
+    Usado por scripts (importar_excel).
+    """
+    cartao = obter_cartao(cartao_id, familia_id)
+    mes, ano = faturas_das_parcelas(cartao, data_compra, max(parcela_atual, 1))[-1]
+    return obter_ou_criar_fatura_aberta(cartao, mes, ano, familia_id)
+
+
 _MESES_PT = {
     1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril", 5: "Maio", 6: "Junho",
     7: "Julho", 8: "Agosto", 9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro",
 }
 
 
-def prever_opcoes_fatura(cartao: MeioPagamento, data_compra: date) -> list[dict]:
-    """Retorna as duas opções de fatura exibidas no formulário (prevista + seguinte)."""
-    if data_compra.day <= cartao.fechamento_dia:
-        mes_fechamento, ano_fechamento = data_compra.month, data_compra.year
-    elif data_compra.month == 12:
-        mes_fechamento, ano_fechamento = 1, data_compra.year + 1
-    else:
-        mes_fechamento, ano_fechamento = data_compra.month + 1, data_compra.year
-    if cartao.vencimento_dia < cartao.fechamento_dia:
-        mes_fatura_1, ano_fatura_1 = _avancar_mes(mes_fechamento, ano_fechamento)
-    else:
-        mes_fatura_1, ano_fatura_1 = mes_fechamento, ano_fechamento
+def prever_opcoes_fatura(
+    cartao: MeioPagamento, data_compra: date, parcela_atual: int = 1
+) -> list[dict]:
+    """
+    Retorna as duas opções de fatura exibidas no formulário (prevista + seguinte).
+    Para a parcela N (edição), a previsão é a da 1ª parcela mais N-1 meses.
+    """
+    mes_fatura_1, ano_fatura_1 = mes_ano_da_fatura(cartao, data_compra)
+    mes_fatura_1, ano_fatura_1 = _avancar_mes(mes_fatura_1, ano_fatura_1, max(parcela_atual, 1) - 1)
     mes_fatura_2, ano_fatura_2 = _avancar_mes(mes_fatura_1, ano_fatura_1)
     def _label(mes: int, ano: int, sufixo: str = "") -> str:
         # CORREÇÃO: usava datetime(...).strftime("%B"), que depende do idioma
@@ -288,7 +332,6 @@ def criar_movimentacao(
             valor_base, residuo = valor, Decimal("0.00")
         for parcela in range(1, numero_parcelas + 1):
             valor_parcela = valor_base + residuo if parcela == 1 else valor_base
-            data_parcela = dados.data_compra + relativedelta(months=parcela - 1)
             mes_parcela, ano_parcela = _avancar_mes(mes_base, ano_base, parcela - 1)
             fatura = obter_ou_criar_fatura_aberta(
                 cartao, mes_parcela, ano_parcela, familia_id
@@ -296,7 +339,7 @@ def criar_movimentacao(
             _criar_mov(
                 descricao=dados.descricao,
                 valor=valor_parcela,
-                data_compra=data_parcela,
+                data_compra=dados.data_compra,  # data original em todas as parcelas
                 cartao_id=dados.cartao_id,
                 categoria_id=dados.categoria_id,
                 usuario_id=usuario_id,
@@ -357,85 +400,203 @@ class EditarMovimentacaoInput:
     fatura_mes_ano: str
     is_estorno: bool = False
     alterar_proximas: bool = False
+def _dia(valor):
+    """date ou datetime -> date."""
+    return valor.date() if isinstance(valor, datetime) else valor
+
+
+def _indice_mes(mes: int, ano: int) -> int:
+    return ano * 12 + (mes - 1)
+
+
+def _mes_ano_do_indice(indice: int) -> tuple[int, int]:
+    return indice % 12 + 1, indice // 12
+
+
+_STATUS_LEGIVEL = {"fechada": "fechada", "pago": "paga", "pago_parcial": "paga parcialmente"}
+
+
+def _descrever(mov: MovimentacaoCartao) -> str:
+    if (mov.numero_parcelas or 1) > 1:
+        return f"a parcela {mov.parcela_atual}/{mov.numero_parcelas} de '{mov.descricao}'"
+    return f"o lançamento '{mov.descricao}'"
+
+
+def _validar_fatura_aberta(mov: MovimentacaoCartao, acao: str) -> None:
+    """Lançamento em fatura que não está aberta é imutável (editar, excluir, mover)."""
+    fatura = db.session.get(Fatura, mov.fatura_id) if mov.fatura_id else None
+    if fatura and fatura.status != "aberta":
+        situacao = _STATUS_LEGIVEL.get(fatura.status, fatura.status)
+        raise FaturaBloqueadaError(
+            f"Não é possível {acao} {_descrever(mov)}: a fatura {fatura.mes:02d}/{fatura.ano} está {situacao}.",
+            fatura.mes,
+            fatura.ano,
+        )
+
+
+def _validar_destino_disponivel(
+    cartao: MeioPagamento, mes: int, ano: int, familia_id: int, mov: Optional[MovimentacaoCartao] = None
+) -> None:
+    """Confere, sem criar nada, se a fatura de destino aceita lançamentos."""
+    fatura = Fatura.query.filter_by(cartao_id=cartao.id, mes=mes, ano=ano, familia_id=familia_id).first()
+    if fatura and fatura.status != "aberta":
+        if mov is None:
+            raise FaturaFechadaError(mes, ano)
+        situacao = _STATUS_LEGIVEL.get(fatura.status, fatura.status)
+        raise FaturaBloqueadaError(
+            f"Não é possível mover {_descrever(mov)} para a fatura {mes:02d}/{ano}: ela está {situacao}.",
+            mes,
+            ano,
+        )
+
+
+def _alvos_da_mudanca_de_data(
+    mov: MovimentacaoCartao, nova_data: date, familia_id: int
+) -> list[MovimentacaoCartao]:
+    """
+    Quais lançamentos recebem a nova data da compra.
+    Parcelado: só a 1ª parcela altera a data, e vale para todas (se já guardam a mesma data).
+    Recorrente ou avulso: cada lançamento tem a sua data.
+    """
+    data_atual = _dia(mov.data_compra)
+    if nova_data == data_atual:
+        return []
+    if (mov.numero_parcelas or 1) > 1:
+        if (mov.parcela_atual or 1) > 1:
+            raise DataCompraBloqueadaError("A data da compra só pode ser alterada na 1ª parcela.")
+        grupo = (
+            MovimentacaoCartao.query.filter_by(compra_grupo_id=mov.compra_grupo_id, familia_id=familia_id).all()
+            if mov.compra_grupo_id
+            else [mov]
+        )
+        if all(_dia(g.data_compra) == data_atual for g in grupo):
+            for g in grupo:
+                _validar_fatura_aberta(g, "alterar a data de")
+            return grupo
+    return [mov]
+
+
 def atualizar_movimentacao(
     mov: MovimentacaoCartao,
     dados: EditarMovimentacaoInput,
     *,
     familia_id: int,
 ) -> str:
+    """
+    Atualiza um lançamento. Com "esta e as próximas" marcado, nome, categoria e valor
+    valem também para as seguintes, e se a fatura mudar elas andam o mesmo número de
+    meses. As anteriores nunca mudam. Lançamento em fatura fechada ou paga é imutável.
+    Tudo é validado antes de gravar: ou muda tudo, ou nada.
+    """
     _validar_movimentacao_editavel(mov)
-    faturas_modificadas: Set[int] = set()
-    fatura_antiga_id = mov.fatura_id
-    # 1. Descrição e categoria (grupo ou individual)
-    if mov.compra_grupo_id:
-        MovimentacaoCartao.query.filter_by(
-            compra_grupo_id=mov.compra_grupo_id,
-            familia_id=familia_id,
-        ).update({"descricao": dados.descricao, "categoria_id": dados.categoria_id})
-        db.session.expire(mov)
-    else:
-        mov.descricao = dados.descricao
-        mov.categoria_id = dados.categoria_id
-    # 2. Valor (sempre atômico na parcela atual)
-    valor_novo = dados.valor * Decimal("-1") if dados.is_estorno else dados.valor
-    mov.valor = valor_novo
-    if dados.alterar_proximas and mov.compra_grupo_id:
-        futuras = MovimentacaoCartao.query.filter(
-            MovimentacaoCartao.compra_grupo_id == mov.compra_grupo_id,
-            MovimentacaoCartao.data_compra > mov.data_compra,
-            MovimentacaoCartao.familia_id == familia_id,
-        ).all()
-        for futura in futuras:
-            futura.valor = valor_novo
-            if futura.fatura_id:
-                faturas_modificadas.add(futura.fatura_id)
-    # 3. Data, cartão e fatura
     if not dados.fatura_mes_ano:
         raise FaturaNaoSelecionadaError("Fatura não selecionada.")
-    mov.data_compra = dados.data_compra
-    mov.cartao_id = dados.cartao_id
+    _validar_fatura_aberta(mov, "alterar")
+
+    # ---------------------------- validação ----------------------------
+    seguintes = parcelas_seguintes(mov, familia_id) if dados.alterar_proximas else []
+    for seguinte in seguintes:
+        _validar_fatura_aberta(seguinte, "alterar")
+
     mes_f, ano_f = _parse_mes_ano(dados.fatura_mes_ano)
     cartao = obter_cartao(dados.cartao_id, familia_id)
+    _validar_destino_disponivel(cartao, mes_f, ano_f, familia_id)
+
+    fatura_antiga = db.session.get(Fatura, mov.fatura_id) if mov.fatura_id else None
+    deslocamento = (
+        _indice_mes(mes_f, ano_f) - _indice_mes(fatura_antiga.mes, fatura_antiga.ano) if fatura_antiga else 0
+    )
+    destinos = []  # (seguinte, mês, ano, cartão)
+    if deslocamento:
+        for seguinte in seguintes:
+            fatura_s = db.session.get(Fatura, seguinte.fatura_id) if seguinte.fatura_id else None
+            if not fatura_s:
+                continue
+            mes_s, ano_s = _mes_ano_do_indice(_indice_mes(fatura_s.mes, fatura_s.ano) + deslocamento)
+            cartao_s = obter_cartao(seguinte.cartao_id, familia_id)
+            _validar_destino_disponivel(cartao_s, mes_s, ano_s, familia_id, mov=seguinte)
+            destinos.append((seguinte, mes_s, ano_s, cartao_s))
+
+    nova_data = _dia(dados.data_compra)
+    alvos_da_data = _alvos_da_mudanca_de_data(mov, nova_data, familia_id)
+
+    # ----------------------------- gravação ----------------------------
+    faturas_modificadas: Set[int] = {mov.fatura_id}
+    valor_novo = dados.valor * Decimal("-1") if dados.is_estorno else dados.valor
+    for alvo in [mov, *seguintes]:
+        alvo.descricao = dados.descricao
+        alvo.categoria_id = dados.categoria_id
+        alvo.valor = valor_novo
+        faturas_modificadas.add(alvo.fatura_id)
+    for alvo in alvos_da_data:
+        alvo.data_compra = nova_data
+
+    mov.cartao_id = dados.cartao_id
     fatura = obter_ou_criar_fatura_aberta(cartao, mes_f, ano_f, familia_id)
     mov.fatura_id = fatura.id
+    faturas_modificadas.add(fatura.id)
+    for seguinte, mes_s, ano_s, cartao_s in destinos:
+        nova_fatura = obter_ou_criar_fatura_aberta(cartao_s, mes_s, ano_s, familia_id)
+        seguinte.fatura_id = nova_fatura.id
+        faturas_modificadas.add(nova_fatura.id)
+
     db.session.commit()
-    faturas_modificadas.update({fatura_antiga_id, fatura.id})
     recalcular_saldos_faturas(faturas_modificadas)
     return "Movimentação atualizada com sucesso."
+
+
 def excluir_movimentacao(
     mov: MovimentacaoCartao,
     *,
     familia_id: int,
     excluir_todas: bool,
 ) -> Set[int]:
+    """
+    Exclui um lançamento. Com excluir_todas, exclui esta e as próximas (nunca as anteriores).
+    Lançamento em fatura fechada ou paga não pode ser excluído; se algum alvo estiver
+    bloqueado, nada é excluído.
+    """
     _validar_movimentacao_editavel(mov)
-    faturas_afetadas: Set[int] = set()
+    _validar_fatura_aberta(mov, "excluir")
+    alvos = [mov]
     if excluir_todas:
-        if mov.compra_grupo_id:
-            vizinhos = MovimentacaoCartao.query.filter_by(
-                compra_grupo_id=mov.compra_grupo_id,
-                familia_id=familia_id,
-            ).all()
-        else:
-            base_nome = mov.descricao
-            if " (" in base_nome and ")" in base_nome:
-                base_nome = base_nome.rsplit(" (", 1)[0]
-            vizinhos = MovimentacaoCartao.query.filter(
-                MovimentacaoCartao.cartao_id == mov.cartao_id,
-                MovimentacaoCartao.familia_id == familia_id,
-                MovimentacaoCartao.descricao.like(f"{base_nome} (%/%)"),
-            ).all()
-    else:
-        vizinhos = [mov]
-    if mov not in vizinhos:
-        vizinhos.append(mov)
-    for m in vizinhos:
-        if m.fatura_id:
-            faturas_afetadas.add(m.fatura_id)
-        db.session.delete(m)
+        alvos += parcelas_seguintes(mov, familia_id)
+        for alvo in alvos[1:]:
+            _validar_fatura_aberta(alvo, "excluir")
+    faturas_afetadas: Set[int] = {m.fatura_id for m in alvos if m.fatura_id}
+    for alvo in alvos:
+        db.session.delete(alvo)
     db.session.commit()
     recalcular_saldos_faturas(faturas_afetadas)
     return faturas_afetadas
+
+
+def ids_com_proximas(movs: Iterable[MovimentacaoCartao], familia_id: int) -> Set[int]:
+    """
+    Ids dos lançamentos que têm parcelas/recorrências em faturas posteriores.
+    Uma consulta só para a lista inteira; serve para a tela decidir se oferece
+    "esta e as próximas".
+    """
+    movs = list(movs)
+    grupos = {m.compra_grupo_id for m in movs if m.compra_grupo_id}
+    if not grupos:
+        return set()
+    ordem = Fatura.ano * 12 + Fatura.mes
+    maximos = dict(
+        db.session.query(MovimentacaoCartao.compra_grupo_id, func.max(ordem))
+        .join(Fatura, MovimentacaoCartao.fatura_id == Fatura.id)
+        .filter(MovimentacaoCartao.compra_grupo_id.in_(grupos), MovimentacaoCartao.familia_id == familia_id)
+        .group_by(MovimentacaoCartao.compra_grupo_id)
+        .all()
+    )
+    resultado: Set[int] = set()
+    for m in movs:
+        if not m.compra_grupo_id or not m.fatura_id:
+            continue
+        fatura = db.session.get(Fatura, m.fatura_id)
+        if fatura and fatura.ano * 12 + fatura.mes < maximos.get(m.compra_grupo_id, -1):
+            resultado.add(m.id)
+    return resultado
 
 
 # ---------------------------------------------------------------------------
@@ -473,3 +634,30 @@ def obter_grupo_da_parcela_anterior(
         if not ja_tem_esta_parcela:
             return anterior.compra_grupo_id
     return None
+
+
+def parcelas_seguintes(mov: MovimentacaoCartao, familia_id: int) -> list[MovimentacaoCartao]:
+    """
+    Lançamentos do mesmo grupo (parcelas ou recorrências) em faturas POSTERIORES
+    à deste. Usa a ordem das faturas, e não data_compra, porque as compras novas
+    guardam a mesma data original em todas as parcelas.
+    """
+    if not mov.compra_grupo_id:
+        return []
+    if not mov.fatura_id:  # sem fatura: cai para a data, como antes
+        return MovimentacaoCartao.query.filter(
+            MovimentacaoCartao.compra_grupo_id == mov.compra_grupo_id,
+            MovimentacaoCartao.familia_id == familia_id,
+            MovimentacaoCartao.data_compra > mov.data_compra,
+        ).all()
+    fatura_atual = db.session.get(Fatura, mov.fatura_id)
+    ordem_atual = fatura_atual.ano * 12 + fatura_atual.mes
+    return (
+        MovimentacaoCartao.query.join(Fatura, MovimentacaoCartao.fatura_id == Fatura.id)
+        .filter(
+            MovimentacaoCartao.compra_grupo_id == mov.compra_grupo_id,
+            MovimentacaoCartao.familia_id == familia_id,
+            (Fatura.ano * 12 + Fatura.mes) > ordem_atual,
+        )
+        .all()
+    )

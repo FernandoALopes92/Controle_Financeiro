@@ -31,6 +31,7 @@ def prever_fatura():
     try:
         data_compra = datetime.strptime(data_compra_str, '%Y-%m-%d').date()
         meio_pagamento_id = int(meio_pagamento_id)
+        parcela_atual = max(int(data.get('parcela_atual') or 1), 1)
     except Exception:
         return jsonify({'erro': 'Dados inválidos.'}), 400
 
@@ -38,7 +39,7 @@ def prever_fatura():
     if not cartao:
         return jsonify({'erro': 'Cartão não encontrado.'}), 404
 
-    opcoes = cartao_service.prever_opcoes_fatura(cartao, data_compra)
+    opcoes = cartao_service.prever_opcoes_fatura(cartao, data_compra, parcela_atual)
     return jsonify({'opcoes': opcoes})
 
 

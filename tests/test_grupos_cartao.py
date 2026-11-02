@@ -33,16 +33,35 @@ def test_excluir_todas_sem_grupo_apaga_ao_menos_o_proprio_lancamento(db, cartao,
     assert MovimentacaoCartao.query.count() == 0
 
 
-def test_excluir_todas_com_grupo_apaga_a_serie_inteira_e_so_ela(db, cartao, categoria_despesa, usuario, familia):
-    p1 = _mov(db, cartao, categoria_despesa, usuario, familia, "Senac", 1, 3, grupo="g1")
-    _mov(db, cartao, categoria_despesa, usuario, familia, "Senac", 2, 3, grupo="g1")
-    _mov(db, cartao, categoria_despesa, usuario, familia, "Senac", 3, 3, grupo="g1")
+def _serie_em_faturas(db, cartao, categoria, usuario, familia, total=3, descricao="Senac"):
+    """Série com uma parcela por fatura (jul, ago, set...), como o app cria."""
+    from app.services import cartao_service as cs
+
+    movs = []
+    for k in range(total):
+        fatura = cs.obter_ou_criar_fatura_aberta(cartao, 7 + k, 2026, familia.id)
+        mov = _mov(db, cartao, categoria, usuario, familia, descricao, k + 1, total, grupo="g1")
+        mov.fatura_id = fatura.id
+        movs.append(mov)
+    db.session.commit()
+    return movs
+
+
+def test_excluir_todas_apaga_esta_e_as_proximas_e_so_elas(db, cartao, categoria_despesa, usuario, familia):
+    p1, *_ = _serie_em_faturas(db, cartao, categoria_despesa, usuario, familia)
     _mov(db, cartao, categoria_despesa, usuario, familia, "Outra compra", 1, 1, grupo=None)
 
     cartao_service.excluir_movimentacao(p1, familia_id=familia.id, excluir_todas=True)
 
-    restantes = MovimentacaoCartao.query.all()
-    assert [m.descricao for m in restantes] == ["Outra compra"]
+    assert [m.descricao for m in MovimentacaoCartao.query.all()] == ["Outra compra"]
+
+
+def test_excluir_todas_a_partir_da_parcela_2_preserva_a_1(db, cartao, categoria_despesa, usuario, familia):
+    _, p2, _ = _serie_em_faturas(db, cartao, categoria_despesa, usuario, familia)
+
+    cartao_service.excluir_movimentacao(p2, familia_id=familia.id, excluir_todas=True)
+
+    assert [m.parcela_atual for m in MovimentacaoCartao.query.all()] == [1]
 
 
 # ---------------------------------------------------------------------------

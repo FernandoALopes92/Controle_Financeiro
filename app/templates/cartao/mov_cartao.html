@@ -448,6 +448,7 @@
                                     ) }}"
                                     class="d-inline form-excluir"
                                     data-parcelas="{{ mov.numero_parcelas }}"
+                                    data-tem-proximas="{{ 1 if mov.id in ids_com_proximas else 0 }}"
                                     data-descricao="{{ mov.descricao }}"
                                     data-valor="{{ mov.valor }}"
                                     data-data="{{ mov.data_compra.strftime('%d/%m/%Y') }}">
@@ -674,6 +675,7 @@
                             ) }}"
                             class="d-inline form-excluir"
                             data-parcelas="{{ mov.numero_parcelas }}"
+                            data-tem-proximas="{{ 1 if mov.id in ids_com_proximas else 0 }}"
                             data-descricao="{{ mov.descricao }}"
                             data-valor="{{ mov.valor }}"
                             data-data="{{ mov.data_compra.strftime('%d/%m/%Y') }}">

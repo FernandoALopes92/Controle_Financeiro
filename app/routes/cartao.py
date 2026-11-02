@@ -121,11 +121,29 @@ def listar_movimentacoes_cartao():
     faturas_ordenadas = sorted(faturas_unicas.values(), key=lambda f: (f.data_vencimento is None, f.data_vencimento or date.max))
 
     # Calcular saldo total por cartão (Geral do mês, independente do filtro visual)
+    saldo_anterior_por_fatura = {}
+
+    for f in faturas_ordenadas:
+        saldo_anterior = sum(
+            mov.valor
+            for mov in f.movimentacoes
+            if (
+                (mov.descricao or "").strip().casefold().startswith(
+                    "saldo pendente fatura ".casefold()
+                )
+                and mov.valor > 0
+            )
+        )
+
+        saldo_anterior_por_fatura[f.id] = float(saldo_anterior)
+
+    # Calcular saldo total por cartão.
     total_saldo = {meio.id: 0.00 for meio in meios}
+
     for f in faturas_ordenadas:
         total_fatura = sum(mov.valor for mov in f.movimentacoes)
         total_saldo[f.cartao_id] = float(total_fatura)
-    
+
     total_saldo_total = sum(total_saldo.values())
 
     # Agrupar valores por categoria BASEADO NOS FILTROS ATIVOS para os gráficos
@@ -150,6 +168,9 @@ def listar_movimentacoes_cartao():
 
     categorias_valores.sort(key=lambda x: x['valor'], reverse=True)
 
+    # quais lançamentos têm parcelas/recorrências seguintes (para oferecer "esta e as próximas")
+    ids_com_proximas = cartao_service.ids_com_proximas(mov_cartao, current_user.familia_id)
+
 
     return render_template(
         "cartao/mov_cartao.html",
@@ -161,10 +182,12 @@ def listar_movimentacoes_cartao():
         meses=meses,
         mov_cartao=mov_cartao,
         ajustes_rotativo_ids=ajustes_rotativo_ids,
+        ids_com_proximas=ids_com_proximas,
         meios=meios,
         categorias=categorias,
         contas=contas,
         faturas=faturas_ordenadas,
+        saldo_anterior_por_fatura=saldo_anterior_por_fatura,
         total_saldo=total_saldo,
         total_saldo_total=total_saldo_total,
         categorias_valores=categorias_valores,
@@ -312,6 +335,16 @@ def deletar_movimentacao_cartao(id):
         flash(msg, "success")
         return redirect(url_for("cartao.listar_movimentacoes_cartao", ano=ano_filtro, mes=mes_filtro))
 
+    except cartao_service.CartaoServiceError as e:
+        db.session.rollback()
+        erro_msg = str(e)
+
+        if is_ajax:
+            return jsonify({"sucesso": False, "erro": erro_msg}), 400
+
+        flash(erro_msg, "warning")
+        return redirect(url_for("cartao.listar_movimentacoes_cartao", ano=ano_filtro, mes=mes_filtro))
+
     except Exception as e:
         db.session.rollback()
         erro_msg = f"Falha ao excluir a movimentação: {str(e)}"
@@ -331,15 +364,7 @@ def obter_movimentacao_cartao(id):
         return jsonify({"sucesso": False, "erro": "Este lançamento é automático e não pode ser editado ou excluído individualmente."}), 400
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        tem_proximas = (
-            bool(mov.compra_grupo_id)
-            and MovimentacaoCartao.query.filter(
-                MovimentacaoCartao.compra_grupo_id == mov.compra_grupo_id,
-                MovimentacaoCartao.familia_id == current_user.familia_id,
-                MovimentacaoCartao.data_compra > mov.data_compra,
-            ).first()
-            is not None
-        )
+        tem_proximas = bool(cartao_service.parcelas_seguintes(mov, current_user.familia_id))
         return jsonify({
             'id': mov.id,
             'descricao': mov.descricao,
