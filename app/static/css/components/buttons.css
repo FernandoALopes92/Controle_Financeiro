@@ -1,5 +1,5 @@
 .btn {
-  min-height: 2.5rem;
+  min-height: 1.5rem;
   padding: 0.55rem var(--space-4);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-sm);
@@ -55,8 +55,8 @@
   color: var(--color-primary-700);
   background: var(--color-surface);
 
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   display: inline-flex;
   align-items: center;
