@@ -1,4 +1,51 @@
+document.addEventListener('DOMContentLoaded', () => {
+  const modalTransf = document.getElementById('modalTransferencia');
+  if (!modalTransf) return;
 
+  const contaOrigem = modalTransf.querySelector('#conta_origem');
+  const saldoOrigemContainer = modalTransf.querySelector('#saldoContaOrigemContainer');
+  const saldoOrigem = modalTransf.querySelector('#saldoContaOrigem');
+
+  const contaDestino = modalTransf.querySelector('#conta_destino');
+  const saldoDestinoContainer = modalTransf.querySelector('#saldoContaDestinoContainer');
+  const saldoDestino = modalTransf.querySelector('#saldoContaDestino');
+
+  function atualizarSaldo(selectElem, containerElem, labelElem) {
+    if (!selectElem || !containerElem || !labelElem) return;
+
+    const selectedOption = selectElem.options[selectElem.selectedIndex];
+
+    if (selectedOption && selectElem.value !== '') {
+      const saldo = parseFloat(selectedOption.getAttribute('data-saldo')) || 0;
+
+      labelElem.textContent =
+        'Saldo: R$ ' +
+        saldo.toLocaleString('pt-BR', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+
+      containerElem.style.display = 'block';
+    } else {
+      containerElem.style.display = 'none';
+    }
+  }
+
+  if (contaOrigem) {
+    contaOrigem.addEventListener('change', () => {
+      atualizarSaldo(contaOrigem, saldoOrigemContainer, saldoOrigem);
+    });
+  }
+
+  if (contaDestino) {
+    contaDestino.addEventListener('change', () => {
+      atualizarSaldo(contaDestino, saldoDestinoContainer, saldoDestino);
+    });
+  }
+
+  if (typeof setHoje === 'function') {
+    setHoje(modalTransf.querySelector('#dataTransferencia'));
+  }
 
   // ==========================================
   // 2. Lógica de Edição (Agora armazena os dados originais)
@@ -68,13 +115,13 @@
   // ==========================================
   // 4. TRAVA DE SEGURANÇA EM TEMPO REAL (Com Saldo Virtual)
   // ==========================================
-  const formTransfAntigo = modalTransf.querySelector('form');
+  const formTransferencia = modalTransf.querySelector('form');
 
-  if (formTransfAntigo) {
-    formTransfAntigo.addEventListener('submit', function (e) {
-      const selectOrigem = formTransfAntigo.querySelector('#conta_origem');
-      const selectDestino = formTransfAntigo.querySelector('#conta_destino');
-      const inputValor = formTransfAntigo.querySelector('#valor');
+  if (formTransferencia) {
+    formTransferencia.addEventListener('submit', function (e) {
+      const selectOrigem = formTransferencia.querySelector('#conta_origem');
+      const selectDestino = formTransferencia.querySelector('#conta_destino');
+      const inputValor = formTransferencia.querySelector('#valor');
 
       if (!selectOrigem || !selectDestino || !inputValor) return;
 
@@ -112,12 +159,12 @@
       const optSelecionada = selectOrigem.options[selectOrigem.selectedIndex];
       let saldoDisponivel = parseFloat(optSelecionada.getAttribute('data-saldo')) || 0;
 
-      const modoEdicao = formTransfAntigo.action.includes('editar');
+      const modoEdicao = formTransferencia.action.includes('editar');
 
       // A MÁGICA DO SALDO VIRTUAL ACONTECE AQUI
       if (modoEdicao) {
-        const origemOriginal = formTransfAntigo.dataset.origemOriginal;
-        const valorOriginal = parseFloat(formTransfAntigo.dataset.valorOriginal) || 0;
+        const origemOriginal = formTransferencia.dataset.origemOriginal;
+        const valorOriginal = parseFloat(formTransferencia.dataset.valorOriginal) || 0;
 
         // Se a conta de origem continuar a mesma, nós projetamos o estorno do valor antigo
         if (origemId === origemOriginal) {
