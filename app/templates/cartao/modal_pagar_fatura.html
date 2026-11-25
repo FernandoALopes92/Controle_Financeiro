@@ -114,8 +114,16 @@
               class="form-control"
               name="data_pagamento"
               id="data_pagamento_{{ fatura.id }}"
-              value="{{ date.today().isoformat() }}"
+              value="{{ fatura.data_vencimento.isoformat() }}"
+              data-vencimento="{{ fatura.data_vencimento.isoformat() }}"
+              data-aviso-id="avisoAtraso_{{ fatura.id }}"
               required />
+
+            <div id="avisoAtraso_{{ fatura.id }}" class="form-text text-warning fw-semibold d-none">
+              <i class="bi bi-exclamation-triangle-fill me-1"></i>
+              A data de pagamento é posterior ao vencimento
+              ({{ fatura.data_vencimento.strftime('%d/%m/%Y') }}): <br> o pagamento será registrado com atraso.
+            </div>
           </div>
         </div>
 

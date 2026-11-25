@@ -31,7 +31,15 @@ def listar():
     # Busca todas as categorias para preencher o <select> do modal
     todas_categorias = Categoria.query.filter_by(familia_id=current_user.familia_id, status=True).order_by(Categoria.nome).all()
     
-    return render_template("/navbar/categorias.html", categorias=categorias_principais, todas_categorias=todas_categorias)
+    # Categorias desativadas (principais ou subcategorias), para poderem ser reativadas
+    desativadas = Categoria.query.filter_by(familia_id=current_user.familia_id, status=False).order_by(Categoria.nome).all()
+
+    return render_template(
+        "/navbar/categorias.html",
+        categorias=categorias_principais,
+        todas_categorias=todas_categorias,
+        desativadas=desativadas,
+    )
 
 @categorias_bp.route("/editar/<int:id>", methods=["POST"])
 @login_required
@@ -66,5 +74,21 @@ def excluir_categoria(id):
         sub.status = False
 
     db.session.commit()
-    flash("Categoria excluída com sucesso!", "success")
+    flash("Categoria desativada com sucesso! Você pode reativá-la na lista de categorias desativadas.", "success")
+    return redirect(url_for("categorias.listar"))
+
+
+@categorias_bp.route("/reativar/<int:id>", methods=["POST"])
+@login_required
+def reativar_categoria(id):
+    categoria = Categoria.query.filter_by(id=id, familia_id=current_user.familia_id).first_or_404()
+    categoria.status = True
+
+    # Uma subcategoria só aparece na tela dentro da categoria principal; se a
+    # principal estiver desativada, reativa ela também para não ficar "órfã".
+    if categoria.pai is not None and not categoria.pai.status:
+        categoria.pai.status = True
+
+    db.session.commit()
+    flash("Categoria reativada com sucesso!", "success")
     return redirect(url_for("categorias.listar"))

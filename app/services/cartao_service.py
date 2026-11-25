@@ -8,6 +8,7 @@ from decimal import Decimal, InvalidOperation, ROUND_DOWN
 from typing import Iterable, Optional, Set
 from dateutil.relativedelta import relativedelta
 from sqlalchemy import func
+from app.utils.recorrencia import meses_da_recorrencia
 from app.models import (
     Categoria,
     Fatura,
@@ -268,7 +269,7 @@ class NovaMovimentacaoInput:
     tipo_pagamento: str          # "parcelado" | outro (à vista)
     tipo_valor: Optional[str]    # "total" | None
     numero_parcelas: int
-    replicar: str                # "3_meses" | "nao"
+    replicar: str                # "3_meses" | "6_meses" | "12_meses" | "nao"
     is_estorno: bool = False
 def _criar_mov(
     *,
@@ -318,7 +319,8 @@ def criar_movimentacao(
     cartao = obter_cartao(dados.cartao_id, familia_id)
 
     # só compras parceladas ou recorrentes precisam de grupo; à vista fica sem
-    precisa_grupo = dados.tipo_pagamento == "parcelado" or dados.replicar == "3_meses"
+    meses_recorrencia = meses_da_recorrencia(dados.replicar)
+    precisa_grupo = dados.tipo_pagamento == "parcelado" or meses_recorrencia > 0
     grupo_id = str(uuid.uuid4()) if precisa_grupo else None
 
     faturas_modificadas: Set[int] = set()
@@ -365,8 +367,8 @@ def criar_movimentacao(
             compra_grupo_id=grupo_id,
         )
         faturas_modificadas.add(fatura.id)
-        if dados.replicar == "3_meses":
-            for i in range(1, 4):
+        if meses_recorrencia:
+            for i in range(1, meses_recorrencia + 1):
                 mes_futuro, ano_futuro = _avancar_mes(mes_base, ano_base, i)
                 fatura_futura = obter_ou_criar_fatura_aberta(
                     cartao, mes_futuro, ano_futuro, familia_id

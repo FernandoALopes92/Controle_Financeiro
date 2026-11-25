@@ -52,7 +52,7 @@ def listar():
         flash("Conta adicionada com sucesso!", "success")
         return redirect(url_for("contas.listar"))
 
-    contas = get_contas()
+    contas = get_contas(incluir_inativas=True)
     return render_template("navbar/contas.html", contas=contas)
 
 
@@ -110,4 +110,12 @@ def excluir_conta(id):
     except conta_service.ContaComPendenciaError as e:
         flash(str(e), "danger")
 
+    return redirect(url_for("contas.listar"))
+
+
+@contas_bp.route("/reativar/<int:id>", methods=["POST"])
+@login_required
+def reativar_conta(id):
+    conta = Conta.query.filter_by(id=id, familia_id=current_user.familia_id).first_or_404()
+    flash(conta_service.reativar_conta(conta), "success")
     return redirect(url_for("contas.listar"))

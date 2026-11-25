@@ -1,8 +1,8 @@
 import traceback, random, hashlib, uuid
-from flask import Blueprint, jsonify, render_template, redirect, url_for, request, flash
+from flask import Blueprint, jsonify, render_template, redirect, url_for, request, flash, current_app
 from app.models import db, MovimentacaoCartao, MeioPagamento, Categoria, Usuario, Fatura, Conta
 from flask_login import login_required, current_user
-from sqlalchemy import func, extract
+from sqlalchemy import func, extract, or_
 from datetime import datetime, date
 from decimal import Decimal, InvalidOperation, ROUND_DOWN
 from dateutil.relativedelta import relativedelta  # instale com: pip install python-dateutil
@@ -101,11 +101,7 @@ def listar_movimentacoes_cartao():
     categorias_usadas = sorted(list({mov.categoria.nome if mov.categoria else 'Rotativo / Ajuste' for mov in mov_cartao}))
 
     meios = get_meios_pagamento()
-    categorias = Categoria.query.filter(
-        Categoria.categoria_pai_id.isnot(None), 
-        Categoria.tipo == 'despesa',
-        Categoria.familia_id == familia_id
-    ).order_by(Categoria.nome.asc()).all()
+    categorias = get_categorias('despesa')
     contas = get_contas()
 
     # Selecionar a fatura mais recente por cartão
@@ -231,16 +227,17 @@ def nova_movimentacao_cartao():
             return _resposta_cartao(is_ajax, sucesso=False, msg=str(e), tipo="warning", status=400)
         except cartao_service.CartaoServiceError as e:
             return _resposta_cartao(is_ajax, sucesso=False, msg=str(e), tipo="danger", status=400)
-        except Exception as e:
+        except Exception:
             db.session.rollback()
+            current_app.logger.exception("Erro ao salvar movimentação de cartão")
             return _resposta_cartao(
                 is_ajax, sucesso=False,
-                msg=f"Ocorreu um erro ao salvar: {e}",
+                msg="Ocorreu um erro inesperado ao salvar. Tente novamente.",
                 tipo="danger", status=500,
             )
 
     meios = get_meios_pagamento()
-    categorias = Categoria.query.filter(Categoria.categoria_pai_id.isnot(None), Categoria.tipo == 'despesa').order_by(Categoria.nome.asc()).all()
+    categorias = get_categorias('despesa')  # já filtra por família e só traz ativas
     return render_template("cartao/modal_mov_cartao.html", meios=meios, categorias=categorias)
 
 
@@ -256,7 +253,11 @@ def editar_movimentacao_cartao(id):
         flash(msg, "warning")
         return redirect(url_for("cartao.listar_movimentacoes_cartao"))
     meios = get_meios_pagamento()
-    categorias = Categoria.query.filter(Categoria.categoria_pai_id.isnot(None), Categoria.tipo == 'despesa', Categoria.familia_id == current_user.familia_id).order_by(Categoria.nome.asc()).all()
+    categorias = Categoria.query.filter(
+        Categoria.categoria_pai_id.isnot(None), Categoria.tipo == 'despesa',
+        Categoria.familia_id == current_user.familia_id,
+        or_(Categoria.status.is_(True), Categoria.id == mov_cartao.categoria_id),
+    ).order_by(Categoria.nome.asc()).all()
 
     if request.method == "POST":
         is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
@@ -293,11 +294,12 @@ def editar_movimentacao_cartao(id):
             db.session.rollback()
             return _resposta_cartao(is_ajax, sucesso=False, msg=str(e), tipo="danger", status=400)
             
-        except Exception as e:
+        except Exception:
             db.session.rollback()
+            current_app.logger.exception("Erro ao atualizar movimentação de cartão")
             return _resposta_cartao(
                 is_ajax, sucesso=False,
-                msg=f"Ocorreu um erro ao atualizar: {e}",
+                msg="Ocorreu um erro inesperado ao atualizar. Tente novamente.",
                 tipo="danger", status=500,
             )
 

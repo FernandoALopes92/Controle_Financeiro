@@ -197,10 +197,12 @@ function configurarTabelaCartao() {
       const textoLinha = linha.textContent.trim().toLowerCase();
 
       // Categoria
-      const categoria = celulas[3]?.getAttribute('data-categoria')?.trim().toLowerCase() || '';
+      // Lê pelo atributo (e não pelo índice da coluna): a coluna Categoria é a 3ª (índice 2),
+      // o índice 3 é o Valor — era isso que fazia o filtro zerar a tabela.
+      const categoria = linha.querySelector('[data-categoria]')?.getAttribute('data-categoria')?.trim().toLowerCase() || '';
 
       // Cartão
-      const cartao = celulas[4]?.getAttribute('data-cartao')?.trim().toLowerCase() || '';
+      const cartao = linha.querySelector('[data-cartao]')?.getAttribute('data-cartao')?.trim().toLowerCase() || '';
 
       // Pesquisa geral
       const passaPesquisa = !pesquisa || textoLinha.includes(pesquisa);
@@ -1321,4 +1323,28 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   });
+});
+
+// ==========================================================
+// PAGAR FATURA: avisa se a data de pagamento for posterior ao vencimento
+// (a data já abre preenchida com o vencimento da fatura)
+// ==========================================================
+
+document.addEventListener('input', (event) => {
+  const campo = event.target;
+
+  if (!campo.matches || !campo.matches('input[data-vencimento]')) {
+    return;
+  }
+
+  const aviso = document.getElementById(campo.dataset.avisoId);
+
+  if (!aviso) {
+    return;
+  }
+
+  // Datas ISO (AAAA-MM-DD) comparam corretamente como texto
+  const atrasado = campo.value && campo.value > campo.dataset.vencimento;
+
+  aviso.classList.toggle('d-none', !atrasado);
 });

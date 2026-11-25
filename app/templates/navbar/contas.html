@@ -50,6 +50,16 @@ set page_subtitle = 'Gerencie saldos, tipos e disponibilidade das suas contas.' 
           </td>
 
           <td>
+            {% if not conta.status %}
+            <!-- Conta inativa: só pode ser reativada -->
+            <form method="POST" action="{{ url_for('contas.reativar_conta', id=conta.id) }}" class="d-inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <button type="submit" class="btn btn-sm btn-outline-success" title="Reativar">
+                <i class="bi bi-arrow-counterclockwise me-1"></i>
+                Reativar
+              </button>
+            </form>
+            {% else %}
             <!-- Botão Editar -->
             <button
               class="btn btn-sm btn-outline-roxo-azulado btn-editar"
@@ -66,6 +76,7 @@ set page_subtitle = 'Gerencie saldos, tipos e disponibilidade das suas contas.' 
               data-bs-target="#modalExcluirConta{{ conta.id }}">
               <i class="bi bi-trash3"></i>
             </button>
+            {% endif %}
           </td>
         </tr>
 
@@ -113,6 +124,12 @@ set page_subtitle = 'Gerencie saldos, tipos e disponibilidade das suas contas.' 
                   Tem certeza que deseja excluir a conta
                   <strong class="text-danger">{{ conta.nome }}</strong>
                   ?
+                  <p class="text-muted small mt-2 mb-0">
+                    Se a conta nunca teve movimentações, ela será <strong>excluída permanentemente</strong>
+                    (inclusive o saldo inicial). Se já tem histórico, será apenas <strong>inativada</strong>
+                    &mdash; o histórico é mantido e você pode reativá-la depois. Para inativar, o saldo precisa
+                    estar zerado e sem lançamentos pendentes.
+                  </p>
                 </div>
                 {% include "components/modal_footer.html" %}
               </div>

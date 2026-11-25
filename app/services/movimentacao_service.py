@@ -14,6 +14,7 @@ from typing import Optional
 from dateutil.relativedelta import relativedelta
 
 from app.models import Categoria, Conta, Movimentacao, db
+from app.utils.recorrencia import meses_da_recorrencia
 
 
 # ---------------------------------------------------------------------------
@@ -85,7 +86,7 @@ class NovaMovimentacaoInput:
     valor: Decimal
     conta_id: int
     pago: bool
-    replicar: str  # "3_meses" | outro valor = não replica
+    replicar: str  # "3_meses" | "6_meses" | "12_meses" | outro valor = não replica
 
 
 def criar_movimentacao(dados: NovaMovimentacaoInput, *, usuario_id: int, familia_id: int) -> str:
@@ -115,8 +116,9 @@ def criar_movimentacao(dados: NovaMovimentacaoInput, *, usuario_id: int, familia
         pago=dados.pago,
     ))
 
-    if dados.replicar == "3_meses":
-        for i in range(1, 4):
+    meses_recorrencia = meses_da_recorrencia(dados.replicar)
+    if meses_recorrencia:
+        for i in range(1, meses_recorrencia + 1):
             data_futura = dados.data + relativedelta(months=i)
             db.session.add(Movimentacao(
                 usuario_id=usuario_id,

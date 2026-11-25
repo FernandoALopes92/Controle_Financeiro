@@ -10,7 +10,9 @@ from dataclasses import dataclass
 from datetime import date as date_type
 from typing import Optional
 
-from app.models import Conta, Movimentacao, db
+from sqlalchemy import or_
+
+from app.models import Conta, Movimentacao, PagamentoFatura, Transferencia, db
 
 
 # ---------------------------------------------------------------------------
@@ -62,35 +64,58 @@ def atualizar_conta(conta: Conta, dados: EditarContaInput) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Excluir conta
+# Excluir / reativar conta
 # ---------------------------------------------------------------------------
+def _conta_tem_historico(conta: Conta, familia_id: int) -> bool:
+    """True se a conta já foi usada em algum lançamento, transferência ou
+    pagamento de fatura (qualquer um deles impede apagar de verdade, pois
+    deixaria registros apontando para uma conta que não existe mais)."""
+    if Movimentacao.query.filter_by(conta_id=conta.id, familia_id=familia_id).first():
+        return True
+    if PagamentoFatura.query.filter_by(conta_id=conta.id, familia_id=familia_id).first():
+        return True
+    return (
+        Transferencia.query.filter(
+            Transferencia.familia_id == familia_id,
+            or_(Transferencia.conta_origem_id == conta.id, Transferencia.conta_destino_id == conta.id),
+        ).first()
+        is not None
+    )
+
+
 def excluir_conta(conta: Conta, *, familia_id: int) -> str:
-    # REGRA 1: a conta precisa estar zerada. Usa round(...) para não deixar
-    # dízimas de ponto flutuante (ex: 0.00001) bloquearem a exclusão.
+    # CONTA NUNCA USADA -> apaga de verdade, mesmo com saldo: sem nenhum
+    # lançamento, o saldo é apenas o "saldo inicial" digitado no cadastro,
+    # não há dinheiro a transferir nem histórico a preservar.
+    if not _conta_tem_historico(conta, familia_id):
+        db.session.delete(conta)
+        db.session.commit()
+        return "Conta excluída permanentemente do sistema!"
+
+    # CONTA COM HISTÓRICO -> só pode ser inativada (soft delete), e para isso
+    # precisa estar zerada e sem pendências.
+    # REGRA 1: usa round(...) para não deixar dízimas de ponto flutuante
+    # (ex: 0.00001) bloquearem o encerramento.
     if round(float(conta.saldo_atual), 2) != 0.00:
         raise ContaComSaldoError(
             f"A conta não pode ser encerrada. Transfira ou zere o saldo atual de "
             f"R$ {conta.saldo_atual:.2f} primeiro."
         )
 
-    movimentacoes_query = Movimentacao.query.filter_by(conta_id=conta.id, familia_id=familia_id)
-    qtd_movimentacoes = movimentacoes_query.count()
-
     # REGRA 2: não pode ter lançamento pendente em aberto
-    tem_pendencia = movimentacoes_query.filter_by(pago=False).first()
-    if tem_pendencia:
+    if Movimentacao.query.filter_by(conta_id=conta.id, familia_id=familia_id, pago=False).first():
         raise ContaComPendenciaError(
             "Existem lançamentos pendentes atrelados a esta conta. Resolva-os antes de encerrar."
         )
 
-    if qtd_movimentacoes == 0:
-        # Conta nunca foi usada -> apaga fisicamente do banco
-        db.session.delete(conta)
-        mensagem = "Conta excluída permanentemente do sistema!"
-    else:
-        # Conta tem histórico -> inativa (soft delete), preserva o passado
-        conta.status = False
-        mensagem = "Conta inativada com sucesso! O histórico financeiro foi mantido."
-
+    conta.status = False
     db.session.commit()
-    return mensagem
+    return "Conta inativada com sucesso! O histórico foi mantido e você pode reativá-la na lista de contas."
+
+
+def reativar_conta(conta: Conta) -> str:
+    if conta.status:
+        return "A conta já está ativa."
+    conta.status = True
+    db.session.commit()
+    return "Conta reativada com sucesso!"
