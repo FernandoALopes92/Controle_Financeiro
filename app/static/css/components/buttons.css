@@ -76,6 +76,11 @@
   color: var(--color-danger);
   background: var(--color-danger-subtle);
 }
+.btn-reativar:hover {
+  border-color: var(--color-success);
+  color: var(--color-success);
+  background: var(--color-success-subtle);
+}
 .btn-success {
   border-color: var(--color-success);
   background: var(--color-success);

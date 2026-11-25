@@ -57,7 +57,7 @@
 
           <!-- VALOR DO PAGAMENTO -->
 
-          <div class="mb-4">
+          <div class="mb-3">
             <label for="valor_{{ fatura.id }}" class="form-label">Valor do Pagamento (R$)</label>
 
             <input
@@ -73,7 +73,7 @@
 
           <!-- CONTA DE ORIGEM -->
 
-          <div class="mb-4">
+          <div class="mb-3">
             <label for="conta_id_{{ fatura.id }}" class="form-label">Conta de Origem</label>
 
             <select
@@ -119,7 +119,7 @@
               data-aviso-id="avisoAtraso_{{ fatura.id }}"
               required />
 
-            <div id="avisoAtraso_{{ fatura.id }}" class="form-text text-warning fw-semibold d-none">
+            <div id="avisoAtraso_{{ fatura.id }}" class="form-text text-center fw-semibold d-none">
               <i class="bi bi-exclamation-triangle-fill me-1"></i>
               A data de pagamento é posterior ao vencimento
               ({{ fatura.data_vencimento.strftime('%d/%m/%Y') }}): <br> o pagamento será registrado com atraso.

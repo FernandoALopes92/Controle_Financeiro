@@ -72,43 +72,38 @@ para acompanhar melhor seus hábitos.' %} {% set page_actions %}
           </td>
         </tr>
         {% endif %} {% endfor %} {% endfor %}
+        {% if desativadas %}
+        <tr class="table-light">
+          <td colspan="3" class="text-start ps-4 text-muted small fw-bold text-uppercase">
+            <i class="bi bi-archive me-1"></i>Categorias desativadas
+          </td>
+        </tr>
+        {% for cat in desativadas %}
+        <tr class="text-muted">
+          <td class="text-start ps-4">
+            {% if cat.pai %}<i class="bi bi-arrow-return-right me-2"></i>{{ cat.pai.nome }} &rsaquo; {% endif %}{{ cat.nome }}
+          </td>
+          <td class="text-center">
+            <span class="badge {% if cat.tipo == 'receita' %}bg-success{% else %}bg-danger{% endif %} px-3 py-1">
+              {{ cat.tipo | title }}
+            </span>
+          </td>
+          <td class="text-center">
+            <form method="POST" action="{{ url_for('categorias.reativar_categoria', id=cat.id) }}" class="d-inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <button type="submit" class="btn btn-sm btn-outline-roxo-azulado btn-reativar" title="Reativar">
+                <i class="bi bi-arrow-counterclockwise"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+        {% endif %}
       </tbody>
     </table>
   </div>
 
-  {% if desativadas %}
-  <div class="mt-4">
-    <h2 class="h6 text-muted mb-2"><i class="bi bi-archive me-1"></i>Categorias desativadas</h2>
-    <div class="table-responsive">
-      <table class="table table-sm align-middle">
-        <tbody>
-          {% for cat in desativadas %}
-          <tr>
-            <td class="text-start ps-4 text-muted">
-              {% if cat.pai %}<i class="bi bi-arrow-return-right me-2"></i>{{ cat.pai.nome }} &rsaquo; {% endif %}{{ cat.nome }}
-            </td>
-            <td class="text-center">
-              <span class="badge {% if cat.tipo == 'receita' %}bg-success{% else %}bg-danger{% endif %} px-3 py-1">
-                {{ cat.tipo | title }}
-              </span>
-            </td>
-            <td class="text-center">
-              <form method="POST" action="{{ url_for('categorias.reativar_categoria', id=cat.id) }}" class="d-inline">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                <button type="submit" class="btn btn-sm btn-outline-success" title="Reativar">
-                  <i class="bi bi-arrow-counterclockwise me-1"></i>
-                  Reativar
-                </button>
-              </form>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-  {% endif %}
-
+  
   {% for categoria in todas_categorias %}
 
   <!-- Modal Editar -->

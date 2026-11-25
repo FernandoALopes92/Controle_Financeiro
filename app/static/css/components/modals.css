@@ -126,12 +126,12 @@
    ========================================================== */
 
 .modal-pagar-fatura .modal-dialog {
-  max-width: 36rem;
+  max-width: 34rem;
 }
 
 .modal-pagar-fatura .modal-body {
-  padding-top: var(--space-5);
-  padding-bottom: var(--space-5);
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
 }
 
 /* ==========================================================
@@ -211,15 +211,15 @@
 }
 
 .modal-pagar-fatura__section-title--spaced {
-  margin-top: var(--space-5);
+  margin-top: var(--space-4);
 }
 
 /* ==========================================================
    CAMPOS DO MODAL
    ========================================================== */
 
-.modal-pagar-fatura .mb-4 {
-  margin-bottom: var(--space-4) !important;
+.modal-pagar-fatura .mb-3 {
+  margin-bottom: var(--space-3) !important;
 }
 
 .modal-pagar-fatura .form-label {

@@ -54,10 +54,9 @@ set page_subtitle = 'Gerencie saldos, tipos e disponibilidade das suas contas.' 
             <!-- Conta inativa: só pode ser reativada -->
             <form method="POST" action="{{ url_for('contas.reativar_conta', id=conta.id) }}" class="d-inline">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-              <button type="submit" class="btn btn-sm btn-outline-success" title="Reativar">
-                <i class="bi bi-arrow-counterclockwise me-1"></i>
-                Reativar
-              </button>
+                <button type="submit" class="btn btn-sm btn-outline-roxo-azulado btn-reativar" title="Reativar">
+                  <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
             </form>
             {% else %}
             <!-- Botão Editar -->
