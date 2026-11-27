@@ -183,6 +183,26 @@ class Fatura(db.Model):
     def atualizar_saldo(self):
         self.saldo = sum(m.valor for m in self.movimentacoes_cartao)
 
+    @property
+    def data_quitacao(self):
+        """Data do último pagamento registrado (o que quitou a fatura), ou None."""
+        datas = [p.data_pagamento for p in self.pagamentos if p.data_pagamento]
+        return max(datas) if datas else None
+
+    @property
+    def dias_atraso_pagamento(self):
+        """Dias entre o vencimento e a quitação. 0 = paga em dia (ou ainda não paga).
+
+        Calculado a partir dos pagamentos, sem coluna nova: faturas antigas
+        ganham a informação automaticamente e o estorno de um pagamento
+        "desfaz" o atraso sozinho."""
+        if self.status != 'pago' or not self.data_vencimento:
+            return 0
+        quitacao = self.data_quitacao
+        if quitacao is None:
+            return 0
+        return max((quitacao - self.data_vencimento).days, 0)
+
     movimentacoes = db.relationship("MovimentacaoCartao", backref="fatura", lazy=True)
     cartao = db.relationship('MeioPagamento', backref='faturas')
 

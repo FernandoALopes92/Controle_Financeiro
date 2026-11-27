@@ -20,6 +20,20 @@ meses_map = {
 # ATENÇÃO: depois de importar, APAGUE as linhas daqui. Se rodar de novo com as
 # mesmas linhas, tudo é importado em duplicidade.
 dados_brutos = """
+25/nov	Leticia Comercio	Lanches/Besteiras	Nubank Feh	 R$ 2,72 
+25/nov	Justo Doces	Lanches/Besteiras	Nubank Feh	 R$ 3,00 
+25/nov	Js Modas	Roupas/Calçados	Nubank Feh	 R$ 10,00 
+25/nov	Rodoviaria SP	Acessórios	Nubank Feh	 R$ 9,80 
+24/nov	Davó	Lanches/Besteiras	Nubank Feh	 R$ 6,57 
+24/nov	Moviecom	Lazer	Nubank Feh	 R$ 16,00 
+24/nov	Shopping Pateo Itaqua	Lanches/Besteiras	Nubank Feh	 R$ 2,75 
+24/nov	Davó	Lanches/Besteiras	Nubank Feh	 R$ 36,43 
+23/nov	Via Naturale	Lanches/Besteiras	Nubank Feh	 R$ 5,40 
+23/nov	Pé de Patel	Lanches/Besteiras	Nubank Feh	 R$ 24,00 
+23/nov	Hiper Real Itaqua	Lanches/Besteiras	Nubank Feh	 R$ 2,50 
+24/nov	Bolo	Lanches/Besteiras	Pic Pay	 R$ 12,00 
+24/nov	Mercadinho Baltazar	Lanches/Besteiras	Pic Pay	 R$ 4,99 
+22/nov	Uber/99	Uber/99	Pic Pay	 R$ 21,42 
 """
 
 # Defina o ano em que essas compras aconteceram

@@ -9,6 +9,17 @@ para acompanhar melhor seus hábitos.' %} {% set page_actions %}
 </div>
 {% endset %} {% include "components/page_header.html" %} {% endblock %} {% block content %}
 <div class="business-page business-page--categories">
+  <div class="input-group mb-3">
+    <span class="input-group-text"><i class="bi bi-search"></i></span>
+    <input
+      type="search"
+      id="filtroCategorias"
+      class="form-control"
+      placeholder="Pesquisar categoria ou subcategoria..."
+      autocomplete="off"
+      aria-label="Pesquisar categoria" />
+  </div>
+
   <div class="table-responsive">
     <table class="table table-hover">
       <thead>
@@ -20,7 +31,7 @@ para acompanhar melhor seus hábitos.' %} {% set page_actions %}
       </thead>
       <tbody>
         {% for cat in categorias %}
-        <tr class="table-light">
+        <tr class="table-light" data-cat-nivel="principal" data-cat-grupo="{{ cat.id }}" data-cat-nome="{{ cat.nome }}">
           <td class="fw-bold text-start ps-4 text-primary">{{ cat.nome }}</td>
           <td class="text-center">
             <span class="badge {% if cat.tipo == 'receita' %}bg-success{% else %}bg-danger{% endif %} px-3 py-1">
@@ -46,7 +57,7 @@ para acompanhar melhor seus hábitos.' %} {% set page_actions %}
         </tr>
 
         {% for sub in cat.subcategorias %} {% if sub.status %}
-        <tr>
+        <tr data-cat-nivel="sub" data-cat-grupo="{{ cat.id }}" data-cat-nome="{{ sub.nome }}">
           <td class="text-start ps-5 text-muted">
             <i class="bi bi-arrow-return-right me-2"></i>
             {{ sub.nome }}
@@ -73,13 +84,13 @@ para acompanhar melhor seus hábitos.' %} {% set page_actions %}
         </tr>
         {% endif %} {% endfor %} {% endfor %}
         {% if desativadas %}
-        <tr class="table-light">
+        <tr class="table-light" data-cat-nivel="titulo-desativadas">
           <td colspan="3" class="text-start ps-4 text-muted small fw-bold text-uppercase">
             <i class="bi bi-archive me-1"></i>Categorias desativadas
           </td>
         </tr>
         {% for cat in desativadas %}
-        <tr class="text-muted">
+        <tr class="text-muted" data-cat-nivel="desativada" data-cat-nome="{% if cat.pai %}{{ cat.pai.nome }} {% endif %}{{ cat.nome }}">
           <td class="text-start ps-4">
             {% if cat.pai %}<i class="bi bi-arrow-return-right me-2"></i>{{ cat.pai.nome }} &rsaquo; {% endif %}{{ cat.nome }}
           </td>
@@ -99,11 +110,13 @@ para acompanhar melhor seus hábitos.' %} {% set page_actions %}
         </tr>
         {% endfor %}
         {% endif %}
+        <tr id="semResultadoCategorias" hidden>
+          <td colspan="3" class="text-center text-muted py-4">Nenhuma categoria encontrada.</td>
+        </tr>
       </tbody>
     </table>
   </div>
 
-  
   {% for categoria in todas_categorias %}
 
   <!-- Modal Editar -->
@@ -186,4 +199,6 @@ para acompanhar melhor seus hábitos.' %} {% set page_actions %}
     </div>
   </div>
 </div>
+
+<script src="{{ url_for('static', filename='js/categorias.js') }}"></script>
 {% endblock %}

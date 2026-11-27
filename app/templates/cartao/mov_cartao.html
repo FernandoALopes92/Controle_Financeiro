@@ -845,6 +845,14 @@
 
                                 </span>
 
+                                {% if fatura.dias_atraso_pagamento %}
+                                <span
+                                    class="badge bg-warning text-dark"
+                                    title="Paga em {{ fatura.data_quitacao.strftime('%d/%m/%Y') }}, {{ fatura.dias_atraso_pagamento }} dia(s) após o vencimento ({{ fatura.data_vencimento.strftime('%d/%m/%Y') }})">
+                                    Com atraso
+                                </span>
+                                {% endif %}
+
 
                                 <form
                                     action="{{ url_for(

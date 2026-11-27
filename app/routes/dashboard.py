@@ -145,7 +145,7 @@ def _montar_cards_fatura(familia_id: int, mes_filtro: int, ano_filtro: int, fatu
         for f in faturas:
             saldo = sum(m.valor for m in f.movimentacoes) or 0
             if saldo > 0 or f.status == 'aberta':
-                lista.append({'cartao': f.cartao, 'saldo': saldo, 'status': f.status})
+                lista.append({'cartao': f.cartao, 'saldo': saldo, 'status': f.status, 'dias_atraso': f.dias_atraso_pagamento})
         lista.sort(key=lambda x: x['cartao'].nome)
         return lista
 
