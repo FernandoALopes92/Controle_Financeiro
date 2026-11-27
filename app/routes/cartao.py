@@ -7,6 +7,7 @@ from datetime import datetime, date
 from decimal import Decimal, InvalidOperation, ROUND_DOWN
 from dateutil.relativedelta import relativedelta  # instale com: pip install python-dateutil
 from app.utils.db_utils import get_meios_pagamento, get_categorias, get_contas
+from app.utils.request_utils import int_arg
 from calendar import monthrange
 from app.services import cartao_service
 from app.services.cartao_service import (
@@ -66,8 +67,9 @@ def listar_movimentacoes_cartao():
     anos = [ano[0] for ano in anos] if anos else [datetime.now().year]
 
     # Filtros capturados da URL
-    ano_filtro = int(request.args.get('ano', default=datetime.now().year))
-    mes_filtro = int(request.args.get('mes', default=datetime.now().month))
+    # int_arg nunca estoura erro 500 com "?ano=abc" ou "?mes=99": cai no mês/ano atual
+    ano_filtro = int_arg('ano', datetime.now().year, minimo=2000, maximo=2100)
+    mes_filtro = int_arg('mes', datetime.now().month, minimo=1, maximo=12)
     cartao_filtro = request.args.get('cartao_id', type=int)
     categoria_filtro = request.args.get('categoria_id', type=int)
 

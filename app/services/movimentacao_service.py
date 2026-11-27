@@ -24,6 +24,10 @@ class MovimentacaoServiceError(Exception):
     """Erro genérico de regra de negócio ligado a movimentações de conta."""
 
 
+class ValorInvalidoError(MovimentacaoServiceError):
+    pass
+
+
 class CategoriaInvalidaError(MovimentacaoServiceError):
     pass
 
@@ -38,6 +42,13 @@ class ContaInativaError(MovimentacaoServiceError):
 
 class MovimentacaoBloqueadaError(MovimentacaoServiceError):
     """Faturas e transferências não podem ser editadas/excluídas por aqui."""
+
+
+def _validar_valor(valor) -> None:
+    """Defesa em profundidade: um NaN/Infinity (ou valor <= 0) que chegasse ao
+    banco contaminaria o saldo da conta inteira."""
+    if not isinstance(valor, Decimal) or not valor.is_finite() or valor <= 0:
+        raise ValorInvalidoError("O valor deve ser um número maior que zero.")
 
 
 # ---------------------------------------------------------------------------
@@ -90,6 +101,7 @@ class NovaMovimentacaoInput:
 
 
 def criar_movimentacao(dados: NovaMovimentacaoInput, *, usuario_id: int, familia_id: int) -> str:
+    _validar_valor(dados.valor)
     categoria = Categoria.query.filter_by(id=dados.categoria_id, familia_id=familia_id).first()
     if not categoria or not categoria.tipo:
         raise CategoriaInvalidaError("Categoria inválida ou sem tipo.")
@@ -150,6 +162,7 @@ class EditarMovimentacaoInput:
 
 
 def atualizar_movimentacao(mov: Movimentacao, dados: EditarMovimentacaoInput, *, familia_id: int) -> str:
+    _validar_valor(dados.valor)  # antes de mexer em qualquer saldo
     if not mov.conta.status:
         raise ContaInativaError(
             "Erro: Esta conta está encerrada/inativa. Reative a conta nas configurações antes de alterar seu histórico."

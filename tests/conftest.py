@@ -23,6 +23,9 @@ def app():
         "TESTING": True,
         "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
         "WTF_CSRF_ENABLED": False,  # não precisamos validar token CSRF nos testes
+        # Chave fixa só para testes: sem ela, a sessão (login nos testes de rota)
+        # não funciona quando não existe .env — como no GitHub Actions.
+        "SECRET_KEY": "chave-somente-para-testes",
     })
 
     with app.app_context():

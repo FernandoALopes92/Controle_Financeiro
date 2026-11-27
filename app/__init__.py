@@ -1,5 +1,5 @@
 import os
-from flask import Flask, app, redirect, url_for
+from flask import Flask, flash, redirect, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_wtf import CSRFProtect
@@ -31,11 +31,33 @@ def create_app(config_overrides=None):
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Boa prática para evitar warning
 
+    # --- Segurança de sessão/cookies --------------------------------------
+    # HttpOnly: JavaScript não lê o cookie de sessão; SameSite=Lax: o navegador
+    # não envia o cookie em POSTs vindos de outros sites.
+    # Secure (só HTTPS): ligue com SESSION_COOKIE_SECURE=1 no .env quando o app
+    # estiver publicado com HTTPS (em http://localhost deixe desligado).
+    cookies_seguros = os.getenv('SESSION_COOKIE_SECURE', '').strip().lower() in ('1', 'true', 'yes')
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    app.config['SESSION_COOKIE_SECURE'] = cookies_seguros
+    app.config['REMEMBER_COOKIE_HTTPONLY'] = True
+    app.config['REMEMBER_COOKIE_SAMESITE'] = 'Lax'
+    app.config['REMEMBER_COOKIE_SECURE'] = cookies_seguros
+    # Upload: o único upload do app são logos pequenos; recusa requisições gigantes.
+    app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024
+
     # Usado pelos testes automatizados para trocar o banco por um de teste
     # (em memória), sem nunca tocar no banco Postgres de verdade.
     if config_overrides:
         app.config.update(config_overrides)
-    
+
+    # Sem SECRET_KEY as sessões/CSRF ficam inseguras (ou quebram só no primeiro
+    # login, de um jeito difícil de entender): melhor falhar logo ao iniciar.
+    if not app.config.get('SECRET_KEY') and not app.config.get('TESTING'):
+        raise RuntimeError(
+            "SECRET_KEY não definida. Crie a variável no arquivo .env "
+            "(ex.: SECRET_KEY=um-texto-longo-e-aleatório) antes de iniciar o app."
+        )
 
     # 2. REGISTRE O FILTRO AQUI (Dentro do create_app)
     app.jinja_env.filters['brl'] = formata_moeda_br
@@ -75,6 +97,22 @@ def create_app(config_overrides=None):
     app.register_blueprint(fatura_bp) # Registra o blueprint das Faturas
     app.register_blueprint(relatorios_bp) # Registra o blueprint dOS Relatórios
 
+
+    @app.after_request
+    def cabecalhos_de_seguranca(resposta):
+        resposta.headers.setdefault('X-Content-Type-Options', 'nosniff')
+        resposta.headers.setdefault('X-Frame-Options', 'SAMEORIGIN')
+        resposta.headers.setdefault('Referrer-Policy', 'strict-origin-when-cross-origin')
+        # SVG aberto direto no navegador pode executar <script>; o "sandbox" +
+        # default-src 'none' neutraliza isso (como <img>, o SVG continua aparecendo).
+        if request.path.startswith('/static/') and request.path.lower().endswith('.svg'):
+            resposta.headers['Content-Security-Policy'] = "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+        return resposta
+
+    @app.errorhandler(413)
+    def arquivo_grande_demais(_erro):
+        flash('Arquivo muito grande. O limite é 4 MB.', 'danger')
+        return redirect(url_for('main.dashboard'))
 
     @app.route('/')
     def index():

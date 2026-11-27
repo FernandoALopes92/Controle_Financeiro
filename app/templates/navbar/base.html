@@ -125,7 +125,8 @@
                 {{ current_user.nome }}
               </span>
               <a
-                href="{{ url_for('auth.logout') }}"
+                href="#"
+                data-logout
                 class="btn btn-sm btn-outline-light fw-bold px-4"
                 style="border-radius: 20px"
                 title="Sair do sistema">
@@ -171,6 +172,10 @@
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"></script>
     <script src="https://unpkg.com/imask"></script>
+    <!-- Logout é POST (com token CSRF): os links "Sair" (data-logout) enviam este formulário -->
+    <form id="logoutForm" method="POST" action="{{ url_for('auth.logout') }}" hidden>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    </form>
     <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </body>

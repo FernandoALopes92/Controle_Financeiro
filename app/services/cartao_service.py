@@ -9,6 +9,7 @@ from typing import Iterable, Optional, Set
 from dateutil.relativedelta import relativedelta
 from sqlalchemy import func
 from app.utils.recorrencia import meses_da_recorrencia
+from app.utils.valores import converter_valor_para_decimal  # noqa: F401 (reexportado: usado por rotas e testes)
 from app.models import (
     Categoria,
     Fatura,
@@ -69,23 +70,6 @@ class ValorInvalidoError(CartaoServiceError):
 # ---------------------------------------------------------------------------
 # Utilitários
 # ---------------------------------------------------------------------------
-def converter_valor_para_decimal(valor_str: str) -> Optional[Decimal]:
-    if not valor_str:
-        return None
-    texto = valor_str.replace("R$", "").replace(" ", "").strip()
-    if "," in texto:
-        # a vírgula é o decimal; os pontos são separador de milhar
-        texto = texto.replace(".", "").replace(",", ".")
-    elif re.fullmatch(r"-?\d{1,3}(\.\d{3})+", texto):
-        # só pontos, todos seguidos de 3 dígitos: milhar ("1.234" -> 1234)
-        texto = texto.replace(".", "")
-    try:
-        valor = Decimal(texto)
-    except (InvalidOperation, ValueError):
-        return None
-    if not valor.is_finite() or valor.as_tuple().exponent < -2:
-        return None 
-    return valor
 def _avancar_mes(mes: int, ano: int, incremento: int = 1) -> tuple[int, int]:
     mes += incremento
     while mes > 12:

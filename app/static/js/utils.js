@@ -266,3 +266,17 @@ function aplicarMascaraNumeroInteiro(idInput) {
   }
 }
 /////////////////////////////////////////////
+
+// ==========================================================
+// LOGOUT: o link "Sair" (data-logout) envia o formulário POST #logoutForm
+// ==========================================================
+document.addEventListener('click', (event) => {
+  const link = event.target.closest('[data-logout]');
+
+  if (!link) {
+    return;
+  }
+
+  event.preventDefault();
+  document.getElementById('logoutForm')?.submit();
+});

@@ -8,8 +8,14 @@ from sqlalchemy import extract
 from app.models import db, Conta, Transferencia
 from app.utils.db_utils import filtrar_por_mes_ano
 from app.services import transferencia_service as transf_service
+from app.utils.valores import converter_valor_para_decimal
 
 transferencias_bp = Blueprint("transferencias", __name__, url_prefix="/transferencias")
+
+
+def _voltar():
+    """Volta para a página de origem; se o navegador não enviou o Referer, vai para a lista."""
+    return redirect(request.referrer or url_for("movimentacoes.lista", aba="transferencias"))
 
 
 @transferencias_bp.route('/')
@@ -31,19 +37,24 @@ def nova_transferencia():
 
         if not origem_id_raw or not destino_id_raw or not valor_raw or not data:
             flash("Todos os campos são obrigatórios.", "danger")
-            return redirect(request.referrer)
+            return _voltar()
+
+        valor = converter_valor_para_decimal(valor_raw)
+        if valor is None:
+            flash("Valor inválido. Use um número com ponto ou vírgula (ex.: 21,28).", "danger")
+            return _voltar()
 
         try:
             dados = transf_service.NovaTransferenciaInput(
                 origem_id=int(origem_id_raw),
                 destino_id=int(destino_id_raw),
-                valor=Decimal(valor_raw),
+                valor=valor,
                 data=data,
                 descricao=descricao,
             )
         except (ValueError, InvalidOperation):
             flash("Dados inválidos.", "danger")
-            return redirect(request.referrer)
+            return _voltar()
 
         try:
             mensagem = transf_service.criar_transferencia(
@@ -70,7 +81,7 @@ def excluir_transferencia(id):
         flash(str(e), "danger")
         return redirect(url_for("transferencias.listar_transferencias"))
 
-    return redirect(request.referrer)
+    return _voltar()
 
 
 @transferencias_bp.route('/editar/<int:id>', methods=["POST"])
@@ -87,17 +98,21 @@ def editar_transferencia(id):
 
     if not origem_id_raw or not destino_id_raw or not valor_raw or not data:
         flash("Todos os campos são obrigatórios.", "danger")
-        return redirect(request.referrer)
+        return _voltar()
 
     if origem_id_raw == destino_id_raw:
         flash("A conta de origem e destino devem ser diferentes.", "danger")
-        return redirect(request.referrer)
+        return _voltar()
+
+    valor = converter_valor_para_decimal(valor_raw)
+    if valor is None:
+        flash("Valor inválido. Use um número com ponto ou vírgula (ex.: 21,28).", "danger")
+        return _voltar()
+    if valor <= 0:
+        flash("O valor da transferência deve ser maior que zero.", "danger")
+        return _voltar()
 
     try:
-        valor = Decimal(valor_raw)
-        if valor <= 0:
-            flash("O valor da transferência deve ser maior que zero.", "danger")
-            return redirect(request.referrer)
         dados = transf_service.EditarTransferenciaInput(
             origem_id=int(origem_id_raw),
             destino_id=int(destino_id_raw),
@@ -107,7 +122,7 @@ def editar_transferencia(id):
         )
     except (ValueError, InvalidOperation):
         flash("Dados inválidos. Verifique os campos e tente novamente.", "danger")
-        return redirect(request.referrer)
+        return _voltar()
 
     try:
         mensagem = transf_service.atualizar_transferencia(
@@ -122,4 +137,4 @@ def editar_transferencia(id):
     except Exception:
         flash("Erro ao atualizar transferência. Tente novamente.", "danger")
 
-    return redirect(request.referrer)
+    return _voltar()

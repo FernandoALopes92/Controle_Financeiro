@@ -8,6 +8,7 @@ from sqlalchemy import extract, func
 from app.models import db, Movimentacao, Transferencia, Categoria, Conta
 from app.utils.db_utils import get_meios_pagamento, get_categorias, get_contas, filtrar_por_mes_ano
 from app.services import movimentacao_service as mov_service
+from app.utils.valores import converter_valor_para_decimal
 
 
 movimentacoes_bp = Blueprint('movimentacoes', __name__, url_prefix='/movimentacoes')
@@ -29,10 +30,9 @@ def criar():
             flash('Todos os campos são obrigatórios.', 'danger')
             return redirect(url_for('movimentacoes.lista'))
 
-        try:
-            valor = Decimal(valor_raw)
-        except (ValueError, TypeError, InvalidOperation):
-            flash("Valor inválido. Use números com ponto ou vírgula.", "danger")
+        valor = converter_valor_para_decimal(valor_raw)
+        if valor is None or valor <= 0:
+            flash("Valor inválido. Use um número maior que zero, com ponto ou vírgula (ex.: 21,28).", "danger")
             return redirect(url_for('movimentacoes.lista'))
 
         try:
@@ -388,10 +388,9 @@ def editar(id):
         flash('Todos os campos são obrigatórios.', 'danger')
         return redirect(url_for('movimentacoes.lista'))
 
-    try:
-        valor = Decimal(valor_raw)
-    except (ValueError, TypeError, InvalidOperation):
-        flash("Valor inválido.", "danger")
+    valor = converter_valor_para_decimal(valor_raw)
+    if valor is None or valor <= 0:
+        flash("Valor inválido. Use um número maior que zero, com ponto ou vírgula (ex.: 21,28).", "danger")
         return redirect(url_for('movimentacoes.lista'))
 
     try:
